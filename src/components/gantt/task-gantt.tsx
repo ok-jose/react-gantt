@@ -4,8 +4,9 @@ import type { CalendarProps } from '../calendar/calendar';
 import { TaskGanttCanvas } from './task-gantt-canvas';
 import type { TaskGanttCanvasProps } from './task-gantt-canvas';
 import { TaskGanttCanvasVirtualized } from './task-gantt-canvas-virtualized';
-import type { TaskGanttCanvasVirtualizedProps } from './task-gantt-canvas-virtualized';
+import { TaskGanttCanvasDebug } from './task-gantt-canvas-debug';
 import { useGanttPerformance } from '../../hooks/useGanttPerformance';
+import { useScrollSync } from '../../hooks/useScrollSync';
 import styles from './gantt.module.css';
 
 export type TaskGanttProps = {
@@ -31,6 +32,18 @@ export type TaskGanttProps = {
    * 是否使用虚拟化 Canvas 渲染，默认 true
    */
   useVirtualizedCanvas?: boolean;
+  /**
+   * 是否启用调试模式，默认 false
+   */
+  enableDebug?: boolean;
+  /**
+   * 是否启用滚动同步，默认 true
+   */
+  enableScrollSync?: boolean;
+  /**
+   * 右侧容器引用，用于滚动同步
+   */
+  rightContainerRef?: React.RefObject<HTMLDivElement>;
 };
 
 /**
@@ -47,11 +60,26 @@ export const TaskGantt: React.FC<TaskGanttProps> = ({
   enableVirtualization = true,
   virtualizationBuffer = 5,
   enablePerformanceMonitoring = false,
-  useVirtualizedCanvas = true,
+  useVirtualizedCanvas = false,
+  enableDebug = false,
+  enableScrollSync = true,
+  rightContainerRef: externalRightContainerRef,
 }) => {
-  const horizontalContainerRef = useRef<HTMLDivElement>(null);
   const verticalGanttContainerRef = useRef<HTMLDivElement>(null);
   const [visibleRange, setVisibleRange] = useState({ start: 0, end: 0 });
+
+  // 滚动同步
+  const {
+    leftContainerRef,
+    rightContainerRef: internalRightContainerRef,
+    syncScrollPosition,
+  } = useScrollSync({
+    enabled: enableScrollSync,
+  });
+
+  // 使用外部传入的右侧容器引用，如果没有则使用内部的
+  const rightContainerRef =
+    externalRightContainerRef || internalRightContainerRef;
 
   // 计算可见区域的任务范围
   const visibleTasks = useMemo(() => {
@@ -95,8 +123,8 @@ export const TaskGantt: React.FC<TaskGanttProps> = ({
   );
 
   useEffect(() => {
-    if (horizontalContainerRef.current) {
-      horizontalContainerRef.current.scrollTop = scrollY;
+    if (rightContainerRef.current) {
+      rightContainerRef.current.scrollTop = scrollY;
     }
   }, [scrollY]);
 
@@ -105,6 +133,28 @@ export const TaskGantt: React.FC<TaskGanttProps> = ({
       verticalGanttContainerRef.current.scrollLeft = scrollX;
     }
   }, [scrollX]);
+
+  // 添加滚动同步监听
+  useEffect(() => {
+    const rightContainer = rightContainerRef.current;
+    if (!rightContainer) return;
+
+    const handleScroll = () => {
+      const scrollTop = rightContainer.scrollTop;
+      // 这里可以添加滚动同步逻辑，如果需要的话
+      console.log('Right container scroll:', scrollTop);
+    };
+
+    rightContainer.addEventListener('scroll', handleScroll);
+    return () => {
+      rightContainer.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  // 确保 Canvas 容器的高度与任务列表匹配
+  const canvasContainerHeight = useMemo(() => {
+    return barProps.tasks.length * barProps.rowHeight;
+  }, [barProps.tasks.length, barProps.rowHeight]);
 
   return (
     <div
@@ -124,15 +174,27 @@ export const TaskGantt: React.FC<TaskGanttProps> = ({
 
       {/* 甘特图主体 - 使用 Canvas */}
       <div
-        ref={horizontalContainerRef}
+        ref={rightContainerRef}
         className={styles.horizontalContainer}
-        style={
-          ganttHeight
-            ? { height: ganttHeight, width: gridProps.svgWidth }
-            : { width: gridProps.svgWidth }
-        }
+        style={{
+          height: ganttHeight || canvasContainerHeight,
+          width: gridProps.svgWidth,
+          overflow: 'auto',
+          position: 'relative',
+        }}
       >
-        {useVirtualizedCanvas ? (
+        {enableDebug ? (
+          <TaskGanttCanvasDebug
+            tasks={barProps.tasks}
+            dates={barProps.dates}
+            rowHeight={barProps.rowHeight}
+            columnWidth={barProps.columnWidth}
+            svgWidth={gridProps.svgWidth}
+            taskHeight={barProps.taskHeight}
+            fontSize={barProps.fontSize}
+            fontFamily={barProps.fontFamily}
+          />
+        ) : useVirtualizedCanvas ? (
           <TaskGanttCanvasVirtualized
             {...barProps}
             tasks={barProps.tasks}

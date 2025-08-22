@@ -6,10 +6,7 @@ import React, {
   useCallback,
 } from 'react';
 import type { BarTask } from '../../types/bar-task';
-import type { Task } from '../../types';
-import { addToDate } from '../../helpers/date-helper';
 import { useGanttPerformance } from '../../hooks/useGanttPerformance';
-import styles from './gantt.module.css';
 
 export interface TaskGanttCanvasProps {
   tasks: BarTask[];
@@ -136,12 +133,35 @@ export const TaskGanttCanvas: React.FC<TaskGanttCanvasProps> = ({
   // 绘制任务条
   const drawTasks = useCallback(
     (ctx: CanvasRenderingContext2D) => {
+      console.log('Drawing tasks:', tasks.length);
+
       tasks.forEach((task, index) => {
         const y = index * rowHeight + (rowHeight - taskHeight) / 2;
         const taskY = y + virtualizationOffset;
 
+        // 调试任务信息
+        console.log(`Task ${index}:`, {
+          name: task.name,
+          x1: task.x1,
+          x2: task.x2,
+          y: taskY,
+          width: task.x2 - task.x1,
+          height: taskHeight,
+        });
+
         // 跳过不可见的任务
         if (taskY + taskHeight < 0 || taskY > ctx.canvas.height) {
+          console.log(`Task ${index} skipped: outside viewport`);
+          return;
+        }
+
+        // 检查任务坐标是否有效
+        if (
+          task.x1 === undefined ||
+          task.x2 === undefined ||
+          task.x1 >= task.x2
+        ) {
+          console.warn(`Task ${index} has invalid coordinates:`, task);
           return;
         }
 
@@ -264,15 +284,30 @@ export const TaskGanttCanvas: React.FC<TaskGanttCanvasProps> = ({
   // 主渲染函数
   const render = useCallback(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {
+      console.warn('Canvas not found');
+      return;
+    }
 
     startRender();
 
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) {
+      console.warn('Canvas context not found');
+      return;
+    }
 
     // 清空画布
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // 调试信息
+    console.log('Canvas render:', {
+      width: canvas.width,
+      height: canvas.height,
+      tasksCount: tasks.length,
+      svgWidth,
+      rowHeight,
+    });
 
     // 绘制网格
     drawGrid(ctx);
@@ -284,7 +319,16 @@ export const TaskGanttCanvas: React.FC<TaskGanttCanvasProps> = ({
     drawTasks(ctx);
 
     endRender();
-  }, [drawGrid, drawArrows, drawTasks, startRender, endRender]);
+  }, [
+    drawGrid,
+    drawArrows,
+    drawTasks,
+    startRender,
+    endRender,
+    tasks.length,
+    svgWidth,
+    rowHeight,
+  ]);
 
   // 获取鼠标位置对应的任务
   const getTaskAtPosition = useCallback(
@@ -407,7 +451,28 @@ export const TaskGanttCanvas: React.FC<TaskGanttCanvasProps> = ({
 
     canvas.width = svgWidth;
     canvas.height = tasks.length * rowHeight;
-  }, [svgWidth, tasks.length, rowHeight]);
+
+    // 尺寸变化后立即重新渲染
+    requestAnimationFrame(() => {
+      render();
+    });
+  }, [svgWidth, tasks.length, rowHeight, render]);
+
+  // 监听任务数据变化，确保重新渲染
+  useEffect(() => {
+    if (tasks.length > 0) {
+      requestAnimationFrame(() => {
+        render();
+      });
+    }
+  }, [tasks, render]);
+
+  // 监听选中任务变化
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      render();
+    });
+  }, [selectedTask, render]);
 
   return (
     <div style={{ position: 'relative' }}>

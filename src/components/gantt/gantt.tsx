@@ -26,6 +26,7 @@ import type {
 } from '../../types';
 import { HorizontalScroll } from '../other/horizontal-scroll';
 import { removeHiddenTasks, sortTasks } from '../../helpers/other-helper';
+import { useSimpleScrollSync } from '../../hooks/useSimpleScrollSync';
 import styles from './gantt.module.css';
 
 export const Gantt: React.FunctionComponent<GanttProps> = ({
@@ -94,6 +95,9 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
 
   const [selectedTask, setSelectedTask] = useState<BarTask>();
   const [failedTask, setFailedTask] = useState<BarTask | null>(null);
+
+  // 滚动同步
+  const { leftRef, rightRef } = useSimpleScrollSync();
 
   const svgWidth = dateSetup.dates.length * columnWidth;
   const ganttFullHeight = barTasks.length * rowHeight;
@@ -447,7 +451,7 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
     ganttHeight,
     horizontalContainerClass: styles.horizontalContainer,
     selectedTask,
-    taskListRef,
+    taskListRef, // 使用原始的 taskListRef
     setSelectedTask: handleSelectedTask,
     onExpanderClick: handleExpanderClick,
     TaskListHeader,
@@ -461,15 +465,25 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
         tabIndex={0}
         ref={wrapperRef}
       >
-        {listCellWidth && <TaskList {...tableProps} />}
-        <TaskGantt
-          gridProps={gridProps}
-          calendarProps={calendarProps}
-          barProps={barProps}
-          ganttHeight={ganttHeight}
-          scrollY={scrollY}
-          scrollX={scrollX}
-        />
+        <div className={styles.scrollSyncContainer}>
+          {listCellWidth && (
+            <div className={styles.scrollSyncLeft} ref={leftRef}>
+              <TaskList {...tableProps} />
+            </div>
+          )}
+          <div className={styles.scrollSyncRight} ref={rightRef}>
+            <TaskGantt
+              gridProps={gridProps}
+              enableScrollSync={false}
+              enableVirtualization={true}
+              calendarProps={calendarProps}
+              barProps={barProps}
+              ganttHeight={ganttHeight}
+              scrollY={scrollY}
+              scrollX={scrollX}
+            />
+          </div>
+        </div>
         {ganttEvent.changedTask && (
           <Tooltip
             arrowIndent={arrowIndent}

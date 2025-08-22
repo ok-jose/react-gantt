@@ -19,3 +19,45 @@
   outline: none;
   position: relative;
 }
+
+/* 滚动同步容器 */
+.scrollSyncContainer {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+}
+
+.scrollSyncLeft {
+  flex-shrink: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.scrollSyncRight {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* 确保滚动条样式一致 */
+.scrollSyncLeft::-webkit-scrollbar,
+.scrollSyncRight::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.scrollSyncLeft::-webkit-scrollbar-track,
+.scrollSyncRight::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.scrollSyncLeft::-webkit-scrollbar-thumb,
+.scrollSyncRight::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.scrollSyncLeft::-webkit-scrollbar-thumb:hover,
+.scrollSyncRight::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}

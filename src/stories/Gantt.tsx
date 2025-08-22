@@ -8,7 +8,8 @@ import { getStartEndDateForProject, initProjectTasks } from './data-helper';
 // Init
 const GanttChart = () => {
   const [view, setView] = React.useState<ViewMode>(ViewMode.Day);
-  const [tasks, setTasks] = React.useState<Task[]>(initProjectTasks(8, 5));
+  const [tasks, setTasks] = React.useState<Task[]>(initProjectTasks(5, 2));
+  console.log(tasks, 'tasks');
   const [isChecked, setIsChecked] = React.useState(true);
   let columnWidth = 65;
   if (view === ViewMode.Year) {

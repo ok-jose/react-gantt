@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 
 export interface PerformanceMetrics {
   renderTime: number;
@@ -48,24 +48,20 @@ export const useGanttPerformance = (
   const frameCountRef = useRef(0);
   const lastTimeRef = useRef(performance.now());
   const renderStartTimeRef = useRef(0);
+  const lastRenderTimeRef = useRef(0);
+  const lastUpdateTimeRef = useRef(0);
 
   // 开始渲染计时
-  const startRender = () => {
+  const startRender = useCallback(() => {
     if (!enabled) return;
     renderStartTimeRef.current = performance.now();
-  };
+  }, [enabled]);
 
   // 结束渲染计时
-  const endRender = () => {
+  const endRender = useCallback(() => {
     if (!enabled) return;
     const renderTime = performance.now() - renderStartTimeRef.current;
-
-    setMetrics(prev => ({
-      ...prev,
-      renderTime,
-      taskCount,
-      visibleTaskCount,
-    }));
+    lastRenderTimeRef.current = renderTime;
 
     // 检查性能警告
     if (renderTime > warningThreshold) {
@@ -78,7 +74,26 @@ export const useGanttPerformance = (
         }
       );
     }
-  };
+  }, [enabled, warningThreshold, taskCount, visibleTaskCount]);
+
+  // 批量更新指标，避免频繁的状态更新
+  const updateMetrics = useCallback(() => {
+    const currentTime = performance.now();
+
+    // 限制更新频率，避免过于频繁的状态更新
+    if (currentTime - lastUpdateTimeRef.current < sampleInterval) {
+      return;
+    }
+
+    setMetrics(prev => ({
+      ...prev,
+      renderTime: lastRenderTimeRef.current,
+      taskCount,
+      visibleTaskCount,
+    }));
+
+    lastUpdateTimeRef.current = currentTime;
+  }, [taskCount, visibleTaskCount, sampleInterval]);
 
   // FPS 监控
   useEffect(() => {
@@ -133,11 +148,22 @@ export const useGanttPerformance = (
     };
   }, [enabled, sampleInterval]);
 
+  // 定期更新渲染时间指标
+  useEffect(() => {
+    if (!enabled) return;
+
+    const intervalId = setInterval(updateMetrics, sampleInterval);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [enabled, updateMetrics, sampleInterval]);
+
   // 性能建议
-  const getPerformanceAdvice = (): string[] => {
+  const getPerformanceAdvice = useCallback((): string[] => {
     const advice: string[] = [];
 
-    if (metrics.renderTime > warningThreshold) {
+    if (lastRenderTimeRef.current > warningThreshold) {
       advice.push('建议启用虚拟化渲染以减少渲染时间');
     }
 
@@ -154,7 +180,7 @@ export const useGanttPerformance = (
     }
 
     return advice;
-  };
+  }, [taskCount, metrics.fps, metrics.memoryUsage, warningThreshold]);
 
   return {
     metrics,

@@ -13,6 +13,43 @@
   background-color: #f5f5f5;
 }
 
+/* 项目行样式 */
+.projectRow {
+  background-color: #f8f9fa !important;
+  font-weight: 600;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.projectRow:nth-of-type(even) {
+  background-color: #e9ecef !important;
+}
+
+/* 任务行样式 */
+.taskRow {
+  background-color: #ffffff;
+}
+
+.taskRow:nth-of-type(even) {
+  background-color: #f8f9fa;
+}
+
+/* 嵌套任务行样式 */
+.taskRow[style*="paddingLeft: 20px"] {
+  background-color: #fafbfc;
+}
+
+.taskRow[style*="paddingLeft: 20px"]:nth-of-type(even) {
+  background-color: #f5f6f7;
+}
+
+.taskRow[style*="paddingLeft: 40px"] {
+  background-color: #f8f9fa;
+}
+
+.taskRow[style*="paddingLeft: 40px"]:nth-of-type(even) {
+  background-color: #f0f1f2;
+}
+
 .taskListCell {
   display: table-cell;
   vertical-align: middle;
@@ -20,8 +57,10 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .taskListNameWrapper {
   display: flex;
+  align-items: center;
 }
 
 .taskListExpander {
@@ -30,9 +69,52 @@
   padding: 0.15rem 0.2rem 0rem 0.2rem;
   user-select: none;
   cursor: pointer;
+  transition: color 0.2s ease;
 }
+
+.taskListExpander:hover {
+  color: #007bff;
+}
+
 .taskListEmptyExpander {
   font-size: 0.6rem;
   padding-left: 1rem;
   user-select: none;
+}
+
+/* 项目名称样式 */
+.projectName {
+  font-weight: 600;
+  color: #495057;
+}
+
+/* 任务名称样式 */
+.taskName {
+  color: #6c757d;
+}
+
+/* 缩进指示器 */
+.taskListTableRow::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(to bottom, #007bff, #0056b3);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.projectRow::before {
+  opacity: 1;
+}
+
+/* 悬停效果 */
+.taskListTableRow:hover {
+  background-color: #e3f2fd !important;
+}
+
+.projectRow:hover {
+  background-color: #d1ecf1 !important;
 }

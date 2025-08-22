@@ -438,13 +438,15 @@ export const TaskGanttCanvasVirtualized: React.FC<
   }, [svgWidth, visibleRange, rowHeight]);
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div style={{ position: 'relative', height: tasks.length * rowHeight }}>
       <canvas
         ref={canvasRef}
         style={{
           display: 'block',
           cursor: isDragging ? 'grabbing' : 'default',
-          transform: `translateY(${visibleOffset}px)`,
+          position: 'absolute',
+          top: visibleOffset,
+          left: 0,
         }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
