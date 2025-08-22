@@ -20,7 +20,10 @@ export const convertToBarTasks = (
   milestoneBackgroundColor: string,
   milestoneBackgroundSelectedColor: string
 ) => {
-  let barTasks = tasks.map((t, i) => {
+  // 扁平化嵌套的任务结构
+  const flattenedTasks = flattenTasks(tasks);
+
+  let barTasks = flattenedTasks.map((t, i) => {
     return convertToBarTask(
       t,
       i,
@@ -58,6 +61,33 @@ export const convertToBarTasks = (
 
   return barTasks;
 };
+
+/**
+ * 扁平化嵌套的任务结构，将 children 中的任务提取到顶层
+ * 同时保持向后兼容性（支持 project 字段）
+ * 注意：只有当父任务的 hideChildren 不为 true 时才包含子任务
+ */
+function flattenTasks(tasks: Task[]): Task[] {
+  const flattened: Task[] = [];
+
+  tasks.forEach(task => {
+    // 添加当前任务
+    flattened.push(task);
+
+    // 递归处理 children 中的任务
+    // 只有当 hideChildren 不为 true 时才包含子任务
+    if (
+      task.children &&
+      task.children.length > 0 &&
+      task.hideChildren !== true
+    ) {
+      const childrenTasks = flattenTasks(task.children);
+      flattened.push(...childrenTasks);
+    }
+  });
+
+  return flattened;
+}
 
 const convertToBarTask = (
   task: Task,
@@ -167,7 +197,7 @@ const convertToBar = (
   const [progressWidth, progressX] = progressWithByParams(
     x1,
     x2,
-    task.progress,
+    task.progress || 0,
     rtl
   );
   const y = taskYCoordinate(index, rowHeight, taskHeight);
@@ -438,7 +468,7 @@ const handleTaskBySVGMouseEventForBar = (
         const [progressWidth, progressX] = progressWithByParams(
           changedTask.x1,
           changedTask.x2,
-          changedTask.progress,
+          changedTask.progress || 0,
           rtl
         );
         changedTask.progressWidth = progressWidth;
@@ -470,7 +500,7 @@ const handleTaskBySVGMouseEventForBar = (
         const [progressWidth, progressX] = progressWithByParams(
           changedTask.x1,
           changedTask.x2,
-          changedTask.progress,
+          changedTask.progress || 0,
           rtl
         );
         changedTask.progressWidth = progressWidth;
@@ -503,7 +533,7 @@ const handleTaskBySVGMouseEventForBar = (
         const [progressWidth, progressX] = progressWithByParams(
           changedTask.x1,
           changedTask.x2,
-          changedTask.progress,
+          changedTask.progress || 0,
           rtl
         );
         changedTask.progressWidth = progressWidth;
@@ -538,7 +568,7 @@ const handleTaskBySVGMouseEventForBar = (
         const [progressWidth, progressX] = progressWithByParams(
           changedTask.x1,
           changedTask.x2,
-          changedTask.progress,
+          changedTask.progress || 0,
           rtl
         );
         changedTask.progressWidth = progressWidth;

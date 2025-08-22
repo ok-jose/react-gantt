@@ -7,10 +7,20 @@
 .taskListTableRow {
   display: table-row;
   text-overflow: ellipsis;
+  cursor: pointer;
 }
 
 .taskListTableRow:nth-of-type(even) {
   background-color: #f5f5f5;
+}
+
+.taskListTableRow:hover {
+  background-color: #e8f4fd;
+}
+
+.selectedRow {
+  background-color: #e3f2fd !important;
+  border-left: 3px solid #2196f3;
 }
 
 .taskListCell {

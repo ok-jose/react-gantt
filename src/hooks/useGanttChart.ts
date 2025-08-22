@@ -1,23 +1,23 @@
 import { useState, useMemo } from 'react';
-import { GanttTask } from '../types';
+import type { Task } from '../types';
 import { getMinMaxDates } from '../utils/dateUtils';
 
-export const useGanttChart = (tasks: GanttTask[]) => {
-  const [selectedTask, setSelectedTask] = useState<GanttTask | null>(null);
-  const [hoveredTask, setHoveredTask] = useState<GanttTask | null>(null);
+export const useGanttChart = (tasks: Task[]) => {
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [hoveredTask, setHoveredTask] = useState<Task | null>(null);
 
-  const { minDate, maxDate } = useMemo(() => {
+  const { min, max } = useMemo(() => {
     return getMinMaxDates(tasks);
   }, [tasks]);
 
   const totalDays = useMemo(() => {
-    const timeDiff = maxDate.getTime() - minDate.getTime();
+    const timeDiff = max.getTime() - min.getTime();
     return Math.ceil(timeDiff / (1000 * 3600 * 24));
-  }, [minDate, maxDate]);
+  }, [min, max]);
 
-  const getTaskPosition = (task: GanttTask) => {
+  const getTaskPosition = (task: Task) => {
     const startOffset =
-      (task.start.getTime() - minDate.getTime()) / (1000 * 3600 * 24);
+      (task.start.getTime() - min.getTime()) / (1000 * 3600 * 24);
     const duration =
       (task.end.getTime() - task.start.getTime()) / (1000 * 3600 * 24);
 
@@ -27,19 +27,19 @@ export const useGanttChart = (tasks: GanttTask[]) => {
     };
   };
 
-  const handleTaskClick = (task: GanttTask) => {
+  const handleTaskClick = (task: Task) => {
     setSelectedTask(task);
   };
 
-  const handleTaskHover = (task: GanttTask | null) => {
+  const handleTaskHover = (task: Task | null) => {
     setHoveredTask(task);
   };
 
   return {
     selectedTask,
     hoveredTask,
-    minDate,
-    maxDate,
+    minDate: min,
+    maxDate: max,
     totalDays,
     getTaskPosition,
     handleTaskClick,

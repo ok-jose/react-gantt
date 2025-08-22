@@ -2,14 +2,15 @@ import React from 'react';
 import { Gantt } from '../components/gantt/gantt';
 import { ViewMode, type Task } from '../types';
 import { ViewSwitcher } from './view-switcher';
-import { getStartEndDateForProject, initTasks } from './data-helper';
+import { getStartEndDateForProject, initNestedTasks } from './data-helper';
 // import '../components/gantt/gantt.css';
 
 // Init
 const GanttChart = () => {
   const [view, setView] = React.useState<ViewMode>(ViewMode.Day);
-  const [tasks, setTasks] = React.useState<Task[]>(initTasks());
+  const [tasks, setTasks] = React.useState<Task[]>(initNestedTasks());
   const [isChecked, setIsChecked] = React.useState(true);
+
   let columnWidth = 65;
   if (view === ViewMode.Year) {
     columnWidth = 350;
@@ -75,21 +76,6 @@ const GanttChart = () => {
         onViewListChange={setIsChecked}
         isChecked={isChecked}
       />
-      <h3>Gantt With Unlimited Height</h3>
-      <Gantt
-        locale="zh-CN"
-        tasks={tasks}
-        viewMode={view}
-        onDateChange={handleTaskChange}
-        onDelete={handleTaskDelete}
-        onProgressChange={handleProgressChange}
-        onDoubleClick={handleDblClick}
-        onClick={handleClick}
-        onSelect={handleSelect}
-        onExpanderClick={handleExpanderClick}
-        listCellWidth={isChecked ? '155px' : ''}
-        columnWidth={columnWidth}
-      />
       <h3>Gantt With Limited Height</h3>
       <Gantt
         tasks={tasks}
@@ -102,7 +88,7 @@ const GanttChart = () => {
         onSelect={handleSelect}
         onExpanderClick={handleExpanderClick}
         listCellWidth={isChecked ? '155px' : ''}
-        ganttHeight={300}
+        ganttHeight={600}
         columnWidth={columnWidth}
       />
     </div>

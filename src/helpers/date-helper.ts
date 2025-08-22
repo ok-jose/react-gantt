@@ -1,5 +1,4 @@
 import { type Task, ViewMode } from '../types';
-import type { DateTimeFormatOptions, DateTimeFormat } from 'intl';
 
 type DateHelperScales =
   | 'year'
@@ -10,11 +9,11 @@ type DateHelperScales =
   | 'second'
   | 'millisecond';
 
-const intlDTCache = {};
+const intlDTCache: Record<string, Intl.DateTimeFormat> = {};
 export const getCachedDateTimeFormat = (
   locString: string | string[],
-  opts: DateTimeFormatOptions = {}
-): DateTimeFormat => {
+  opts: Intl.DateTimeFormatOptions = {}
+): Intl.DateTimeFormat => {
   const key = JSON.stringify([locString, opts]);
   let dtf = intlDTCache[key];
   if (!dtf) {

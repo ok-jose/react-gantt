@@ -17,44 +17,12 @@ export function isBarTask(task: Task | BarTask): task is BarTask {
 }
 
 export function removeHiddenTasks(tasks: Task[]) {
-  const groupedTasks = tasks.filter(
-    t => t.hideChildren && t.type === 'project'
-  );
-  if (groupedTasks.length > 0) {
-    for (let i = 0; groupedTasks.length > i; i++) {
-      const groupedTask = groupedTasks[i];
-      const children = getChildren(tasks, groupedTask);
-      tasks = tasks.filter(t => children.indexOf(t) === -1);
-    }
-  }
-  return tasks;
-}
-
-function getChildren(taskList: Task[], task: Task) {
-  let tasks: Task[] = [];
-  if (task.type !== 'project') {
-    tasks = taskList.filter(
-      t => t.dependencies && t.dependencies.indexOf(task.id) !== -1
-    );
-  } else {
-    tasks = taskList.filter(t => t.project && t.project === task.id);
-  }
-  var taskChildren: Task[] = [];
-  tasks.forEach(t => {
-    taskChildren.push(...getChildren(taskList, t));
-  });
-  tasks = tasks.concat(tasks, taskChildren);
+  // 直接返回原始任务，让 bar-helper.ts 中的 flattenTasks 函数处理 hideChildren 逻辑
+  // 这样可以避免重复的扁平化和重建过程
   return tasks;
 }
 
 export const sortTasks = (taskA: Task, taskB: Task) => {
-  const orderA = taskA.displayOrder || Number.MAX_VALUE;
-  const orderB = taskB.displayOrder || Number.MAX_VALUE;
-  if (orderA > orderB) {
-    return 1;
-  } else if (orderA < orderB) {
-    return -1;
-  } else {
-    return 0;
-  }
+  // 简单的字符串比较，保持任务顺序稳定
+  return taskA.id.localeCompare(taskB.id);
 };

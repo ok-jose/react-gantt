@@ -19,7 +19,7 @@ export type Task = {
   /**
    * From 0 to 100
    */
-  progress: number;
+  progress?: number;
   styles?: {
     backgroundColor?: string;
     backgroundSelectedColor?: string;
@@ -31,6 +31,7 @@ export type Task = {
   dependencies?: string[];
   hideChildren?: boolean;
   displayOrder?: number;
+  children?: Task[];
 };
 
 export interface EventOption {

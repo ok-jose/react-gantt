@@ -104,13 +104,8 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
 
   // task change events
   useEffect(() => {
-    let filteredTasks: Task[];
-    if (onExpanderClick) {
-      filteredTasks = removeHiddenTasks(tasks);
-    } else {
-      filteredTasks = tasks;
-    }
-    filteredTasks = filteredTasks.sort(sortTasks);
+    const filteredTasks = tasks.sort(sortTasks);
+
     const [startDate, endDate] = ganttDateRange(
       filteredTasks,
       viewMode,
@@ -167,7 +162,6 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
     milestoneBackgroundSelectedColor,
     rtl,
     scrollX,
-    onExpanderClick,
   ]);
 
   useEffect(() => {
@@ -394,7 +388,7 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
   const gridProps: GridProps = {
     columnWidth,
     svgWidth,
-    tasks: tasks,
+    tasks: barTasks,
     rowHeight,
     dates: dateSetup.dates,
     todayColor,
@@ -440,7 +434,7 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
     rowWidth: listCellWidth,
     fontFamily,
     fontSize,
-    tasks: barTasks,
+    tasks: tasks,
     locale,
     headerHeight,
     scrollY,
