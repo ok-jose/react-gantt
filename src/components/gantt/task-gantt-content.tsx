@@ -30,6 +30,11 @@ export type TaskGanttContentProps = {
   setGanttEvent: (value: GanttEvent) => void;
   setFailedTask: (value: BarTask | null) => void;
   setSelectedTask: (taskId: string) => void;
+  /**
+   * 是否显示项目分段进度条
+   * 默认为 true，设置为 false 时只显示子任务段，不显示进度条
+   */
+  showProjectSegmentProgress?: boolean;
 } & EventOption;
 
 export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
@@ -50,6 +55,7 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
   setGanttEvent,
   setFailedTask,
   setSelectedTask,
+  showProjectSegmentProgress = false,
   onDateChange,
   onProgressChange,
   onDoubleClick,
@@ -293,6 +299,7 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
               key={task.id}
               isSelected={!!selectedTask && task.id === selectedTask.id}
               rtl={rtl}
+              showProjectSegmentProgress={showProjectSegmentProgress}
             />
           );
         })}

@@ -144,6 +144,8 @@ export const NestedStructureExample: React.FC = () => {
     <div style={{ padding: '20px' }}>
       <h2>嵌套结构示例</h2>
       <p>这个示例展示了如何使用新的嵌套 children 结构来组织任务。</p>
+
+      <h3>显示项目分段进度条（默认）</h3>
       <Gantt
         tasks={tasks}
         viewMode={ViewMode.Day}
@@ -154,6 +156,21 @@ export const NestedStructureExample: React.FC = () => {
         rowHeight={50}
         ganttHeight={400}
         locale="zh-CN"
+        showProjectSegmentProgress={true}
+      />
+
+      <h3>隐藏项目分段进度条</h3>
+      <Gantt
+        tasks={tasks}
+        viewMode={ViewMode.Day}
+        onDateChange={handleTaskChange}
+        onExpanderClick={handleExpanderClick}
+        listCellWidth="200px"
+        columnWidth={65}
+        rowHeight={50}
+        ganttHeight={400}
+        locale="zh-CN"
+        showProjectSegmentProgress={false}
       />
     </div>
   );

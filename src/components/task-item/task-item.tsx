@@ -16,6 +16,11 @@ export type TaskItemProps = {
   isDelete: boolean;
   isSelected: boolean;
   rtl: boolean;
+  /**
+   * 是否显示项目分段进度条
+   * 默认为 true，设置为 false 时只显示子任务段，不显示进度条
+   */
+  showProjectSegmentProgress?: boolean;
   onEventStart: (
     action: GanttContentMoveAction,
     selectedTask: BarTask,
@@ -31,6 +36,7 @@ export const TaskItem: React.FC<TaskItemProps> = props => {
     taskHeight,
     isSelected,
     rtl,
+    showProjectSegmentProgress = false,
     onEventStart,
   } = {
     ...props,
@@ -45,7 +51,12 @@ export const TaskItem: React.FC<TaskItemProps> = props => {
         setTaskItem(<Milestone {...props} />);
         break;
       case 'project':
-        setTaskItem(<Project {...props} />);
+        setTaskItem(
+          <Project
+            {...props}
+            showProjectSegmentProgress={showProjectSegmentProgress}
+          />
+        );
         break;
       case 'smalltask':
         setTaskItem(<BarSmall {...props} />);

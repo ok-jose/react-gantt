@@ -114,6 +114,11 @@ export interface StylingOption {
   arrowColor?: string;
   arrowIndent?: number;
   todayColor?: string;
+  /**
+   * 是否显示项目分段进度条
+   * 默认为 true，设置为 false 时只显示子任务段，不显示进度条
+   */
+  showProjectSegmentProgress?: boolean;
   TooltipContent?: React.FC<{
     task: Task;
     fontSize: string;

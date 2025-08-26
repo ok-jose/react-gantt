@@ -25,7 +25,7 @@ import type {
   Task,
 } from '../../types';
 import { HorizontalScroll } from '../other/horizontal-scroll';
-import { removeHiddenTasks, sortTasks } from '../../helpers/other-helper';
+import { sortTasks } from '../../helpers/other-helper';
 import styles from './gantt.module.css';
 
 export const Gantt: React.FunctionComponent<GanttProps> = ({
@@ -58,6 +58,7 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
   fontSize = '14px',
   arrowIndent = 20,
   todayColor = 'rgba(252, 248, 227, 0.5)',
+  showProjectSegmentProgress = false,
   viewDate,
   TooltipContent = StandardTooltipContent,
   TaskListHeader = TaskListHeaderDefault,
@@ -427,6 +428,7 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
     onDoubleClick,
     onClick,
     onDelete,
+    showProjectSegmentProgress,
   };
 
   const tableProps: TaskListProps = {
