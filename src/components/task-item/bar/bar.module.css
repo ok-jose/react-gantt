@@ -3,7 +3,7 @@
   outline: none;
 }
 
-.barWrapper:hover .barHandle {
+.barWrapper .barHandle {
   visibility: visible;
   opacity: 1;
 }

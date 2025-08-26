@@ -3,7 +3,6 @@ import { Gantt } from '../components/gantt/gantt';
 import { ViewMode, type Task } from '../types';
 import { ViewSwitcher } from './view-switcher';
 import { getStartEndDateForProject, initNestedTasks } from './data-helper';
-// import '../components/gantt/gantt.css';
 
 // Init
 const GanttChart = () => {
@@ -21,21 +20,17 @@ const GanttChart = () => {
   }
 
   const handleTaskChange = (task: Task) => {
-    console.log('On date change Id:' + task.id);
-    let newTasks = tasks.map(t => (t.id === task.id ? task : t));
-    if (task.project) {
-      const [start, end] = getStartEndDateForProject(newTasks, task.project);
-      const project = newTasks[newTasks.findIndex(t => t.id === task.project)];
-      if (
-        project.start.getTime() !== start.getTime() ||
-        project.end.getTime() !== end.getTime()
-      ) {
-        const changedProject = { ...project, start, end };
-        newTasks = newTasks.map(t =>
-          t.id === task.project ? changedProject : t
-        );
+    // TODO: 处理任务日期变化, 需要递归task.children
+    const newTasks = tasks.map(t => (t.id === task.id ? task : t));
+    newTasks.forEach(t => {
+      if (t.children) {
+        t.children.forEach(c => {
+          c.start = task.start;
+          c.end = task.end;
+          c.progress = task.progress;
+        });
       }
-    }
+    });
     setTasks(newTasks);
   };
 

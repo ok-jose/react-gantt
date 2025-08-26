@@ -27,10 +27,8 @@ export type Task = {
     progressSelectedColor?: string;
   };
   isDisabled?: boolean;
-  project?: string;
   dependencies?: string[];
   hideChildren?: boolean;
-  displayOrder?: number;
   children?: Task[];
 };
 

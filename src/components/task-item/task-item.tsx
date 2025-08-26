@@ -21,7 +21,7 @@ export type TaskItemProps = {
    * 默认为 true，设置为 false 时只显示子任务段，不显示进度条
    */
   showProjectSegmentProgress?: boolean;
-  onEventStart: (
+  onEventStart?: (
     action: GanttContentMoveAction,
     selectedTask: BarTask,
     event?: React.MouseEvent | React.KeyboardEvent
@@ -62,7 +62,7 @@ export const TaskItem: React.FC<TaskItemProps> = props => {
         setTaskItem(<BarSmall {...props} />);
         break;
       default:
-        setTaskItem(<Bar {...props} />);
+        setTaskItem(<Bar {...props} isDateChangeable={false} />);
         break;
     }
   }, [task, isSelected]);
@@ -96,26 +96,26 @@ export const TaskItem: React.FC<TaskItemProps> = props => {
       onKeyDown={e => {
         switch (e.key) {
           case 'Delete': {
-            if (isDelete) onEventStart('delete', task, e);
+            if (isDelete) onEventStart?.('delete', task, e);
             break;
           }
         }
         e.stopPropagation();
       }}
       onMouseEnter={e => {
-        onEventStart('mouseenter', task, e);
+        onEventStart?.('mouseenter', task, e);
       }}
       onMouseLeave={e => {
-        onEventStart('mouseleave', task, e);
+        onEventStart?.('mouseleave', task, e);
       }}
       onDoubleClick={e => {
-        onEventStart('dblclick', task, e);
+        onEventStart?.('dblclick', task, e);
       }}
       onClick={e => {
-        onEventStart('click', task, e);
+        onEventStart?.('click', task, e);
       }}
       onFocus={() => {
-        onEventStart('select', task);
+        onEventStart?.('select', task);
       }}
     >
       {taskItem}

@@ -205,7 +205,6 @@ export function initNestedTasks() {
           end: new Date(currentDate.getFullYear(), currentDate.getMonth(), 12),
           progress: 30,
           type: 'task',
-          displayOrder: 6,
         },
         {
           id: 'Backend',
@@ -218,7 +217,6 @@ export function initNestedTasks() {
           end: new Date(currentDate.getFullYear(), currentDate.getMonth(), 15),
           progress: 15,
           type: 'task',
-          displayOrder: 7,
         },
         {
           id: 'Testing',
@@ -231,7 +229,6 @@ export function initNestedTasks() {
           end: new Date(currentDate.getFullYear(), currentDate.getMonth(), 20),
           progress: 0,
           type: 'task',
-          displayOrder: 8,
         },
       ],
     },
@@ -242,7 +239,6 @@ export function initNestedTasks() {
     //   id: 'Documentation',
     //   progress: 0,
     //   type: 'task',
-    //   displayOrder: 9,
     // },
     {
       start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 10),
@@ -252,7 +248,6 @@ export function initNestedTasks() {
       progress: 0,
       type: 'project',
       hideChildren: false,
-      displayOrder: 9,
       children: [
         {
           id: 'Idea',
@@ -265,7 +260,6 @@ export function initNestedTasks() {
           end: new Date(currentDate.getFullYear(), currentDate.getMonth(), 15),
           progress: 0,
           type: 'task',
-          displayOrder: 9,
         },
         {
           id: 'Draft',
@@ -278,7 +272,6 @@ export function initNestedTasks() {
           end: new Date(currentDate.getFullYear(), currentDate.getMonth(), 20),
           progress: 0,
           type: 'task',
-          displayOrder: 9,
         },
         {
           id: 'Proofreading',
@@ -291,7 +284,6 @@ export function initNestedTasks() {
           end: new Date(currentDate.getFullYear(), currentDate.getMonth(), 25),
           progress: 0,
           type: 'task',
-          displayOrder: 9,
         },
       ],
     },
@@ -299,8 +291,8 @@ export function initNestedTasks() {
   return tasks;
 }
 
-export function getStartEndDateForProject(tasks: Task[], projectId: string) {
-  const projectTasks = tasks.filter(t => t.project === projectId);
+export function getStartEndDateForProject(tasks: Task[], id: string) {
+  const projectTasks = tasks.filter(t => t.id === id);
   let start = projectTasks[0].start;
   let end = projectTasks[0].end;
 
