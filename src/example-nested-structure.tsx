@@ -123,6 +123,45 @@ export const NestedStructureExample: React.FC = () => {
       ],
     },
     {
+      id: 'OverlappingProject',
+      name: '重叠任务项目（测试）',
+      type: 'project',
+      start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1),
+      end: new Date(currentDate.getFullYear(), currentDate.getMonth(), 15),
+      progress: 40,
+      hideChildren: false,
+      children: [
+        {
+          id: 'Task1',
+          name: '任务1',
+          type: 'task',
+          start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 2),
+          end: new Date(currentDate.getFullYear(), currentDate.getMonth(), 8),
+          progress: 60,
+        },
+        {
+          id: 'Task2',
+          name: '任务2',
+          type: 'task',
+          start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 6),
+          end: new Date(currentDate.getFullYear(), currentDate.getMonth(), 12),
+          progress: 30,
+        },
+        {
+          id: 'Task3',
+          name: '任务3',
+          type: 'task',
+          start: new Date(
+            currentDate.getFullYear(),
+            currentDate.getMonth(),
+            10
+          ),
+          end: new Date(currentDate.getFullYear(), currentDate.getMonth(), 14),
+          progress: 20,
+        },
+      ],
+    },
+    {
       start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 10),
       end: new Date(currentDate.getFullYear(), currentDate.getMonth(), 25),
       name: '文档编写',
@@ -144,6 +183,9 @@ export const NestedStructureExample: React.FC = () => {
     <div style={{ padding: '20px' }}>
       <h2>嵌套结构示例</h2>
       <p>这个示例展示了如何使用新的嵌套 children 结构来组织任务。</p>
+      <p style={{ color: 'red', fontWeight: 'bold' }}>
+        注意：包含重叠子任务的项目会显示红色背景标识
+      </p>
 
       <h3>显示项目分段进度条（默认）</h3>
       <Gantt

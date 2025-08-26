@@ -626,3 +626,52 @@ const handleTaskBySVGMouseEventForMilestone = (
   }
   return { isChanged, changedTask };
 };
+
+/**
+ * 检测子任务之间是否有时间重叠
+ * @param children 子任务数组
+ * @returns 是否存在重叠
+ */
+const hasOverlappingChildren = (children: Task[]): boolean => {
+  if (!children || children.length <= 1) {
+    return false;
+  }
+
+  // 按开始时间排序
+  const sortedChildren = [...children].sort(
+    (a, b) => a.start.getTime() - b.start.getTime()
+  );
+
+  // 检查相邻任务是否有重叠
+  for (let i = 0; i < sortedChildren.length - 1; i++) {
+    const currentTask = sortedChildren[i];
+    const nextTask = sortedChildren[i + 1];
+
+    // 如果当前任务的结束时间晚于下一个任务的开始时间，则存在重叠
+    if (currentTask.end.getTime() > nextTask.start.getTime()) {
+      return true;
+    }
+  }
+
+  // 额外检查：确保没有任务完全包含在其他任务中
+  for (let i = 0; i < sortedChildren.length; i++) {
+    for (let j = i + 1; j < sortedChildren.length; j++) {
+      const task1 = sortedChildren[i];
+      const task2 = sortedChildren[j];
+
+      // 检查是否有重叠（包括完全包含的情况）
+      const start1 = task1.start.getTime();
+      const end1 = task1.end.getTime();
+      const start2 = task2.start.getTime();
+      const end2 = task2.end.getTime();
+
+      if (start1 < end2 && end1 > start2) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+};
+
+export { hasOverlappingChildren };

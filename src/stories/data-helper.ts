@@ -235,14 +235,65 @@ export function initNestedTasks() {
         },
       ],
     },
+    // {
+    //   start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 10),
+    //   end: new Date(currentDate.getFullYear(), currentDate.getMonth(), 25),
+    //   name: '文档编写',
+    //   id: 'Documentation',
+    //   progress: 0,
+    //   type: 'task',
+    //   displayOrder: 9,
+    // },
     {
       start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 10),
       end: new Date(currentDate.getFullYear(), currentDate.getMonth(), 25),
-      name: '文档编写',
-      id: 'Documentation',
+      name: '项目文档',
+      id: 'ProjectDocumentation',
       progress: 0,
-      type: 'task',
+      type: 'project',
+      hideChildren: false,
       displayOrder: 9,
+      children: [
+        {
+          id: 'Idea',
+          name: '文档立意',
+          start: new Date(
+            currentDate.getFullYear(),
+            currentDate.getMonth(),
+            10
+          ),
+          end: new Date(currentDate.getFullYear(), currentDate.getMonth(), 15),
+          progress: 0,
+          type: 'task',
+          displayOrder: 9,
+        },
+        {
+          id: 'Draft',
+          name: '文档初稿',
+          start: new Date(
+            currentDate.getFullYear(),
+            currentDate.getMonth(),
+            13
+          ),
+          end: new Date(currentDate.getFullYear(), currentDate.getMonth(), 20),
+          progress: 0,
+          type: 'task',
+          displayOrder: 9,
+        },
+        {
+          id: 'Proofreading',
+          name: '文档校对',
+          start: new Date(
+            currentDate.getFullYear(),
+            currentDate.getMonth(),
+            20
+          ),
+          end: new Date(currentDate.getFullYear(), currentDate.getMonth(), 25),
+          progress: 0,
+          type: 'task',
+          displayOrder: 9,
+        },
+      ],
     },
   ];
   return tasks;

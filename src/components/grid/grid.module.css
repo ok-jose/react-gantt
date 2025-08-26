@@ -13,3 +13,7 @@
 .gridTick {
   stroke: #e6e4e4;
 }
+
+.gridRowOverlap {
+  fill: rgba(245, 86, 87, 0.7);
+}

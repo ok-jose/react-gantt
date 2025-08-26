@@ -2,6 +2,7 @@ import React from 'react';
 import type { Task } from '../../types';
 import { addToDate } from '../../helpers/date-helper';
 import styles from './grid.module.css';
+import { hasOverlappingChildren } from '../../helpers/bar-helper';
 
 export type GridBodyProps = {
   tasks: Task[];
@@ -34,6 +35,10 @@ export const GridBody: React.FC<GridBodyProps> = ({
     />,
   ];
   for (const task of tasks) {
+    const hasChildrenOverlap =
+      task.children && task.children.length > 0
+        ? hasOverlappingChildren(task.children)
+        : false;
     gridRows.push(
       <rect
         key={'Row' + task.id}
@@ -41,7 +46,11 @@ export const GridBody: React.FC<GridBodyProps> = ({
         y={y}
         width={svgWidth}
         height={rowHeight}
-        className={styles.gridRow}
+        className={
+          hasChildrenOverlap
+            ? `${styles.gridRow} ${styles.gridRowOverlap} `
+            : styles.gridRow
+        }
       />
     );
     rowLines.push(
