@@ -136,10 +136,9 @@ export const Project: React.FC<TaskItemProps> = ({
                 y={childY + task.height / 2}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                className={styles.childTaskLabel}
+                // className={styles.childTaskLabel}
                 fill="#ffffff"
-                fontSize="10"
-                fontWeight="bold"
+                fontSize="12"
               >
                 {childTask.name}
               </text>

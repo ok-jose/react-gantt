@@ -30,6 +30,14 @@ export type Task = {
   dependencies?: string[];
   hideChildren?: boolean;
   children?: Task[];
+  /**
+   * 所属项目ID（向后兼容，推荐使用 children 结构）
+   */
+  project?: string;
+  /**
+   * 显示顺序
+   */
+  displayOrder?: number;
 };
 
 export interface EventOption {
@@ -117,6 +125,11 @@ export interface StylingOption {
    * 默认为 true，设置为 false 时只显示子任务段，不显示进度条
    */
   showProjectSegmentProgress?: boolean;
+  /**
+   * 是否显示子任务，左侧 table 不展示嵌套表，右边 gantt 不展示子任务行
+   * 默认为 false，设置为 true 时显示子任务
+   */
+  showSubTask?: boolean;
   isDateChangeable?: boolean | ['start', 'end', 'move'];
   TooltipContent?: React.FC<{
     task: Task;
@@ -142,6 +155,7 @@ export interface StylingOption {
      */
     setSelectedTask: (taskId: string) => void;
     onExpanderClick: (task: Task) => void;
+    showSubTask?: boolean;
   }>;
 }
 

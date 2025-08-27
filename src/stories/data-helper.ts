@@ -187,7 +187,7 @@ export function initNestedTasks() {
       id: 'SoftwareProject',
       progress: 30,
       type: 'project',
-      hideChildren: false,
+      hideChildren: true,
       children: [
         {
           id: 'Planning',
@@ -197,7 +197,6 @@ export function initNestedTasks() {
           progress: 100,
           type: 'task',
         },
-
         {
           id: 'Frontend',
           name: '前端开发',
@@ -247,7 +246,7 @@ export function initNestedTasks() {
       id: 'ProjectDocumentation',
       progress: 0,
       type: 'project',
-      hideChildren: false,
+      hideChildren: true,
       children: [
         {
           id: 'Idea',

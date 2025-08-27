@@ -35,6 +35,7 @@ export const TaskList: React.FC<TaskListProps> = ({
     listCellWidth: rowWidth,
     rowHeight,
     ganttHeight,
+    showSubTask,
   } = styling;
   const { locale } = display;
 
@@ -64,6 +65,7 @@ export const TaskList: React.FC<TaskListProps> = ({
     selectedTaskId: selectedTaskId,
     setSelectedTask,
     onExpanderClick,
+    showSubTask,
   };
 
   return (

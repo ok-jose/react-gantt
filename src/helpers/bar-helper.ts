@@ -18,10 +18,11 @@ export const convertToBarTasks = (
   projectBackgroundColor: string,
   projectBackgroundSelectedColor: string,
   milestoneBackgroundColor: string,
-  milestoneBackgroundSelectedColor: string
+  milestoneBackgroundSelectedColor: string,
+  showSubTask: boolean = false
 ) => {
   // 扁平化嵌套的任务结构
-  const flattenedTasks = flattenTasks(tasks);
+  const flattenedTasks = flattenTasks(tasks, showSubTask);
 
   let barTasks = flattenedTasks.map((t, i) => {
     return convertToBarTask(
@@ -65,10 +66,10 @@ export const convertToBarTasks = (
 /**
  * 扁平化嵌套的任务结构，将 children 中的任务提取到顶层
  * 同时保持向后兼容性（支持 project 字段）
- * 注意：只有当父任务的 hideChildren 不为 true 时才包含子任务
+ * 注意：只有当父任务的 hideChildren 不为 true 且 showSubTask 为 true 时才包含子任务
  * 项目任务会保留其子任务信息用于分段显示，同时子任务也会作为独立任务行显示
  */
-function flattenTasks(tasks: Task[]): Task[] {
+function flattenTasks(tasks: Task[], showSubTask: boolean = false): Task[] {
   const flattened: Task[] = [];
 
   tasks.forEach(task => {
@@ -76,22 +77,23 @@ function flattenTasks(tasks: Task[]): Task[] {
     flattened.push(task);
 
     // 递归处理 children 中的任务
-    // 只有当 hideChildren 不为 true 时才包含子任务
+    // 只有当 hideChildren 不为 true 且 showSubTask 为 true 时才包含子任务
     if (
       task.children &&
       task.children.length > 0 &&
-      task.hideChildren !== true
+      task.hideChildren !== true &&
+      showSubTask
     ) {
       // 对于项目任务，保留子任务信息用于分段显示，同时将子任务提取到顶层
       if (task.type === 'project') {
         // 项目任务已经在上面的 flattened.push(task) 中添加了
         // 子任务信息保留在 task.children 中，用于分段显示
         // 同时将子任务提取到顶层作为独立任务行
-        const childrenTasks = flattenTasks(task.children);
+        const childrenTasks = flattenTasks(task.children, showSubTask);
         flattened.push(...childrenTasks);
       } else {
         // 对于非项目任务，将子任务提取到顶层
-        const childrenTasks = flattenTasks(task.children);
+        const childrenTasks = flattenTasks(task.children, showSubTask);
         flattened.push(...childrenTasks);
       }
     }

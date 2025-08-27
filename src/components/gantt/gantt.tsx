@@ -68,6 +68,7 @@ const GanttInternal: React.FunctionComponent = () => {
     arrowIndent,
     todayColor,
     showProjectSegmentProgress,
+    showSubTask,
   } = styling;
 
   const { viewMode, viewDate, preStepsCount, locale, rtl } = display;
@@ -146,7 +147,8 @@ const GanttInternal: React.FunctionComponent = () => {
         projectBackgroundColor,
         projectBackgroundSelectedColor,
         milestoneBackgroundColor,
-        milestoneBackgroundSelectedColor
+        milestoneBackgroundSelectedColor,
+        showSubTask
       )
     );
   }, [
@@ -170,6 +172,7 @@ const GanttInternal: React.FunctionComponent = () => {
     milestoneBackgroundSelectedColor,
     rtl,
     scrollX,
+    showSubTask,
   ]);
 
   useEffect(() => {
@@ -541,6 +544,7 @@ export const Gantt: React.FunctionComponent<GanttProps> = props => {
     arrowIndent = 20,
     todayColor = 'rgba(252, 248, 227, 0.5)',
     showProjectSegmentProgress = false,
+    showSubTask = false,
     isDateChangeable,
     viewDate,
     TooltipContent = StandardTooltipContent,
@@ -586,6 +590,7 @@ export const Gantt: React.FunctionComponent<GanttProps> = props => {
       arrowIndent,
       todayColor,
       showProjectSegmentProgress,
+      showSubTask,
     },
     display: {
       viewMode,

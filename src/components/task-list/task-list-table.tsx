@@ -31,6 +31,7 @@ export const TaskListTableDefault: React.FC<{
   selectedTaskId: string;
   setSelectedTask: (taskId: string) => void;
   onExpanderClick: (task: Task) => void;
+  showSubTask?: boolean;
 }> = ({
   rowHeight,
   rowWidth,
@@ -41,6 +42,7 @@ export const TaskListTableDefault: React.FC<{
   selectedTaskId,
   setSelectedTask,
   onExpanderClick,
+  showSubTask = false,
 }) => {
   const toLocaleDateString = useMemo(
     () => toLocaleDateStringFactory(locale),
@@ -52,10 +54,12 @@ export const TaskListTableDefault: React.FC<{
    */
   const renderTaskRow = (task: Task, level: number = 0): React.ReactNode => {
     let expanderSymbol = '';
-    if (task.hideChildren === false) {
-      expanderSymbol = '▼';
-    } else if (task.hideChildren === true) {
-      expanderSymbol = '▶';
+    if (showSubTask) {
+      if (task.hideChildren === false) {
+        expanderSymbol = '▼';
+      } else if (task.hideChildren === true) {
+        expanderSymbol = '▶';
+      }
     }
 
     // 计算缩进
@@ -123,7 +127,7 @@ export const TaskListTableDefault: React.FC<{
 
   /**
    * 递归渲染任务行，支持嵌套的 children 结构
-   * 只有当父任务的 hideChildren 不为 true 时才显示子任务
+   * 只有当父任务的 hideChildren 不为 true 且 showSubTask 为 true 时才显示子任务
    */
   const renderTaskRows = (
     taskList: Task[],
@@ -135,11 +139,12 @@ export const TaskListTableDefault: React.FC<{
       // 渲染当前任务行
       rows.push(renderTaskRow(task, level));
 
-      // 如果任务有 children 且未隐藏，递归渲染子任务
+      // 如果任务有 children 且未隐藏且 showSubTask 为 true，递归渲染子任务
       if (
         task.children &&
         task.children.length > 0 &&
-        task.hideChildren !== true
+        task.hideChildren !== true &&
+        showSubTask
       ) {
         const childRows = renderTaskRows(task.children, level + 1);
         rows.push(...childRows);

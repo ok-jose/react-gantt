@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import GanttChart from './Gantt';
 
 const meta: Meta<typeof GanttChart> = {

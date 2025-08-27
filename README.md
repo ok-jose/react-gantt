@@ -239,6 +239,22 @@ const handleExpanderClick = task => {
 />
 ```
 
+### 子任务显示控制
+
+```tsx
+<Gantt
+  tasks={tasks}
+  showSubTask={true} // 显示子任务行
+  // ... 其他属性
+/>
+
+<Gantt
+  tasks={tasks}
+  showSubTask={false} // 隐藏子任务行（默认）
+  // ... 其他属性
+/>
+```
+
 ## API 参考
 
 ### Gantt 组件属性
@@ -254,6 +270,7 @@ const handleExpanderClick = task => {
 | `columnWidth`      | `number`               | `65`           | 甘特图列宽度       |
 | `rowHeight`        | `number`               | `50`           | 行高度             |
 | `locale`           | `string`               | `'en-GB'`      | 国际化语言         |
+| `showSubTask`      | `boolean`              | `false`        | 是否显示子任务行   |
 
 ### Task 类型
 

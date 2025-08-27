@@ -39,6 +39,7 @@ interface GanttContextValue {
     arrowIndent: number;
     todayColor: string;
     showProjectSegmentProgress: boolean;
+    showSubTask: boolean;
   };
 
   // 显示相关配置

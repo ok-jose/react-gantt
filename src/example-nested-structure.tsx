@@ -186,6 +186,9 @@ export const NestedStructureExample: React.FC = () => {
       <p style={{ color: 'red', fontWeight: 'bold' }}>
         注意：包含重叠子任务的项目会显示红色背景标识
       </p>
+      <p style={{ color: 'blue', fontWeight: 'bold' }}>
+        新增功能：showSubTask 属性控制是否显示子任务行，默认为 false
+      </p>
 
       <h3>显示项目分段进度条（默认）</h3>
       <Gantt
@@ -213,6 +216,36 @@ export const NestedStructureExample: React.FC = () => {
         ganttHeight={400}
         locale="zh-CN"
         showProjectSegmentProgress={false}
+      />
+
+      <h3>显示子任务（showSubTask=true）</h3>
+      <Gantt
+        tasks={tasks}
+        viewMode={ViewMode.Day}
+        onDateChange={handleTaskChange}
+        onExpanderClick={handleExpanderClick}
+        listCellWidth="200px"
+        columnWidth={65}
+        rowHeight={50}
+        ganttHeight={400}
+        locale="zh-CN"
+        showProjectSegmentProgress={true}
+        showSubTask={true}
+      />
+
+      <h3>隐藏子任务（showSubTask=false，默认）</h3>
+      <Gantt
+        tasks={tasks}
+        viewMode={ViewMode.Day}
+        onDateChange={handleTaskChange}
+        onExpanderClick={handleExpanderClick}
+        listCellWidth="200px"
+        columnWidth={65}
+        rowHeight={50}
+        ganttHeight={400}
+        locale="zh-CN"
+        showProjectSegmentProgress={true}
+        showSubTask={false}
       />
     </div>
   );

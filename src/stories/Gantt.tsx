@@ -184,6 +184,7 @@ const GanttChart = () => {
         listCellWidth={isChecked ? '155px' : ''}
         ganttHeight={600}
         columnWidth={columnWidth}
+        rowHeight={38}
       />
     </div>
   );
