@@ -3,25 +3,41 @@ import type { Task } from '../../types';
 import { addToDate } from '../../helpers/date-helper';
 import styles from './grid.module.css';
 import { hasOverlappingChildren } from '../../helpers/bar-helper';
+import { useGanttContext } from '../../contexts/GanttContext';
 
 export type GridBodyProps = {
   tasks: Task[];
   dates: Date[];
   svgWidth: number;
-  rowHeight: number;
-  columnWidth: number;
-  todayColor: string;
-  rtl: boolean;
+  rowHeight?: number;
+  columnWidth?: number;
+  todayColor?: string;
+  rtl?: boolean;
 };
+
 export const GridBody: React.FC<GridBodyProps> = ({
   tasks,
   dates,
-  rowHeight,
   svgWidth,
-  columnWidth,
-  todayColor,
-  rtl,
+  rowHeight: propRowHeight,
+  columnWidth: propColumnWidth,
+  todayColor: propTodayColor,
+  rtl: propRtl,
 }) => {
+  const { styling, display } = useGanttContext();
+  const {
+    rowHeight: contextRowHeight,
+    columnWidth: contextColumnWidth,
+    todayColor: contextTodayColor,
+  } = styling;
+  const { rtl: contextRtl } = display;
+
+  // 使用 props 优先，如果没有则使用 Context 中的值
+  const rowHeight = propRowHeight || contextRowHeight;
+  const columnWidth = propColumnWidth || contextColumnWidth;
+  const todayColor = propTodayColor || contextTodayColor;
+  const rtl = propRtl ?? contextRtl;
+
   let y = 0;
   const gridRows: React.ReactNode[] = [];
   const rowLines: React.ReactNode[] = [

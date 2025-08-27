@@ -117,6 +117,7 @@ export interface StylingOption {
    * 默认为 true，设置为 false 时只显示子任务段，不显示进度条
    */
   showProjectSegmentProgress?: boolean;
+  isDateChangeable?: boolean | ['start', 'end', 'move'];
   TooltipContent?: React.FC<{
     task: Task;
     fontSize: string;

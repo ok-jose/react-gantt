@@ -10,28 +10,51 @@ import {
 } from '../../helpers/date-helper';
 import type { DateSetup } from '../../types/date-setup';
 import styles from './calendar.module.css';
+import { useGanttContext } from '../../contexts/GanttContext';
 
 export type CalendarProps = {
   dateSetup: DateSetup;
-  locale: string;
-  viewMode: ViewMode;
-  rtl: boolean;
-  headerHeight: number;
-  columnWidth: number;
-  fontFamily: string;
-  fontSize: string;
+  locale?: string;
+  viewMode?: ViewMode;
+  rtl?: boolean;
+  headerHeight?: number;
+  columnWidth?: number;
+  fontFamily?: string;
+  fontSize?: string;
 };
 
 export const Calendar: React.FC<CalendarProps> = ({
   dateSetup,
-  locale,
-  viewMode,
-  rtl,
-  headerHeight,
-  columnWidth,
-  fontFamily,
-  fontSize,
+  locale: propLocale,
+  viewMode: propViewMode,
+  rtl: propRtl,
+  headerHeight: propHeaderHeight,
+  columnWidth: propColumnWidth,
+  fontFamily: propFontFamily,
+  fontSize: propFontSize,
 }) => {
+  const { styling, display } = useGanttContext();
+  const {
+    headerHeight: contextHeaderHeight,
+    columnWidth: contextColumnWidth,
+    fontFamily: contextFontFamily,
+    fontSize: contextFontSize,
+  } = styling;
+  const {
+    locale: contextLocale,
+    viewMode: contextViewMode,
+    rtl: contextRtl,
+  } = display;
+
+  // 使用 props 优先，如果没有则使用 Context 中的值
+  const locale = propLocale || contextLocale;
+  const viewMode = propViewMode || contextViewMode;
+  const rtl = propRtl ?? contextRtl;
+  const headerHeight = propHeaderHeight || contextHeaderHeight;
+  const columnWidth = propColumnWidth || contextColumnWidth;
+  const fontFamily = propFontFamily || contextFontFamily;
+  const fontSize = propFontSize || contextFontSize;
+
   const getCalendarValuesForYear = () => {
     const topValues: React.ReactNode[] = [];
     const bottomValues: React.ReactNode[] = [];

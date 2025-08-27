@@ -1,59 +1,45 @@
 import React, { useEffect, useRef } from 'react';
 import type { Task, BarTask } from '../../types';
+import { useGanttContext } from '../../contexts/GanttContext';
+import { TaskListHeaderDefault } from './task-list-header';
+import { TaskListTableDefault } from './task-list-table';
 
 export type TaskListProps = {
-  headerHeight: number;
-  rowWidth: string;
-  fontFamily: string;
-  fontSize: string;
-  rowHeight: number;
-  ganttHeight: number;
   scrollY: number;
-  locale: string;
-  tasks: Task[];
-  taskListRef: React.RefObject<HTMLDivElement | null>;
-  horizontalContainerClass?: string;
   selectedTask: BarTask | undefined;
   setSelectedTask: (task: string) => void;
   onExpanderClick: (task: Task) => void;
-  TaskListHeader: React.FC<{
-    headerHeight: number;
-    rowWidth: string;
-    fontFamily: string;
-    fontSize: string;
-  }>;
-  TaskListTable: React.FC<{
-    rowHeight: number;
-    rowWidth: string;
-    fontFamily: string;
-    fontSize: string;
-    locale: string;
-    tasks: Task[];
-    selectedTaskId: string;
-    setSelectedTask: (taskId: string) => void;
-    onExpanderClick: (task: Task) => void;
-  }>;
+  taskListRef: React.RefObject<HTMLDivElement | null>;
+  horizontalContainerClass?: string;
 };
 
 export const TaskList: React.FC<TaskListProps> = ({
-  headerHeight,
-  fontFamily,
-  fontSize,
-  rowWidth,
-  rowHeight,
   scrollY,
-  tasks,
   selectedTask,
   setSelectedTask,
   onExpanderClick,
-  locale,
-  ganttHeight,
   taskListRef,
   horizontalContainerClass,
-  TaskListHeader,
-  TaskListTable,
 }) => {
+  const {
+    styling,
+    display,
+    tasks,
+    TaskListHeader = TaskListHeaderDefault,
+    TaskListTable = TaskListTableDefault,
+  } = useGanttContext();
+  const {
+    headerHeight,
+    fontFamily,
+    fontSize,
+    listCellWidth: rowWidth,
+    rowHeight,
+    ganttHeight,
+  } = styling;
+  const { locale } = display;
+
   const horizontalContainerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (horizontalContainerRef.current) {
       horizontalContainerRef.current.scrollTop = scrollY;
@@ -66,6 +52,7 @@ export const TaskList: React.FC<TaskListProps> = ({
     fontSize,
     rowWidth,
   };
+
   const selectedTaskId = selectedTask ? selectedTask.id : '';
   const tableProps = {
     rowHeight,

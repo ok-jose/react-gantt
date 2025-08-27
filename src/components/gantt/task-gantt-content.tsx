@@ -10,6 +10,7 @@ import {
   type GanttContentMoveAction,
   type GanttEvent,
 } from '../../types/gantt-task-actions';
+import { useGanttContext } from '../../contexts/GanttContext';
 
 export type TaskGanttContentProps = {
   tasks: BarTask[];
@@ -62,6 +63,22 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
   onClick,
   onDelete,
 }) => {
+  const { events } = useGanttContext();
+  const {
+    onDateChange: contextOnDateChange,
+    onProgressChange: contextOnProgressChange,
+    onDoubleClick: contextOnDoubleClick,
+    onClick: contextOnClick,
+    onDelete: contextOnDelete,
+  } = events;
+
+  // 使用 Context 中的事件处理函数，如果没有传入 props 的话
+  const finalOnDateChange = onDateChange || contextOnDateChange;
+  const finalOnProgressChange = onProgressChange || contextOnProgressChange;
+  const finalOnDoubleClick = onDoubleClick || contextOnDoubleClick;
+  const finalOnClick = onClick || contextOnClick;
+  const finalOnDelete = onDelete || contextOnDelete;
+
   const point = svg?.current?.createSVGPoint();
   const [xStep, setXStep] = useState(0);
   const [initEventX1Delta, setInitEventX1Delta] = useState(0);
@@ -137,11 +154,11 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
       let operationSuccess = true;
       if (
         (action === 'move' || action === 'end' || action === 'start') &&
-        onDateChange &&
+        finalOnDateChange &&
         isNotLikeOriginal
       ) {
         try {
-          const result = await onDateChange(
+          const result = await finalOnDateChange(
             newChangedTask,
             newChangedTask.barChildren
           );
@@ -151,9 +168,9 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
         } catch (error) {
           operationSuccess = false;
         }
-      } else if (onProgressChange && isNotLikeOriginal) {
+      } else if (finalOnProgressChange && isNotLikeOriginal) {
         try {
-          const result = await onProgressChange(
+          const result = await finalOnProgressChange(
             newChangedTask,
             newChangedTask.barChildren
           );
@@ -187,9 +204,9 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
     ganttEvent,
     xStep,
     initEventX1Delta,
-    onProgressChange,
+    finalOnProgressChange,
     timeStep,
-    onDateChange,
+    finalOnDateChange,
     svg,
     isMoving,
     point,
@@ -214,9 +231,9 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
     // Keyboard events
     else if (isKeyboardEvent(event)) {
       if (action === 'delete') {
-        if (onDelete) {
+        if (finalOnDelete) {
           try {
-            const result = await onDelete(task);
+            const result = await finalOnDelete(task);
             if (result !== undefined && result) {
               setGanttEvent({ action, changedTask: task });
             }
@@ -240,9 +257,9 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
         setGanttEvent({ action: '' });
       }
     } else if (action === 'dblclick') {
-      !!onDoubleClick && onDoubleClick(task);
+      !!finalOnDoubleClick && finalOnDoubleClick(task);
     } else if (action === 'click') {
-      !!onClick && onClick(task);
+      !!finalOnClick && finalOnClick(task);
     }
     // Change task event start
     else if (action === 'move') {
@@ -294,7 +311,7 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
               taskHeight={taskHeight}
               // isProgressChangeable={!!onProgressChange && !task.isDisabled}
               isProgressChangeable={false}
-              isDateChangeable={!!onDateChange && !task.isDisabled}
+              isDateChangeable={!!finalOnDateChange && !task.isDisabled}
               isDelete={!task.isDisabled}
               onEventStart={handleBarEventStart}
               key={task.id}

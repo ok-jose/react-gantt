@@ -27,50 +27,61 @@ import type {
 import { HorizontalScroll } from '../other/horizontal-scroll';
 import { sortTasks } from '../../helpers/other-helper';
 import styles from './gantt.module.css';
+import { GanttProvider, useGanttContext } from '../../contexts/GanttContext';
 
-export const Gantt: React.FunctionComponent<GanttProps> = ({
-  tasks,
-  headerHeight = 50,
-  columnWidth = 60,
-  listCellWidth = '155px',
-  rowHeight = 50,
-  ganttHeight = 0,
-  viewMode = ViewMode.Day,
-  preStepsCount = 1,
-  locale = 'en-GB',
-  barFill = 60,
-  barCornerRadius = 3,
-  barProgressColor = '#a3a3ff',
-  barProgressSelectedColor = '#8282f5',
-  barBackgroundColor = '#b8c2cc',
-  barBackgroundSelectedColor = '#aeb8c2',
-  projectProgressColor = '#7db59a',
-  projectProgressSelectedColor = '#59a985',
-  projectBackgroundColor = '#fac465',
-  projectBackgroundSelectedColor = '#f7bb53',
-  milestoneBackgroundColor = '#f1c453',
-  milestoneBackgroundSelectedColor = '#f29e4c',
-  rtl = false,
-  handleWidth = 8,
-  timeStep = 300000,
-  arrowColor = 'grey',
-  fontFamily = 'Arial, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue',
-  fontSize = '14px',
-  arrowIndent = 20,
-  todayColor = 'rgba(252, 248, 227, 0.5)',
-  showProjectSegmentProgress = false,
-  viewDate,
-  TooltipContent = StandardTooltipContent,
-  TaskListHeader = TaskListHeaderDefault,
-  TaskListTable = TaskListTableDefault,
-  onDateChange,
-  onProgressChange,
-  onDoubleClick,
-  onClick,
-  onDelete,
-  onSelect,
-  onExpanderClick,
-}) => {
+/**
+ * Gantt 组件的内部实现
+ */
+const GanttInternal: React.FunctionComponent = () => {
+  const {
+    styling,
+    display,
+    events,
+    state,
+    timeStep,
+    tasks,
+    TooltipContent = StandardTooltipContent,
+  } = useGanttContext();
+
+  const {
+    headerHeight,
+    columnWidth,
+    listCellWidth,
+    rowHeight,
+    ganttHeight,
+    barCornerRadius,
+    handleWidth,
+    fontFamily,
+    fontSize,
+    barFill,
+    barProgressColor,
+    barProgressSelectedColor,
+    barBackgroundColor,
+    barBackgroundSelectedColor,
+    projectProgressColor,
+    projectProgressSelectedColor,
+    projectBackgroundColor,
+    projectBackgroundSelectedColor,
+    milestoneBackgroundColor,
+    milestoneBackgroundSelectedColor,
+    arrowColor,
+    arrowIndent,
+    todayColor,
+    showProjectSegmentProgress,
+  } = styling;
+
+  const { viewMode, viewDate, preStepsCount, locale, rtl } = display;
+  const {
+    onDateChange,
+    onProgressChange,
+    onDoubleClick,
+    onClick,
+    onDelete,
+    onSelect,
+    onExpanderClick,
+  } = events;
+  const { selectedTask, ganttEvent, setSelectedTask, setGanttEvent } = state;
+
   const wrapperRef = useRef<HTMLDivElement>(null);
   const taskListRef = useRef<HTMLDivElement>(null);
   const [dateSetup, setDateSetup] = useState<DateSetup>(() => {
@@ -85,15 +96,11 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
   const [svgContainerWidth, setSvgContainerWidth] = useState(0);
   const [svgContainerHeight, setSvgContainerHeight] = useState(ganttHeight);
   const [barTasks, setBarTasks] = useState<BarTask[]>([]);
-  const [ganttEvent, setGanttEvent] = useState<GanttEvent>({
-    action: '',
-  });
   const taskHeight = useMemo(
     () => (rowHeight * barFill) / 100,
     [rowHeight, barFill]
   );
 
-  const [selectedTask, setSelectedTask] = useState<BarTask>();
   const [failedTask, setFailedTask] = useState<BarTask | null>(null);
 
   const svgWidth = dateSetup.dates.length * columnWidth;
@@ -221,7 +228,7 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
         }
       }
     }
-  }, [ganttEvent, barTasks]);
+  }, [ganttEvent, barTasks, setGanttEvent]);
 
   useEffect(() => {
     if (failedTask) {
@@ -381,11 +388,13 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
     }
     setSelectedTask(newSelectedTask);
   };
+
   const handleExpanderClick = (task: Task) => {
     if (onExpanderClick && task.hideChildren !== undefined) {
       onExpanderClick({ ...task, hideChildren: !task.hideChildren });
     }
   };
+
   const gridProps: GridProps = {
     columnWidth,
     svgWidth,
@@ -395,6 +404,7 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
     todayColor,
     rtl,
   };
+
   const calendarProps: CalendarProps = {
     dateSetup,
     locale,
@@ -405,6 +415,7 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
     fontSize,
     rtl,
   };
+
   const barProps: TaskGanttContentProps = {
     tasks: barTasks,
     dates: dateSetup.dates,
@@ -432,23 +443,14 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
   };
 
   const tableProps: TaskListProps = {
-    rowHeight,
-    rowWidth: listCellWidth,
-    fontFamily,
-    fontSize,
-    tasks: tasks,
-    locale,
-    headerHeight,
     scrollY,
-    ganttHeight,
-    horizontalContainerClass: styles.horizontalContainer,
     selectedTask,
-    taskListRef,
     setSelectedTask: handleSelectedTask,
     onExpanderClick: handleExpanderClick,
-    TaskListHeader,
-    TaskListTable,
+    taskListRef,
+    horizontalContainerClass: styles.horizontalContainer,
   };
+
   return (
     <div>
       <div
@@ -501,5 +503,123 @@ export const Gantt: React.FunctionComponent<GanttProps> = ({
         onScroll={handleScrollX}
       />
     </div>
+  );
+};
+
+/**
+ * Gantt 组件的主入口
+ */
+export const Gantt: React.FunctionComponent<GanttProps> = props => {
+  const {
+    tasks,
+    headerHeight = 50,
+    columnWidth = 60,
+    listCellWidth = '155px',
+    rowHeight = 50,
+    ganttHeight = 0,
+    viewMode = ViewMode.Day,
+    preStepsCount = 1,
+    locale = 'en-GB',
+    barFill = 60,
+    barCornerRadius = 3,
+    barProgressColor = '#a3a3ff',
+    barProgressSelectedColor = '#8282f5',
+    barBackgroundColor = '#b8c2cc',
+    barBackgroundSelectedColor = '#aeb8c2',
+    projectProgressColor = '#7db59a',
+    projectProgressSelectedColor = '#59a985',
+    projectBackgroundColor = '#fac465',
+    projectBackgroundSelectedColor = '#f7bb53',
+    milestoneBackgroundColor = '#f1c453',
+    milestoneBackgroundSelectedColor = '#f29e4c',
+    rtl = false,
+    handleWidth = 8,
+    timeStep = 300000,
+    arrowColor = 'grey',
+    fontFamily = 'Arial, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue',
+    fontSize = '14px',
+    arrowIndent = 20,
+    todayColor = 'rgba(252, 248, 227, 0.5)',
+    showProjectSegmentProgress = false,
+    isDateChangeable,
+    viewDate,
+    TooltipContent = StandardTooltipContent,
+    TaskListHeader = TaskListHeaderDefault,
+    TaskListTable = TaskListTableDefault,
+    onDateChange,
+    onProgressChange,
+    onDoubleClick,
+    onClick,
+    onDelete,
+    onSelect,
+    onExpanderClick,
+  } = props;
+
+  const [selectedTask, setSelectedTask] = useState<BarTask>();
+  const [ganttEvent, setGanttEvent] = useState<GanttEvent>({
+    action: '',
+  });
+
+  const contextValue = {
+    styling: {
+      headerHeight,
+      columnWidth,
+      listCellWidth,
+      rowHeight,
+      ganttHeight,
+      barCornerRadius,
+      handleWidth,
+      fontFamily,
+      fontSize,
+      barFill,
+      barProgressColor,
+      barProgressSelectedColor,
+      barBackgroundColor,
+      barBackgroundSelectedColor,
+      projectProgressColor,
+      projectProgressSelectedColor,
+      projectBackgroundColor,
+      projectBackgroundSelectedColor,
+      milestoneBackgroundColor,
+      milestoneBackgroundSelectedColor,
+      arrowColor,
+      arrowIndent,
+      todayColor,
+      showProjectSegmentProgress,
+    },
+    display: {
+      viewMode,
+      viewDate,
+      preStepsCount,
+      locale,
+      rtl,
+    },
+    events: {
+      onDateChange,
+      onProgressChange,
+      onDoubleClick,
+      onClick,
+      onDelete,
+      onSelect,
+      onExpanderClick,
+    },
+    state: {
+      selectedTask,
+      ganttEvent,
+      setSelectedTask,
+      setGanttEvent,
+    },
+    timeStep,
+    tasks,
+    isDateChangeable,
+    TooltipContent,
+    TaskListHeader,
+    TaskListTable,
+  };
+
+  return (
+    <GanttProvider value={contextValue}>
+      <GanttInternal />
+    </GanttProvider>
   );
 };
