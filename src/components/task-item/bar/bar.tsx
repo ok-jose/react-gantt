@@ -1,5 +1,5 @@
 import React from 'react';
-import { getProgressPoint } from '../../../helpers/bar-helper';
+import { getProgressPoint } from '../../../helpers';
 import { BarDisplay } from './bar-display';
 import { BarDateHandle } from './bar-date-handle';
 import { BarProgressHandle } from './bar-progress-handle';

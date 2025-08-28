@@ -7,7 +7,6 @@ import React, {
 } from 'react';
 import { ViewMode } from '../../types';
 import { type GridProps } from '../grid/grid';
-import { ganttDateRange, seedDates } from '../../helpers/date-helper';
 import type { CalendarProps } from '../calendar/calendar';
 import type { TaskGanttContentProps } from './task-gantt-content';
 import { TaskListHeaderDefault } from '../task-list/task-list-header';
@@ -16,7 +15,6 @@ import { StandardTooltipContent, Tooltip } from '../other/tooltip';
 import { VerticalScroll } from '../other/vertical-scroll';
 import { type TaskListProps, TaskList } from '../task-list/task-list';
 import { TaskGantt } from './task-gantt';
-import { convertToBarTasks } from '../../helpers/bar-helper';
 import type {
   GanttEvent,
   BarTask,
@@ -25,7 +23,12 @@ import type {
   Task,
 } from '../../types';
 import { HorizontalScroll } from '../other/horizontal-scroll';
-import { sortTasks } from '../../helpers/other-helper';
+import {
+  sortTasks,
+  ganttDateRange,
+  seedDates,
+  convertToBarTasks,
+} from '../../helpers';
 import styles from './gantt.module.css';
 import { GanttProvider, useGanttContext } from '../../contexts/GanttContext';
 

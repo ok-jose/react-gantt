@@ -2,8 +2,11 @@ import React, { useEffect, useState } from 'react';
 import type { EventOption } from '../../types';
 import type { BarTask } from '../../types/bar-task';
 import { Arrow } from '../other/arrow';
-import { handleTaskBySVGMouseEvent } from '../../helpers/bar-helper';
-import { isKeyboardEvent } from '../../helpers/other-helper';
+import {
+  handleTaskBySVGMouseEvent,
+  isKeyboardEvent,
+  updateTaskRecursively,
+} from '../../helpers';
 import { TaskItem } from '../task-item/task-item';
 import {
   type BarMoveAction,
@@ -63,7 +66,7 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
   onClick,
   onDelete,
 }) => {
-  const { events } = useGanttContext();
+  const { events, tasks: currentTasks } = useGanttContext();
   const {
     onDateChange: contextOnDateChange,
     onProgressChange: contextOnProgressChange,
@@ -158,10 +161,14 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
         isNotLikeOriginal
       ) {
         try {
-          const result = await finalOnDateChange(
-            newChangedTask,
-            newChangedTask.barChildren
+          // 先进行内部任务更新，获取更新后的全量 tasks
+          const updatedTasks = updateTaskRecursively(
+            currentTasks,
+            newChangedTask
           );
+
+          // 调用外部的 onDateChange，传递更新后的全量 tasks
+          const result = await finalOnDateChange(newChangedTask, updatedTasks);
           if (result !== undefined) {
             operationSuccess = result;
           }
@@ -170,9 +177,16 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
         }
       } else if (finalOnProgressChange && isNotLikeOriginal) {
         try {
+          // 先进行内部任务更新，获取更新后的全量 tasks
+          const updatedTasks = updateTaskRecursively(
+            currentTasks,
+            newChangedTask
+          );
+
+          // 调用外部的 onProgressChange，传递更新后的全量 tasks
           const result = await finalOnProgressChange(
             newChangedTask,
-            newChangedTask.barChildren
+            updatedTasks
           );
           if (result !== undefined) {
             operationSuccess = result;

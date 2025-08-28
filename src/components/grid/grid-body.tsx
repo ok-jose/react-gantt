@@ -1,9 +1,8 @@
 import React from 'react';
 import type { Task } from '../../types';
-import { addToDate } from '../../helpers/date-helper';
-import styles from './grid.module.css';
-import { hasOverlappingChildren } from '../../helpers/bar-helper';
+import { hasOverlappingChildren, addToDate } from '../../helpers';
 import { useGanttContext } from '../../contexts/GanttContext';
+import styles from './grid.module.css';
 
 export type GridBodyProps = {
   tasks: Task[];

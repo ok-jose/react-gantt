@@ -87,13 +87,13 @@ const ContextUsageExample: React.FC = () => {
   ]);
 
   // 事件处理函数
-  const handleDateChange = (task: Task, _children: Task[]) => {
+  const handleDateChange = (task: Task, _allTasks: Task[]) => {
     console.log('日期变更:', task.name, task.start, task.end);
     // 这里可以更新任务状态
     return true;
   };
 
-  const handleProgressChange = (task: Task, _children: Task[]) => {
+  const handleProgressChange = (task: Task, _allTasks: Task[]) => {
     console.log('进度变更:', task.name, task.progress);
     // 这里可以更新任务进度
     return true;

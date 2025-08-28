@@ -7,7 +7,7 @@ import {
   getLocalDayOfWeek,
   getLocaleMonth,
   getWeekNumberISO8601,
-} from '../../helpers/date-helper';
+} from '../../helpers'; 
 import type { DateSetup } from '../../types/date-setup';
 import styles from './calendar.module.css';
 import { useGanttContext } from '../../contexts/GanttContext';
