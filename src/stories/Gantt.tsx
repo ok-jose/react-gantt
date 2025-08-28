@@ -82,6 +82,7 @@ const GanttChart = () => {
         ganttHeight={600}
         columnWidth={columnWidth}
         rowHeight={38}
+        locale="zh-CN"
       />
     </div>
   );

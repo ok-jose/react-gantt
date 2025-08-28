@@ -1,19 +1,21 @@
+@import '../../index.css';
+
 .gridRow {
-  fill: #fff;
+  fill: var(--gantt-background-color);
 }
 
-.gridRow:nth-child(even) {
+/* .gridRow:nth-child(even) {
   fill: #f5f5f5;
-}
+} */
 
 .gridRowLine {
-  stroke: #ebeff2;
+  stroke: var(--gantt-border-color);
 }
 
 .gridTick {
-  stroke: #e6e4e4;
+  stroke: var(--gantt-border-color);
 }
 
 .gridRowOverlap {
-  fill: rgba(245, 86, 87, 0.5);
+  fill: var(--gantt-overlap-color);
 }

@@ -7,7 +7,7 @@ import {
   getLocalDayOfWeek,
   getLocaleMonth,
   getWeekNumberISO8601,
-} from '../../helpers'; 
+} from '../../helpers';
 import type { DateSetup } from '../../types/date-setup';
 import styles from './calendar.module.css';
 import { useGanttContext } from '../../contexts/GanttContext';
@@ -404,7 +404,11 @@ export const Calendar: React.FC<CalendarProps> = ({
       [topValues, bottomValues] = getCalendarValuesForHour();
   }
   return (
-    <g className="calendar" fontSize={fontSize} fontFamily={fontFamily}>
+    <g
+      className={`calendar ${styles.calendarContainer}`}
+      fontSize={fontSize}
+      fontFamily={fontFamily}
+    >
       <rect
         x={0}
         y={0}
