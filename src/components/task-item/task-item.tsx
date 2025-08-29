@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import type { BarTask } from '../../types/bar-task';
 import type { GanttContentMoveAction } from '../../types/gantt-task-actions';
 import { Bar } from './bar/bar';
-import { BarSmall } from './bar/bar-small';
 import { Milestone } from './milestone/milestone';
 import { Project } from './project/project';
 import style from './task-list.module.css';
@@ -11,11 +10,11 @@ export type TaskItemProps = {
   task: BarTask;
   arrowIndent: number;
   taskHeight: number;
-  isProgressChangeable: boolean;
-  isDateChangeable: boolean;
-  isDelete: boolean;
+  // isProgressChangeable: boolean;
+  // isDateChangeable: boolean;
+  // isDelete: boolean;
   isSelected: boolean;
-  rtl: boolean;
+  // rtl: boolean;
   /**
    * 是否显示项目分段进度条
    * 默认为 true，设置为 false 时只显示子任务段，不显示进度条
@@ -32,12 +31,9 @@ export const TaskItem: React.FC<TaskItemProps> = props => {
   const {
     task,
     arrowIndent,
-    isDelete,
     taskHeight,
     isSelected,
-    rtl,
     showProjectSegmentProgress = false,
-    onEventStart,
   } = {
     ...props,
   };
@@ -58,11 +54,8 @@ export const TaskItem: React.FC<TaskItemProps> = props => {
           />
         );
         break;
-      case 'smalltask':
-        setTaskItem(<BarSmall {...props} />);
-        break;
       default:
-        setTaskItem(<Bar {...props} isDateChangeable={false} />);
+        setTaskItem(<Bar {...props} />);
         break;
     }
   }, [task, isSelected]);
@@ -78,46 +71,13 @@ export const TaskItem: React.FC<TaskItemProps> = props => {
     const hasChild = task.barChildren.length > 0;
     if (isTextInside) {
       return task.x1 + width * 0.5;
-    }
-    if (rtl && textRef.current) {
-      return (
-        task.x1 -
-        textRef.current.getBBox().width -
-        arrowIndent * +hasChild -
-        arrowIndent * 0.2
-      );
     } else {
       return task.x1 + width + arrowIndent * +hasChild + arrowIndent * 0.2;
     }
   };
 
   return (
-    <g
-      onKeyDown={e => {
-        switch (e.key) {
-          case 'Delete': {
-            if (isDelete) onEventStart?.('delete', task, e);
-            break;
-          }
-        }
-        e.stopPropagation();
-      }}
-      onMouseEnter={e => {
-        onEventStart?.('mouseenter', task, e);
-      }}
-      onMouseLeave={e => {
-        onEventStart?.('mouseleave', task, e);
-      }}
-      onDoubleClick={e => {
-        onEventStart?.('dblclick', task, e);
-      }}
-      onClick={e => {
-        onEventStart?.('click', task, e);
-      }}
-      onFocus={() => {
-        onEventStart?.('select', task);
-      }}
-    >
+    <g>
       {taskItem}
       {task.typeInternal !== 'project' && (
         <text
