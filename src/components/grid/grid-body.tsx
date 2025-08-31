@@ -39,16 +39,16 @@ export const GridBody: React.FC<GridBodyProps> = ({
 
   let y = 0;
   const gridRows: React.ReactNode[] = [];
-  const rowLines: React.ReactNode[] = [
-    <line
-      key="RowLineFirst"
-      x="0"
-      y1={0}
-      x2={svgWidth}
-      y2={0}
-      className={styles.gridRowLine}
-    />,
-  ];
+  // const rowLines: React.ReactNode[] = [
+  //   <line
+  //     key="RowLineFirst"
+  //     x="0"
+  //     y1={0}
+  //     x2={svgWidth}
+  //     y2={0}
+  //     className={styles.gridRowLine}
+  //   />,
+  // ];
   for (const task of tasks) {
     const hasChildrenOverlap =
       task.children && task.children.length > 0
@@ -68,16 +68,16 @@ export const GridBody: React.FC<GridBodyProps> = ({
         }
       />
     );
-    rowLines.push(
-      <line
-        key={'RowLine' + task.id}
-        x="0"
-        y1={y + rowHeight}
-        x2={svgWidth}
-        y2={y + rowHeight}
-        className={styles.gridRowLine}
-      />
-    );
+    // rowLines.push(
+    //   <line
+    //     key={'RowLine' + task.id}
+    //     x="0"
+    //     y1={y + rowHeight}
+    //     x2={svgWidth}
+    //     y2={y + rowHeight}
+    //     className={styles.gridRowLine}
+    //   />
+    // );
     y += rowHeight;
   }
 
@@ -143,7 +143,7 @@ export const GridBody: React.FC<GridBodyProps> = ({
   return (
     <g className="gridBody">
       <g className="rows">{gridRows}</g>
-      <g className="rowLines">{rowLines}</g>
+      {/* <g className="rowLines">{rowLines}</g> */}
       <g className="ticks">{ticks}</g>
       <g className="today">{today}</g>
     </g>
