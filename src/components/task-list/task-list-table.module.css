@@ -2,8 +2,10 @@
 
 .taskListWrapper {
   display: table;
-  border-bottom: var(--gantt-border-color) 1px solid;
   border-left: var(--gantt-border-color) 1px solid;
+  width: 100%;
+  max-width: 220px;
+  table-layout: fixed;
 }
 
 .taskListTableRow {
@@ -31,6 +33,8 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  border-right: 1px solid var(--gantt-border-color);
+  border-bottom: 1px solid var(--gantt-border-color);
 }
 .taskListNameWrapper {
   display: flex;

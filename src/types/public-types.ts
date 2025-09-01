@@ -141,6 +141,7 @@ export interface StylingOption {
     rowWidth: string;
     fontFamily: string;
     fontSize: string;
+    columns?: TableColumn[];
   }>;
   TaskListTable?: React.FC<{
     rowHeight: number;
@@ -156,9 +157,81 @@ export interface StylingOption {
     setSelectedTask: (taskId: string) => void;
     onExpanderClick: (task: Task) => void;
     showSubTask?: boolean;
+    columns?: TableColumn[];
   }>;
+  /**
+   * 表格列配置
+   */
+  columns?: TableColumn[];
 }
 
 export interface GanttProps extends EventOption, DisplayOption, StylingOption {
   tasks: Task[];
 }
+
+/**
+ * 表格列配置接口
+ */
+export interface TableColumn {
+  /** 列的唯一标识符 */
+  key: string;
+  /** 列标题 */
+  title: string;
+  /** 列宽度，可以是固定像素值或百分比 */
+  width?: string;
+  /** 是否可排序 */
+  sortable?: boolean;
+  /** 是否可调整大小 */
+  resizable?: boolean;
+  /** 列的对齐方式 */
+  align?: 'left' | 'center' | 'right';
+  /** 自定义渲染函数 */
+  render?: (task: Task, locale: string) => React.ReactNode;
+  /** 是否显示此列 */
+  visible?: boolean;
+}
+
+/**
+ * 默认列配置
+ */
+export const DEFAULT_COLUMNS: TableColumn[] = [
+  {
+    key: 'name',
+    title: 'Name',
+    width: '40%',
+    align: 'left',
+    visible: true,
+  },
+  {
+    key: 'start',
+    title: 'From',
+    width: '30%',
+    align: 'left',
+    visible: true,
+    render: (task: Task, locale: string) => {
+      const dateTimeOptions: Intl.DateTimeFormatOptions = {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      };
+      return task.start.toLocaleDateString(locale, dateTimeOptions);
+    },
+  },
+  {
+    key: 'end',
+    title: 'To',
+    width: '30%',
+    align: 'left',
+    visible: true,
+    render: (task: Task, locale: string) => {
+      const dateTimeOptions: Intl.DateTimeFormatOptions = {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      };
+      return task.end.toLocaleDateString(locale, dateTimeOptions);
+    },
+  },
+];

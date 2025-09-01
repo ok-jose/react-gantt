@@ -24,7 +24,7 @@ const GanttChart = () => {
    * @param task 变化的任务
    * @param allTasks 更新后的全量任务列表
    */
-  const handleTaskChange = (changedTask: Task, allTasks: Task[]) => {
+  const handleTaskChange = (_changedTask: Task, allTasks: Task[]) => {
     console.log('On date change Id:' + allTasks);
     // 使用更新后的全量任务列表
     setTasks(allTasks);
@@ -69,6 +69,13 @@ const GanttChart = () => {
       />
       <h3>Gantt With Limited Height</h3>
       <Gantt
+        columns={[
+          {
+            key: 'name',
+            title: '资源',
+            width: '200px',
+          },
+        ]}
         tasks={tasks}
         viewMode={view}
         onDateChange={handleTaskChange}

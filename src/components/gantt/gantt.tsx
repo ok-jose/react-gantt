@@ -520,6 +520,7 @@ export const Gantt: React.FunctionComponent<GanttProps> = props => {
     tasks,
     headerHeight = 50,
     columnWidth = 60,
+    columns,
     listCellWidth = '155px',
     rowHeight = 50,
     ganttHeight = 0,
@@ -571,6 +572,7 @@ export const Gantt: React.FunctionComponent<GanttProps> = props => {
     styling: {
       headerHeight,
       columnWidth,
+      columns,
       listCellWidth,
       rowHeight,
       ganttHeight,

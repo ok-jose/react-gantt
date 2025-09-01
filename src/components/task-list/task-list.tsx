@@ -28,6 +28,7 @@ export const TaskList: React.FC<TaskListProps> = ({
     TaskListHeader = TaskListHeaderDefault,
     TaskListTable = TaskListTableDefault,
   } = useGanttContext();
+  const { columns } = styling;
   const {
     headerHeight,
     fontFamily,
@@ -52,6 +53,7 @@ export const TaskList: React.FC<TaskListProps> = ({
     fontFamily,
     fontSize,
     rowWidth,
+    columns,
   };
 
   const selectedTaskId = selectedTask ? selectedTask.id : '';
@@ -66,17 +68,20 @@ export const TaskList: React.FC<TaskListProps> = ({
     setSelectedTask,
     onExpanderClick,
     showSubTask,
+    columns,
   };
 
   return (
     <div ref={taskListRef}>
-      <TaskListHeader {...headerProps} />
       <div
         ref={horizontalContainerRef}
         className={horizontalContainerClass}
         style={ganttHeight ? { height: ganttHeight } : {}}
       >
-        <TaskListTable {...tableProps} />
+        <div className="task-list-table-container">
+          <TaskListHeader {...headerProps} />
+          <TaskListTable {...tableProps} />
+        </div>
       </div>
     </div>
   );

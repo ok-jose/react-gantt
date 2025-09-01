@@ -1,12 +1,24 @@
-import React from "react";
-import styles from "./task-list-header.module.css";
+import React from 'react';
+import styles from './task-list-header.module.css';
+import type { TableColumn } from '../../types';
+import { DEFAULT_COLUMNS } from '../../types';
 
 export const TaskListHeaderDefault: React.FC<{
   headerHeight: number;
   rowWidth: string;
   fontFamily: string;
   fontSize: string;
-}> = ({ headerHeight, fontFamily, fontSize, rowWidth }) => {
+  columns?: TableColumn[];
+}> = ({
+  headerHeight,
+  fontFamily,
+  fontSize,
+  rowWidth,
+  columns = DEFAULT_COLUMNS,
+}) => {
+  // 过滤可见的列
+  const visibleColumns = columns.filter(col => col.visible !== false);
+
   return (
     <div
       className={styles.ganttTable}
@@ -21,44 +33,19 @@ export const TaskListHeaderDefault: React.FC<{
           height: headerHeight - 2,
         }}
       >
-        <div
-          className={styles.ganttTable_HeaderItem}
-          style={{
-            minWidth: rowWidth,
-          }}
-        >
-          &nbsp;Name
-        </div>
-        <div
-          className={styles.ganttTable_HeaderSeparator}
-          style={{
-            height: headerHeight * 0.5,
-            marginTop: headerHeight * 0.2,
-          }}
-        />
-        <div
-          className={styles.ganttTable_HeaderItem}
-          style={{
-            minWidth: rowWidth,
-          }}
-        >
-          &nbsp;From
-        </div>
-        <div
-          className={styles.ganttTable_HeaderSeparator}
-          style={{
-            height: headerHeight * 0.5,
-            marginTop: headerHeight * 0.25,
-          }}
-        />
-        <div
-          className={styles.ganttTable_HeaderItem}
-          style={{
-            minWidth: rowWidth,
-          }}
-        >
-          &nbsp;To
-        </div>
+        {visibleColumns.map(column => (
+          <div
+            key={column.key}
+            className={styles.ganttTable_HeaderItem}
+            style={{
+              minWidth: column.width || rowWidth,
+              maxWidth: column.width || rowWidth,
+              textAlign: column.align || 'left',
+            }}
+          >
+            &nbsp;{column.title}
+          </div>
+        ))}
       </div>
     </div>
   );

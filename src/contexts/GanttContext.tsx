@@ -40,6 +40,7 @@ interface GanttContextValue {
     todayColor: string;
     showProjectSegmentProgress: boolean;
     showSubTask: boolean;
+    columns?: StylingOption['columns'];
   };
 
   // 显示相关配置

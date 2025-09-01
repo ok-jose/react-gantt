@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import styles from './task-list-table.module.css';
-import type { Task } from '../../types';
+import type { Task, TableColumn } from '../../types';
+import { DEFAULT_COLUMNS } from '../../types';
 
 const localeDateStringCache: any = {};
 const toLocaleDateStringFactory =
@@ -32,6 +33,7 @@ export const TaskListTableDefault: React.FC<{
   setSelectedTask: (taskId: string) => void;
   onExpanderClick: (task: Task) => void;
   showSubTask?: boolean;
+  columns?: TableColumn[];
 }> = ({
   rowHeight,
   rowWidth,
@@ -43,6 +45,7 @@ export const TaskListTableDefault: React.FC<{
   setSelectedTask,
   onExpanderClick,
   showSubTask = false,
+  columns = DEFAULT_COLUMNS,
 }) => {
   const toLocaleDateString = useMemo(
     () => toLocaleDateStringFactory(locale),
@@ -68,6 +71,9 @@ export const TaskListTableDefault: React.FC<{
     // 判断是否为选中状态
     const isSelected = selectedTaskId === task.id;
 
+    // 过滤可见的列
+    const visibleColumns = columns.filter(col => col.visible !== false);
+
     return (
       <div
         className={`${styles.taskListTableRow} ${
@@ -77,52 +83,65 @@ export const TaskListTableDefault: React.FC<{
         key={`${task.id}row`}
         onClick={() => setSelectedTask(task.id)}
       >
-        <div
-          className={styles.taskListCell}
-          style={{
-            minWidth: rowWidth,
-            maxWidth: rowWidth,
-          }}
-          title={task.name}
-        >
-          <div className={styles.taskListNameWrapper}>
-            <div
-              className={
-                expanderSymbol
-                  ? styles.taskListExpander
-                  : styles.taskListEmptyExpander
-              }
-              onClick={e => {
-                e.stopPropagation(); // 阻止事件冒泡，避免触发行选中
-                onExpanderClick(task);
-              }}
-              style={{ marginLeft: `${indent}px` }}
-            >
-              {expanderSymbol}
-            </div>
-            <div>{task.name}</div>
+        {visibleColumns.map(column => (
+          <div
+            key={column.key}
+            className={styles.taskListCell}
+            style={{
+              minWidth: column.width || rowWidth,
+              maxWidth: column.width || rowWidth,
+              textAlign: column.align || 'left',
+            }}
+            title={column.key === 'name' ? task.name : undefined}
+          >
+            {column.key === 'name' ? (
+              <div className={styles.taskListNameWrapper}>
+                <div
+                  className={
+                    expanderSymbol
+                      ? styles.taskListExpander
+                      : styles.taskListEmptyExpander
+                  }
+                  onClick={e => {
+                    e.stopPropagation(); // 阻止事件冒泡，避免触发行选中
+                    onExpanderClick(task);
+                  }}
+                  style={{ marginLeft: `${indent}px` }}
+                >
+                  {expanderSymbol}
+                </div>
+                <div>{task.name}</div>
+              </div>
+            ) : (
+              <div>
+                &nbsp;
+                {column.render
+                  ? column.render(task, locale)
+                  : getDefaultColumnValue(task, column.key)}
+              </div>
+            )}
           </div>
-        </div>
-        <div
-          className={styles.taskListCell}
-          style={{
-            minWidth: rowWidth,
-            maxWidth: rowWidth,
-          }}
-        >
-          &nbsp;{toLocaleDateString(task.start, dateTimeOptions)}
-        </div>
-        <div
-          className={styles.taskListCell}
-          style={{
-            minWidth: rowWidth,
-            maxWidth: rowWidth,
-          }}
-        >
-          &nbsp;{toLocaleDateString(task.end, dateTimeOptions)}
-        </div>
+        ))}
       </div>
     );
+  };
+
+  /**
+   * 获取默认列值
+   */
+  const getDefaultColumnValue = (task: Task, key: string): string => {
+    switch (key) {
+      case 'start':
+        return toLocaleDateString(task.start, dateTimeOptions);
+      case 'end':
+        return toLocaleDateString(task.end, dateTimeOptions);
+      case 'progress':
+        return task.progress ? `${task.progress}%` : '0%';
+      case 'type':
+        return task.type || 'task';
+      default:
+        return '';
+    }
   };
 
   /**
