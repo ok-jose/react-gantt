@@ -8,6 +8,11 @@
   width: 100%;
   max-width: 220px;
   table-layout: fixed;
+  /* 固定头部，防止滚动时移动 */
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: var(--gantt-background-color, #ffffff);
 }
 
 .ganttTable_Header {
@@ -26,4 +31,16 @@
   vertical-align: -webkit-baseline-middle;
   vertical-align: middle;
   border-right: 1px solid var(--gantt-border-color);
+  /* 确保头部单元格有背景色 */
+  background-color: var(--gantt-background-color, #ffffff);
+}
+
+/* 新增：固定头部容器样式 */
+.task-list-header-container {
+  position: relative;
+  z-index: 20;
+  background-color: var(--gantt-background-color, #ffffff);
+  /* 移除底部边框，因为 ganttTable 已经有边框了 */
+  width: 100%;
+  max-width: 220px;
 }

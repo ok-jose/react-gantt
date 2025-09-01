@@ -76,7 +76,7 @@ export const TaskList: React.FC<TaskListProps> = ({
       <div
         ref={horizontalContainerRef}
         className={horizontalContainerClass}
-        style={ganttHeight ? { height: ganttHeight } : {}}
+        style={ganttHeight ? { height: ganttHeight + 50 } : {}}
       >
         <div className="task-list-table-container">
           <TaskListHeader {...headerProps} />

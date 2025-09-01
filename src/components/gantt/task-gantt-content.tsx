@@ -39,6 +39,7 @@ export type TaskGanttContentProps = {
    * 默认为 true，设置为 false 时只显示子任务段，不显示进度条
    */
   showProjectSegmentProgress?: boolean;
+  isDateChangeable?: boolean;
 } & EventOption;
 
 export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
@@ -60,6 +61,7 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
   setFailedTask,
   setSelectedTask,
   showProjectSegmentProgress = false,
+  isDateChangeable = false,
   onDateChange,
   onProgressChange,
   onDoubleClick,
@@ -325,7 +327,8 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
               taskHeight={taskHeight}
               // isProgressChangeable={!!onProgressChange && !task.isDisabled}
               isProgressChangeable={false}
-              isDateChangeable={!!finalOnDateChange && !task.isDisabled}
+              isDateChangeable={isDateChangeable}
+              // isDateChangeable={!!finalOnDateChange && !task.isDisabled}
               isDelete={!task.isDisabled}
               onEventStart={handleBarEventStart}
               key={task.id}

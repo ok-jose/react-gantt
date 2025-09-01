@@ -80,14 +80,9 @@ export const Project: React.FC<TaskItemProps> = ({
 
         // 为每个子任务使用不同的颜色
         const childColors = [
-          '#ff6b6b', // 红色
-          '#4ecdc4', // 青色
-          '#45b7d1', // 蓝色
-          '#96ceb4', // 绿色
-          '#feca57', // 黄色
-          '#ff9ff3', // 粉色
-          '#54a0ff', // 蓝色
-          '#5f27cd', // 紫色
+          '#F77879', // 红色
+          '#99CBFA', // 青色
+          '#D5DEE5', // 中性
         ];
         const childColor = childColors[index % childColors.length];
 

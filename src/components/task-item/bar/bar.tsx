@@ -9,7 +9,7 @@ import styles from './bar.module.css';
 export const Bar: React.FC<TaskItemProps> = ({
   task,
   isProgressChangeable = false,
-  isDateChangeable,
+  isDateChangeable = false,
   rtl,
   onEventStart,
   isSelected,
@@ -36,8 +36,8 @@ export const Bar: React.FC<TaskItemProps> = ({
           isDateChangeable && onEventStart?.('move', task, e);
         }}
       />
-      <g className="handleGroup">
-        {isDateChangeable && (
+      {isDateChangeable && (
+        <g className="handleGroup">
           <g>
             {/* left */}
             <BarDateHandle
@@ -62,16 +62,16 @@ export const Bar: React.FC<TaskItemProps> = ({
               }}
             />
           </g>
-        )}
-        {isProgressChangeable && (
-          <BarProgressHandle
-            progressPoint={progressPoint}
-            onMouseDown={e => {
-              onEventStart?.('progress', task, e);
-            }}
-          />
-        )}
-      </g>
+          {isProgressChangeable && (
+            <BarProgressHandle
+              progressPoint={progressPoint}
+              onMouseDown={e => {
+                onEventStart?.('progress', task, e);
+              }}
+            />
+          )}
+        </g>
+      )}
     </g>
   );
 };
