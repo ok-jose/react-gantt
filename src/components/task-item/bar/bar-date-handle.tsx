@@ -1,5 +1,5 @@
-import React from "react";
-import styles from "./bar.module.css";
+import React from 'react';
+import styles from './bar.module.css';
 
 type BarDateHandleProps = {
   x: number;
@@ -7,7 +7,7 @@ type BarDateHandleProps = {
   width: number;
   height: number;
   barCornerRadius: number;
-  onMouseDown: (event: React.MouseEvent<SVGRectElement, MouseEvent>) => void;
+  onMouseDown?: (event: React.MouseEvent<SVGRectElement, MouseEvent>) => void;
 };
 export const BarDateHandle: React.FC<BarDateHandleProps> = ({
   x,

@@ -28,9 +28,7 @@ export const Milestone: React.FC<TaskItemProps> = ({
         ry={task.barCornerRadius}
         transform={transform}
         className={styles.milestoneBackground}
-        onMouseDown={e => {
-          isDateChangeable && onEventStart && onEventStart('move', task, e);
-        }}
+        // 交由 dnd-kit 处理拖拽
       />
     </g>
   );

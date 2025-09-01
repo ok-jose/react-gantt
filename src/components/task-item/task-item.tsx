@@ -4,7 +4,6 @@ import type { GanttContentMoveAction } from '../../types/gantt-task-actions';
 import { Bar } from './bar/bar';
 import { BarSmall } from './bar/bar-small';
 import { Milestone } from './milestone/milestone';
-import { Project } from './project/project';
 import style from './task-list.module.css';
 
 export type TaskItemProps = {
@@ -36,36 +35,126 @@ export const TaskItem: React.FC<TaskItemProps> = props => {
     taskHeight,
     isSelected,
     rtl,
-    showProjectSegmentProgress = false,
     onEventStart,
   } = {
     ...props,
   };
   const textRef = useRef<SVGTextElement>(null);
-  const [taskItem, setTaskItem] = useState(<div />);
   const [isTextInside, setIsTextInside] = useState(true);
 
-  useEffect(() => {
+  // 计算子任务
+  const renderChildTasks = () => {
+    if (!task.children || task.children.length === 0) {
+      return null;
+    }
+
+    return task.children.map((childTask, index) => {
+      // 计算子任务的位置和宽度
+      const childStart = childTask.start.getTime();
+      const childEnd = childTask.end.getTime();
+      const parentStart = task.start.getTime();
+      const parentEnd = task.end.getTime();
+
+      // 确保子任务的时间范围在父任务范围内
+      const clampedChildStart = Math.max(childStart, parentStart);
+      const clampedChildEnd = Math.min(childEnd, parentEnd);
+
+      // 计算子任务在父任务中的相对位置
+      const parentWidth = task.x2 - task.x1;
+      const parentDuration = parentEnd - parentStart;
+      const childDuration = clampedChildEnd - clampedChildStart;
+
+      // 如果子任务完全超出父任务范围，跳过显示
+      if (childDuration <= 0) {
+        return null;
+      }
+
+      const childX1 =
+        task.x1 +
+        ((clampedChildStart - parentStart) / parentDuration) * parentWidth;
+      const childX2 = childX1 + (childDuration / parentDuration) * parentWidth;
+
+      // 计算子任务的进度
+      const childProgress = childTask.progress || 0;
+      const childProgressWidth = (childX2 - childX1) * (childProgress / 100);
+      const childProgressX = childX1;
+
+      // 为每个子任务使用不同的颜色
+      const childColors = [
+        '#F77879', // 红色
+        '#99CBFA', // 青色
+        '#D5DEE5', // 中性
+      ];
+      const childColor = childColors[index % childColors.length];
+
+      // 创建子任务的 BarTask 对象
+      const childBarTask: BarTask = {
+        ...childTask,
+        index: index,
+        x1: childX1,
+        x2: childX2,
+        y: task.y,
+        height: task.height,
+        progressX: childProgressX,
+        progressWidth: childProgressWidth,
+        barCornerRadius: task.barCornerRadius,
+        handleWidth: task.handleWidth,
+        styles: {
+          backgroundColor: childColor,
+          backgroundSelectedColor: childColor,
+          progressColor: '#ffffff',
+          progressSelectedColor: '#ffffff',
+        },
+        barChildren: [],
+        typeInternal: 'task',
+      };
+
+      return (
+        <g key={`${task.id}-child-${childTask.id}`}>
+          <Bar
+            task={childBarTask}
+            isSelected={isSelected}
+            isProgressChangeable={false}
+            isDateChangeable={false}
+            rtl={rtl}
+            onEventStart={onEventStart}
+            arrowIndent={arrowIndent}
+            taskHeight={taskHeight}
+            isDelete={isDelete}
+          />
+          {/* 子任务标签 */}
+          {childX2 - childX1 > 30 && (
+            <text
+              x={childX1 + (childX2 - childX1) / 2}
+              y={task.y + task.height / 2}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fill="#ffffff"
+              fontSize="12"
+            >
+              {childTask.name}
+            </text>
+          )}
+        </g>
+      );
+    });
+  };
+
+  // 渲染主任务
+  const renderMainTask = () => {
     switch (task.typeInternal) {
       case 'milestone':
-        setTaskItem(<Milestone {...props} />);
-        break;
-      case 'project':
-        setTaskItem(
-          <Project
-            {...props}
-            showProjectSegmentProgress={showProjectSegmentProgress}
-          />
-        );
-        break;
+        return <Milestone {...props} />;
       case 'smalltask':
-        setTaskItem(<BarSmall {...props} />);
-        break;
+        return <BarSmall {...props} />;
       default:
-        setTaskItem(<Bar {...props} isDateChangeable={false} />);
-        break;
+        // 如果有子任务，不渲染主任务条，只渲染子任务
+        if (task.children && task.children.length > 0) {
+          return null;
+        }
+        return <Bar {...props} isDateChangeable={false} />;
     }
-  }, [task, isSelected]);
+  };
 
   useEffect(() => {
     if (textRef.current) {
@@ -118,22 +207,29 @@ export const TaskItem: React.FC<TaskItemProps> = props => {
         onEventStart?.('select', task);
       }}
     >
-      {taskItem}
-      {task.typeInternal !== 'project' && (
-        <text
-          x={getX()}
-          y={task.y + taskHeight * 0.5}
-          className={
-            isTextInside
-              ? style.barLabel
-              : style.barLabel && style.barLabelOutside
-          }
-          ref={textRef}
-          fontSize="12"
-        >
-          {task.name}
-        </text>
-      )}
+      {/* 渲染主任务 */}
+      {renderMainTask()}
+
+      {/* 渲染子任务 */}
+      {renderChildTasks()}
+
+      {/* 只有没有子任务的主任务才显示文本标签 */}
+      {(!task.children || task.children.length === 0) &&
+        task.typeInternal !== 'milestone' && (
+          <text
+            x={getX()}
+            y={task.y + taskHeight * 0.5}
+            className={
+              isTextInside
+                ? style.barLabel
+                : style.barLabel && style.barLabelOutside
+            }
+            ref={textRef}
+            fontSize="12"
+          >
+            {task.name}
+          </text>
+        )}
     </g>
   );
 };

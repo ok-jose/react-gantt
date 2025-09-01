@@ -2,7 +2,9 @@ import React from 'react';
 import { Bar } from '../bar/bar';
 import type { TaskItemProps } from '../task-item';
 import type { BarTask } from '../../../types/bar-task';
+import type { Task } from '../../../types';
 import styles from './project.module.css';
+import { useDraggable } from '@dnd-kit/core';
 
 /**
  * Project 组件 - 使用 Bar 组件渲染项目条和子任务

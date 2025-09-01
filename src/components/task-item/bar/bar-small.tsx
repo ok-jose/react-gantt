@@ -8,7 +8,6 @@ import styles from './bar.module.css';
 export const BarSmall: React.FC<TaskItemProps> = ({
   task,
   isProgressChangeable,
-  isDateChangeable,
   onEventStart,
   isSelected,
 }) => {
@@ -29,9 +28,7 @@ export const BarSmall: React.FC<TaskItemProps> = ({
         barCornerRadius={task.barCornerRadius}
         styles={task.styles}
         isSelected={isSelected}
-        onMouseDown={e => {
-          isDateChangeable && onEventStart && onEventStart('move', task, e);
-        }}
+        // 拖拽交由 dnd-kit
       />
       <g className="handleGroup">
         {isProgressChangeable && (

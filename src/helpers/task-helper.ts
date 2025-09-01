@@ -114,3 +114,50 @@ export const updateTaskRecursively = (
     return task;
   });
 };
+
+/**
+ * 根据拖拽的方向与位移，对任务列表进行级联时间偏移。
+ * 规则：
+ * - 当 deltaMs > 0（向后/未来拖动）时：将位于 draggedTask 之后的任务整体向后偏移 deltaMs。
+ * - 当 deltaMs < 0（向前/过去拖动）时：将位于 draggedTask 之前的任务整体向前偏移 deltaMs。
+ * - draggedTask 自身应用 deltaMs。
+ * 顺序依据传入的 tasks 数组顺序。
+ */
+export const applyCascadeShift = (
+  tasks: Task[],
+  draggedTaskId: string,
+  deltaMs: number
+): Task[] => {
+  if (!deltaMs) return tasks.slice();
+
+  const draggedIndex = tasks.findIndex(t => t.id === draggedTaskId);
+  if (draggedIndex === -1) return tasks.slice();
+
+  const shiftTaskDeep = (task: Task, ms: number): Task => {
+    const shifted: Task = {
+      ...task,
+      start: new Date(task.start.getTime() + ms),
+      end: new Date(task.end.getTime() + ms),
+    };
+    if (task.children && task.children.length > 0) {
+      shifted.children = task.children.map(child => shiftTaskDeep(child, ms));
+    }
+    return shifted;
+  };
+
+  return tasks.map((task, index) => {
+    // 被拖拽的任务本身不应该被级联偏移，它已经在 handleDragEnd 中更新了
+    if (index === draggedIndex) {
+      return task; // 直接返回原任务，不进行级联偏移
+    }
+    // 向前拖拽 (deltaMs < 0)：只有被拖拽任务之前的任务才偏移
+    if (deltaMs < 0 && index < draggedIndex) {
+      return shiftTaskDeep(task, deltaMs);
+    }
+    // 向后拖拽 (deltaMs > 0)：只有被拖拽任务之后的任务才偏移
+    if (deltaMs > 0 && index > draggedIndex) {
+      return shiftTaskDeep(task, deltaMs);
+    }
+    return task;
+  });
+};

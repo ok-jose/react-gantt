@@ -84,18 +84,9 @@ function flattenTasks(tasks: Task[], showSubTask: boolean = false): Task[] {
       task.hideChildren !== true &&
       showSubTask
     ) {
-      // 对于项目任务，保留子任务信息用于分段显示，同时将子任务提取到顶层
-      if (task.type === 'project') {
-        // 项目任务已经在上面的 flattened.push(task) 中添加了
-        // 子任务信息保留在 task.children 中，用于分段显示
-        // 同时将子任务提取到顶层作为独立任务行
-        const childrenTasks = flattenTasks(task.children, showSubTask);
-        flattened.push(...childrenTasks);
-      } else {
-        // 对于非项目任务，将子任务提取到顶层
-        const childrenTasks = flattenTasks(task.children, showSubTask);
-        flattened.push(...childrenTasks);
-      }
+      // 统一处理子任务：保留子任务信息在父任务中，同时将子任务提取到顶层
+      const childrenTasks = flattenTasks(task.children, showSubTask);
+      flattened.push(...childrenTasks);
     }
   });
 
@@ -116,10 +107,10 @@ const convertToBarTask = (
   barProgressSelectedColor: string,
   barBackgroundColor: string,
   barBackgroundSelectedColor: string,
-  projectProgressColor: string,
-  projectProgressSelectedColor: string,
-  projectBackgroundColor: string,
-  projectBackgroundSelectedColor: string,
+  _projectProgressColor: string,
+  _projectProgressSelectedColor: string,
+  _projectBackgroundColor: string,
+  _projectBackgroundSelectedColor: string,
   milestoneBackgroundColor: string,
   milestoneBackgroundSelectedColor: string
 ): BarTask => {
@@ -140,6 +131,7 @@ const convertToBarTask = (
       );
       break;
     case 'project':
+      // 项目任务现在当作普通任务处理，不再有特殊逻辑
       barTask = convertToBar(
         task,
         index,
@@ -150,10 +142,10 @@ const convertToBarTask = (
         barCornerRadius,
         handleWidth,
         rtl,
-        projectProgressColor,
-        projectProgressSelectedColor,
-        projectBackgroundColor,
-        projectBackgroundSelectedColor
+        barProgressColor,
+        barProgressSelectedColor,
+        barBackgroundColor,
+        barBackgroundSelectedColor
       );
       break;
     default:
@@ -214,7 +206,7 @@ const convertToBar = (
     rtl
   );
   const y = taskYCoordinate(index, rowHeight, taskHeight);
-  const hideChildren = task.type === 'project' ? task.hideChildren : undefined;
+  const hideChildren = task.hideChildren;
 
   const styles = {
     backgroundColor: barBackgroundColor,
@@ -401,10 +393,13 @@ const endByX = (x: number, xStep: number, task: BarTask) => {
 };
 
 const moveByX = (x: number, xStep: number, task: BarTask) => {
-  const steps = Math.round((x - task.x1) / xStep);
-  const additionalXValue = steps * xStep;
-  const newX1 = task.x1 + additionalXValue;
-  const newX2 = newX1 + task.x2 - task.x1;
+  // 对于拖拽移动，需要保持任务的持续时间不变
+  // x 是拖拽的目标位置，需要按网格步进对齐
+  const steps = Math.round(x / xStep);
+  const newX1 = steps * xStep;
+  // 保持原有的宽度，确保 end - start 不变
+  const taskWidth = task.x2 - task.x1;
+  const newX2 = newX1 + taskWidth;
   return [newX1, newX2];
 };
 
@@ -559,29 +554,30 @@ const handleTaskBySVGMouseEventForBar = (
       break;
     }
     case 'move': {
-      const [newMoveX1, newMoveX2] = moveByX(
-        svgX - initEventX1Delta,
-        xStep,
-        selectedTask
-      );
+      const [newMoveX1, newMoveX2] = moveByX(svgX, xStep, selectedTask);
       isChanged = newMoveX1 !== selectedTask.x1;
       if (isChanged) {
-        changedTask.start = dateByX(
-          newMoveX1,
-          selectedTask.x1,
-          selectedTask.start,
-          xStep,
-          timeStep
-        );
-        changedTask.end = dateByX(
-          newMoveX2,
-          selectedTask.x2,
-          selectedTask.end,
-          xStep,
-          timeStep
-        );
+        // 对于拖拽移动，基于 viewMode 的格子刻度计算时间偏移
+        // xStep 现在表示每个格子的像素宽度（columnWidth）
+        // 拖拽的像素偏移量除以 xStep 得到格子数量
+        // 再乘以 timeStep 得到毫秒偏移量
+
+        // 计算 x 方向的偏移量（像素）
+        const deltaX = newMoveX1 - selectedTask.x1;
+
+        // 将像素偏移量转换为格子数量，再转换为时间偏移量
+        const deltaGrids = deltaX / xStep; // 拖拽了多少个格子
+        const deltaMs = deltaGrids * timeStep; // 转换为毫秒
+
+        // 计算新的开始和结束时间
+        const newStartTime = new Date(selectedTask.start.getTime() + deltaMs);
+        const newEndTime = new Date(selectedTask.end.getTime() + deltaMs);
+
+        changedTask.start = newStartTime;
+        changedTask.end = newEndTime;
         changedTask.x1 = newMoveX1;
         changedTask.x2 = newMoveX2;
+
         const [progressWidth, progressX] = progressWithByParams(
           changedTask.x1,
           changedTask.x2,

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import type { EventOption } from '../../types';
 import type { BarTask } from '../../types/bar-task';
 import { Arrow } from '../other/arrow';
@@ -6,6 +6,7 @@ import {
   handleTaskBySVGMouseEvent,
   isKeyboardEvent,
   updateTaskRecursively,
+  applyCascadeShift,
 } from '../../helpers';
 import { TaskItem } from '../task-item/task-item';
 import {
@@ -14,6 +15,20 @@ import {
   type GanttEvent,
 } from '../../types/gantt-task-actions';
 import { useGanttContext } from '../../contexts/GanttContext';
+import {
+  DndContext,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragStartEvent,
+  type DragMoveEvent,
+  type DragEndEvent,
+  useDraggable,
+} from '@dnd-kit/core';
+import {
+  restrictToHorizontalAxis,
+  createSnapModifier,
+} from '@dnd-kit/modifiers';
 
 export type TaskGanttContentProps = {
   tasks: BarTask[];
@@ -84,152 +99,125 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
   const finalOnClick = onClick || contextOnClick;
   const finalOnDelete = onDelete || contextOnDelete;
 
-  const point = svg?.current?.createSVGPoint();
   const [xStep, setXStep] = useState(0);
-  const [initEventX1Delta, setInitEventX1Delta] = useState(0);
-  const [isMoving, setIsMoving] = useState(false);
 
-  // create xStep
+  // create xStep - 基于 viewMode 的单个格子刻度
   useEffect(() => {
-    const dateDelta =
-      dates[1].getTime() -
-      dates[0].getTime() -
-      dates[1].getTimezoneOffset() * 60 * 1000 +
-      dates[0].getTimezoneOffset() * 60 * 1000;
-    const newXStep = (timeStep * columnWidth) / dateDelta;
+    // 对于拖拽，我们需要基于 viewMode 的单个格子来计算 xStep
+    // 每个格子代表一个时间单位（如 HalfHour = 30分钟）
+    // xStep 应该是每个格子对应的像素宽度
+    const newXStep = columnWidth; // 每个格子对应一列，宽度为 columnWidth
     setXStep(newXStep);
-  }, [columnWidth, dates, timeStep]);
+  }, [columnWidth]);
 
-  useEffect(() => {
-    const handleMouseMove = async (event: MouseEvent) => {
-      if (!ganttEvent.changedTask || !point || !svg?.current) return;
-      event.preventDefault();
+  // 已移除基于 SVG 的 mousemove/mouseup 拖拽监听，改用 dnd-kit 事件
 
-      point.x = event.clientX;
-      const cursor = point.matrixTransform(
-        svg?.current.getScreenCTM()?.inverse()
-      );
+  // dnd-kit 传感器与修饰器
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 2,
+      },
+    })
+  );
+  const modifiers = useMemo(() => {
+    return [restrictToHorizontalAxis, createSnapModifier(xStep || 1)];
+  }, [xStep]);
 
-      const { isChanged, changedTask } = handleTaskBySVGMouseEvent(
-        cursor.x,
-        ganttEvent.action as BarMoveAction,
-        ganttEvent.changedTask,
-        xStep,
-        timeStep,
-        initEventX1Delta,
-        rtl
-      );
-      if (isChanged) {
-        setGanttEvent({ action: ganttEvent.action, changedTask });
-      }
-    };
+  const handleDragStart = (event: DragStartEvent) => {
+    const activeId = String(event.active.id);
+    const task = tasks.find(t => t.id === activeId);
+    if (!task) return;
+    setGanttEvent({
+      action: 'move',
+      changedTask: task,
+      originalSelectedTask: task,
+    });
+  };
 
-    const handleMouseUp = async (event: MouseEvent) => {
-      const { action, originalSelectedTask, changedTask } = ganttEvent;
-      if (!changedTask || !point || !svg?.current || !originalSelectedTask)
-        return;
-      event.preventDefault();
+  const handleDragMove = (event: DragMoveEvent) => {
+    // 拖拽过程中不更新任务时间，只依靠 dnd-kit 的 transform 进行视觉移动
+    // 时间计算和更新留到 handleDragEnd 中进行
+  };
 
-      point.x = event.clientX;
-      const cursor = point.matrixTransform(
-        svg?.current.getScreenCTM()?.inverse()
-      );
-      const { changedTask: newChangedTask } = handleTaskBySVGMouseEvent(
-        cursor.x,
-        action as BarMoveAction,
-        changedTask,
-        xStep,
-        timeStep,
-        initEventX1Delta,
-        rtl
-      );
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { originalSelectedTask } = ganttEvent;
+    if (!originalSelectedTask) return;
 
-      const isNotLikeOriginal =
-        originalSelectedTask.start !== newChangedTask.start ||
-        originalSelectedTask.end !== newChangedTask.end ||
-        originalSelectedTask.progress !== newChangedTask.progress;
+    setGanttEvent({ action: '' });
 
-      // remove listeners
-      svg.current.removeEventListener('mousemove', handleMouseMove);
-      svg.current.removeEventListener('mouseup', handleMouseUp);
-      setGanttEvent({ action: '' });
-      setIsMoving(false);
+    // 只在有实际移动时才进行时间更新
+    const deltaX = event.delta.x || 0;
+    if (Math.abs(deltaX) < 1) return; // 没有有效移动
 
-      // custom operation start
-      let operationSuccess = true;
-      if (
-        (action === 'move' || action === 'end' || action === 'start') &&
-        finalOnDateChange &&
-        isNotLikeOriginal
-      ) {
-        try {
-          // 先进行内部任务更新，获取更新后的全量 tasks
-          const updatedTasks = updateTaskRecursively(
-            currentTasks,
-            newChangedTask
-          );
+    // 计算拖拽结束后的最终位置
+    // 基于 viewMode 的格子刻度来计算时间偏移
+    const finalSvgX = originalSelectedTask.x1 + deltaX;
 
-          // 调用外部的 onDateChange，传递更新后的全量 tasks
-          const result = await finalOnDateChange(newChangedTask, updatedTasks);
-          if (result !== undefined) {
-            operationSuccess = result;
+    // 确保按网格步进对齐（每个格子对应一个时间单位）
+    const alignedX = Math.round(finalSvgX / xStep) * xStep;
+
+    const { isChanged, changedTask } = handleTaskBySVGMouseEvent(
+      alignedX,
+      'move' as BarMoveAction,
+      originalSelectedTask,
+      xStep,
+      timeStep,
+      0, // 对于拖拽移动，不需要额外的偏移量
+      rtl
+    );
+
+    if (!isChanged || !finalOnDateChange) return;
+
+    let operationSuccess = true;
+    try {
+      // 计算位移量（毫秒）
+      const deltaMs =
+        changedTask.start.getTime() - originalSelectedTask.start.getTime();
+
+      // 对于拖拽操作，需要正确处理子任务的时间更新
+      // 如果拖拽的是父任务，需要递归更新其所有子任务的时间
+      const updatedTasks = currentTasks.map(task => {
+        if (task.id === changedTask.id) {
+          // 检查是否有子任务需要更新
+          if (task.children && task.children.length > 0) {
+            // 递归更新子任务的时间
+            const updatedChildren = task.children.map(child => ({
+              ...child,
+              start: new Date(child.start.getTime() + deltaMs),
+              end: new Date(child.end.getTime() + deltaMs),
+            }));
+
+            return {
+              ...changedTask,
+              children: updatedChildren,
+            };
           }
-        } catch (error) {
-          operationSuccess = false;
+          return changedTask;
         }
-      } else if (finalOnProgressChange && isNotLikeOriginal) {
-        try {
-          // 先进行内部任务更新，获取更新后的全量 tasks
-          const updatedTasks = updateTaskRecursively(
-            currentTasks,
-            newChangedTask
-          );
+        return task;
+      });
 
-          // 调用外部的 onProgressChange，传递更新后的全量 tasks
-          const result = await finalOnProgressChange(
-            newChangedTask,
-            updatedTasks
-          );
-          if (result !== undefined) {
-            operationSuccess = result;
-          }
-        } catch (error) {
-          operationSuccess = false;
-        }
+      // 再按规则对其他任务进行级联偏移
+      const cascadedTasks = applyCascadeShift(
+        updatedTasks,
+        changedTask.id,
+        deltaMs
+      );
+
+      // 回调返回整个最新 tasks
+      const result = await finalOnDateChange(changedTask, cascadedTasks);
+      if (result !== undefined) {
+        operationSuccess = result;
       }
-
-      // If operation is failed - return old state
-      if (!operationSuccess) {
-        setFailedTask(originalSelectedTask);
-      }
-    };
-
-    if (
-      !isMoving &&
-      (ganttEvent.action === 'move' ||
-        ganttEvent.action === 'end' ||
-        ganttEvent.action === 'start' ||
-        ganttEvent.action === 'progress') &&
-      svg?.current
-    ) {
-      svg.current.addEventListener('mousemove', handleMouseMove);
-      svg.current.addEventListener('mouseup', handleMouseUp);
-      setIsMoving(true);
+    } catch (error) {
+      operationSuccess = false;
     }
-  }, [
-    ganttEvent,
-    xStep,
-    initEventX1Delta,
-    finalOnProgressChange,
-    timeStep,
-    finalOnDateChange,
-    svg,
-    isMoving,
-    point,
-    rtl,
-    setFailedTask,
-    setGanttEvent,
-  ]);
+
+    if (!operationSuccess) {
+      setFailedTask(originalSelectedTask);
+    }
+  };
 
   /**
    * Method is Start point of task change
@@ -279,17 +267,8 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
     }
     // Change task event start
     else if (action === 'move') {
-      if (!svg?.current || !point) return;
-      point.x = event.clientX;
-      const cursor = point.matrixTransform(
-        svg.current.getScreenCTM()?.inverse()
-      );
-      setInitEventX1Delta(cursor.x - task.x1);
-      setGanttEvent({
-        action,
-        changedTask: task,
-        originalSelectedTask: task,
-      });
+      // 改由 dnd-kit 触发，无需在此处理
+      return;
     } else {
       setGanttEvent({
         action,
@@ -300,45 +279,51 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
   };
 
   return (
-    <g className="content">
-      <g className="arrows" fill={arrowColor} stroke={arrowColor}>
-        {tasks.map(task => {
-          return task.barChildren.map(child => {
+    <DndContext
+      sensors={sensors}
+      modifiers={modifiers}
+      onDragStart={handleDragStart}
+      onDragMove={handleDragMove}
+      onDragEnd={handleDragEnd}
+    >
+      <g className="content">
+        <g className="arrows" fill={arrowColor} stroke={arrowColor}>
+          {tasks.map(task => {
+            return task.barChildren.map(child => {
+              return (
+                <Arrow
+                  key={`Arrow from ${task.id} to ${tasks[child.index].id}`}
+                  taskFrom={task}
+                  taskTo={tasks[child.index]}
+                  rowHeight={rowHeight}
+                  taskHeight={taskHeight}
+                  arrowIndent={arrowIndent}
+                  rtl={rtl}
+                />
+              );
+            });
+          })}
+        </g>
+        <g className="bar" fontFamily={fontFamily} fontSize={fontSize}>
+          {tasks.map(task => {
             return (
-              <Arrow
-                key={`Arrow from ${task.id} to ${tasks[child.index].id}`}
-                taskFrom={task}
-                taskTo={tasks[child.index]}
-                rowHeight={rowHeight}
-                taskHeight={taskHeight}
+              <TaskItem
+                key={task.id}
+                task={task}
                 arrowIndent={arrowIndent}
+                taskHeight={taskHeight}
+                isProgressChangeable={false}
+                isDateChangeable={false}
+                isDelete={!task.isDisabled}
+                onEventStart={handleBarEventStart}
+                isSelected={!!selectedTask && task.id === selectedTask.id}
                 rtl={rtl}
+                showProjectSegmentProgress={showProjectSegmentProgress}
               />
             );
-          });
-        })}
+          })}
+        </g>
       </g>
-      <g className="bar" fontFamily={fontFamily} fontSize={fontSize}>
-        {tasks.map(task => {
-          return (
-            <TaskItem
-              task={task}
-              arrowIndent={arrowIndent}
-              taskHeight={taskHeight}
-              // isProgressChangeable={!!onProgressChange && !task.isDisabled}
-              isProgressChangeable={false}
-              isDateChangeable={isDateChangeable}
-              // isDateChangeable={!!finalOnDateChange && !task.isDisabled}
-              isDelete={!task.isDisabled}
-              onEventStart={handleBarEventStart}
-              key={task.id}
-              isSelected={!!selectedTask && task.id === selectedTask.id}
-              rtl={rtl}
-              showProjectSegmentProgress={showProjectSegmentProgress}
-            />
-          );
-        })}
-      </g>
-    </g>
+    </DndContext>
   );
 };
