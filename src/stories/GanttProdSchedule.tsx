@@ -669,10 +669,10 @@ const ProdSchedule = () => {
       ]}
       tasks={tasks}
       // childrenField="tasks"
-      viewMode={ViewMode.Hour}
+      viewMode={ViewMode.HalfHour}
       onDateChange={console.log}
       isDateChangeable={false}
-      ganttHeight={600}
+      ganttHeight={1000}
       rowHeight={38}
       locale="zh-CN"
     />

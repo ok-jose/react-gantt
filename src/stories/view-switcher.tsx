@@ -2,18 +2,11 @@ import React from 'react';
 import { ViewMode } from '../types';
 import './view-switcher.css';
 
-type ViewSwitcherProps = {
-  isChecked: boolean;
-  onViewListChange: (isChecked: boolean) => void;
+export const ViewSwitcher: React.FC<{
   onViewModeChange: (viewMode: ViewMode) => void;
-};
-export const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
-  onViewModeChange,
-  onViewListChange,
-  isChecked,
-}) => {
+}> = ({ onViewModeChange }) => {
   return (
-    <div className="ViewContainer">
+    <div className="view-switcher">
       <button
         className="Button"
         onClick={() => onViewModeChange(ViewMode.Hour)}
@@ -22,15 +15,21 @@ export const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
       </button>
       <button
         className="Button"
+        onClick={() => onViewModeChange(ViewMode.HalfHour)}
+      >
+        Half Hour
+      </button>
+      <button
+        className="Button"
         onClick={() => onViewModeChange(ViewMode.QuarterDay)}
       >
-        Quarter of Day
+        Quarter Day
       </button>
       <button
         className="Button"
         onClick={() => onViewModeChange(ViewMode.HalfDay)}
       >
-        Half of Day
+        Half Day
       </button>
       <button className="Button" onClick={() => onViewModeChange(ViewMode.Day)}>
         Day
@@ -49,27 +48,16 @@ export const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
       </button>
       <button
         className="Button"
+        onClick={() => onViewModeChange(ViewMode.QuarterYear)}
+      >
+        Quarter Year
+      </button>
+      <button
+        className="Button"
         onClick={() => onViewModeChange(ViewMode.Year)}
       >
         Year
       </button>
-      <button
-        className="Button"
-        onClick={() => onViewModeChange(ViewMode.QuarterYear)}
-      >
-        Year
-      </button>
-      <div className="Switch">
-        <label className="Switch_Toggle">
-          <input
-            type="checkbox"
-            defaultChecked={isChecked}
-            onClick={() => onViewListChange(!isChecked)}
-          />
-          <span className="Slider" />
-        </label>
-        Show Task List
-      </div>
     </div>
   );
 };

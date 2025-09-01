@@ -288,11 +288,15 @@ const convertToMilestone = (
 };
 
 const taskXCoordinate = (xDate: Date, dates: Date[], columnWidth: number) => {
-  const index = dates.findIndex(d => d.getTime() >= xDate.getTime()) - 1;
+  // 找到第一个大于等于 xDate 的刻度索引
+  const firstGE = dates.findIndex(d => d.getTime() >= xDate.getTime());
+  // 若未找到，说明 xDate 超过最后一个刻度，使用倒数第二段进行计算
+  const safeIndex = firstGE === -1 ? dates.length - 2 : firstGE - 1;
+  const index = Math.max(0, safeIndex);
 
   const remainderMillis = xDate.getTime() - dates[index].getTime();
-  const percentOfInterval =
-    remainderMillis / (dates[index + 1].getTime() - dates[index].getTime());
+  const interval = dates[index + 1].getTime() - dates[index].getTime();
+  const percentOfInterval = interval > 0 ? remainderMillis / interval : 0;
   const x = index * columnWidth + percentOfInterval * columnWidth;
   return x;
 };

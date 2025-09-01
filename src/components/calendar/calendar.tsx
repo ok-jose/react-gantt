@@ -288,41 +288,63 @@ export const Calendar: React.FC<CalendarProps> = ({
   const getCalendarValuesForPartOfDay = () => {
     const topValues: React.ReactNode[] = [];
     const bottomValues: React.ReactNode[] = [];
-    const ticks = viewMode === ViewMode.HalfDay ? 2 : 4;
-    const topDefaultHeight = headerHeight * 0.5;
+    // QuarterDay:4, HalfDay:2, HalfHour:48
+    const ticks =
+      viewMode === ViewMode.QuarterDay
+        ? 4
+        : viewMode === ViewMode.HalfDay
+          ? 2
+          : viewMode === ViewMode.HalfHour
+            ? 48
+            : 4;
+    const topDefaultHeight = headerHeight * 0.5; // 上半部分高度
     const dates = dateSetup.dates;
     for (let i = 0; i < dates.length; i++) {
       const date = dates[i];
-      const bottomValue = getCachedDateTimeFormat(locale, {
-        hour: 'numeric',
-      }).format(date);
+      const bottomValue =
+        viewMode === ViewMode.HalfHour
+          ? getCachedDateTimeFormat(locale, {
+              hour: 'numeric',
+              minute: '2-digit',
+              hour12: false,
+            }).format(date)
+          : getCachedDateTimeFormat(locale, {
+              hour: 'numeric',
+            }).format(date);
 
+      const xCenter = rtl
+        ? columnWidth * (i + 1) - columnWidth * 0.5
+        : columnWidth * i + columnWidth * 0.5;
+
+      // 下半部：垂直居中
       bottomValues.push(
         <text
           key={date.getTime()}
-          y={headerHeight * 0.8}
-          x={columnWidth * (i + +rtl)}
+          y={topDefaultHeight + topDefaultHeight * 0.6}
+          x={xCenter}
           className={styles.calendarBottomText}
           fontFamily={fontFamily}
         >
           {bottomValue}
         </text>
       );
+      // 新的一天：在开头左对齐显示日期（上半部）
       if (i === 0 || date.getDate() !== dates[i - 1].getDate()) {
         const topValue = `${getLocalDayOfWeek(
           date,
           locale,
           'short'
         )}, ${date.getDate()} ${getLocaleMonth(date, locale)}`;
+        const xText = columnWidth * i + 8; // 左侧内边距
         topValues.push(
           <TopPartOfCalendar
             key={topValue + date.getFullYear()}
             value={topValue}
-            x1Line={columnWidth * i + ticks * columnWidth}
+            x1Line={columnWidth * i}
             y1Line={0}
             y2Line={topDefaultHeight}
-            xText={columnWidth * i + ticks * columnWidth * 0.5}
-            yText={topDefaultHeight * 0.9}
+            xText={xText}
+            yText={topDefaultHeight * 0.6}
           />
         );
       }
@@ -334,42 +356,49 @@ export const Calendar: React.FC<CalendarProps> = ({
   const getCalendarValuesForHour = () => {
     const topValues: React.ReactNode[] = [];
     const bottomValues: React.ReactNode[] = [];
-    const topDefaultHeight = headerHeight * 0.5;
+    const topDefaultHeight = headerHeight * 0.5; // 上半部分高度
     const dates = dateSetup.dates;
     for (let i = 0; i < dates.length; i++) {
       const date = dates[i];
       const bottomValue = getCachedDateTimeFormat(locale, {
         hour: 'numeric',
+        minute: '2-digit',
+        hour12: false,
       }).format(date);
 
+      const xCenter = rtl
+        ? columnWidth * (i + 1) - columnWidth * 0.5
+        : columnWidth * i + columnWidth * 0.5;
+
+      // 下半部：垂直居中
       bottomValues.push(
         <text
           key={date.getTime()}
-          y={headerHeight * 0.8}
-          x={columnWidth * (i + +rtl)}
+          y={topDefaultHeight + topDefaultHeight * 0.6}
+          x={xCenter}
           className={styles.calendarBottomText}
           fontFamily={fontFamily}
         >
           {bottomValue}
         </text>
       );
-      if (i !== 0 && date.getDate() !== dates[i - 1].getDate()) {
-        const displayDate = dates[i - 1];
+      // 新的一天：在开头左对齐显示日期（上半部）
+      if (i === 0 || date.getDate() !== dates[i - 1].getDate()) {
         const topValue = `${getLocalDayOfWeek(
-          displayDate,
+          date,
           locale,
           'long'
-        )}, ${displayDate.getDate()} ${getLocaleMonth(displayDate, locale)}`;
-        const topPosition = (date.getHours() - 24) / 2;
+        )}, ${date.getDate()} ${getLocaleMonth(date, locale)}`;
+        const xText = columnWidth * i + 8;
         topValues.push(
           <TopPartOfCalendar
-            key={topValue + displayDate.getFullYear()}
+            key={topValue + date.getFullYear()}
             value={topValue}
             x1Line={columnWidth * i}
             y1Line={0}
             y2Line={topDefaultHeight}
-            xText={columnWidth * (i + topPosition)}
-            yText={topDefaultHeight * 0.9}
+            xText={xText}
+            yText={topDefaultHeight * 0.6}
           />
         );
       }
@@ -398,10 +427,12 @@ export const Calendar: React.FC<CalendarProps> = ({
       break;
     case ViewMode.QuarterDay:
     case ViewMode.HalfDay:
+    case ViewMode.HalfHour:
       [topValues, bottomValues] = getCalendarValuesForPartOfDay();
       break;
     case ViewMode.Hour:
       [topValues, bottomValues] = getCalendarValuesForHour();
+      break;
   }
   return (
     <g
@@ -415,6 +446,25 @@ export const Calendar: React.FC<CalendarProps> = ({
         width={columnWidth * dateSetup.dates.length}
         height={headerHeight}
         className={styles.calendarHeader}
+      />
+      {/* 时间轴分隔线（每列一条，仅下半部分） */}
+      {dateSetup.dates.map((_, index) => (
+        <line
+          key={`separator-${index}`}
+          x1={columnWidth * index}
+          y1={headerHeight * 0.5}
+          x2={columnWidth * index}
+          y2={headerHeight}
+          className={styles.calendarTopTick}
+        />
+      ))}
+      {/* 下半部分的上边框 */}
+      <line
+        x1={0}
+        y1={headerHeight * 0.5}
+        x2={columnWidth * dateSetup.dates.length}
+        y2={headerHeight * 0.5}
+        className={styles.calendarTopTick}
       />
       {bottomValues} {topValues}
     </g>
