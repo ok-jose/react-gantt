@@ -1,4 +1,5 @@
 import React from 'react';
+import { useDraggable } from '@dnd-kit/core';
 import { getProgressPoint } from '../../../helpers';
 import { BarDisplay } from './bar-display';
 import { BarDateHandle } from './bar-date-handle';
@@ -14,14 +15,40 @@ export const Bar: React.FC<TaskItemProps> = ({
   onEventStart,
   isSelected,
 }) => {
+  // 使 Bar 可拖拽
+  const { attributes, listeners, setNodeRef, transform, isDragging } =
+    useDraggable({
+      id: task.id,
+      data: {
+        type: 'task',
+        task,
+      },
+    });
+
   const progressPoint = getProgressPoint(
     +!rtl * task.progressWidth + task.progressX,
     task.y,
     task.height
   );
   const handleHeight = task.height - 2;
+
+  // 拖拽时的样式
+  const dragStyle = transform
+    ? {
+        transform: `translate(${transform.x}px, ${transform.y}px)`,
+        zIndex: isDragging ? 1000 : 'auto',
+      }
+    : undefined;
+
   return (
-    <g className={styles.barWrapper} tabIndex={0}>
+    <g
+      className={styles.barWrapper}
+      tabIndex={0}
+      ref={setNodeRef as any}
+      {...(listeners as any)}
+      {...(attributes as any)}
+      style={dragStyle as any}
+    >
       <BarDisplay
         x={task.x1}
         y={task.y}

@@ -43,10 +43,6 @@ export type Task = {
 
 export interface EventOption {
   /**
-   * Time step value for date changes.
-   */
-  timeStep?: number;
-  /**
    * Invokes on bar select on unselect.
    */
   onSelect?: (task: Task, isSelected: boolean) => void;

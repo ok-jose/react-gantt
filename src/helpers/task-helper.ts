@@ -1,4 +1,5 @@
 import type { Task, BarTask } from '../types';
+import { ViewMode } from '../types';
 
 export function isKeyboardEvent(
   event: React.MouseEvent | React.KeyboardEvent | React.FocusEvent
@@ -123,6 +124,32 @@ export const updateTaskRecursively = (
  * - draggedTask 自身应用 deltaMs。
  * 顺序依据传入的 tasks 数组顺序。
  */
+/**
+ * 递归查找任务，支持在嵌套的 children 中查找
+ * @param tasks 任务列表
+ * @param taskId 要查找的任务ID
+ * @returns 找到的任务和其父任务，如果没找到则返回 undefined
+ */
+export const findTaskRecursively = (
+  tasks: Task[],
+  taskId: string
+): { task: Task; parentTask?: Task } | undefined => {
+  for (const task of tasks) {
+    if (task.id === taskId) {
+      return { task };
+    }
+
+    if (task.children && task.children.length > 0) {
+      const found = findTaskRecursively(task.children, taskId);
+      if (found) {
+        return { task: found.task, parentTask: task };
+      }
+    }
+  }
+
+  return undefined;
+};
+
 export const applyCascadeShift = (
   tasks: Task[],
   draggedTaskId: string,
@@ -160,4 +187,28 @@ export const applyCascadeShift = (
     }
     return task;
   });
+};
+export const calculateTimeStep = (viewMode: ViewMode): number => {
+  switch (viewMode) {
+    case ViewMode.Hour:
+      return 60 * 60 * 1000; // 1小时 = 60 * 60 * 1000 毫秒
+    case ViewMode.HalfHour:
+      return 30 * 60 * 1000; // 30分钟 = 30 * 60 * 1000 毫秒
+    case ViewMode.QuarterDay:
+      return 6 * 60 * 60 * 1000; // 6小时 = 6 * 60 * 60 * 1000 毫秒
+    case ViewMode.HalfDay:
+      return 12 * 60 * 60 * 1000; // 12小时 = 12 * 60 * 60 * 1000 毫秒
+    case ViewMode.Day:
+      return 24 * 60 * 60 * 1000; // 1天 = 24 * 60 * 60 * 1000 毫秒
+    case ViewMode.Week:
+      return 7 * 24 * 60 * 60 * 1000; // 1周 = 7 * 24 * 60 * 60 * 1000 毫秒
+    case ViewMode.Month:
+      return 30 * 24 * 60 * 60 * 1000; // 1月 ≈ 30 * 24 * 60 * 60 * 1000 毫秒
+    case ViewMode.QuarterYear:
+      return 3 * 30 * 24 * 60 * 60 * 1000; // 1季度 ≈ 3 * 30 * 24 * 60 * 60 * 1000 毫秒
+    case ViewMode.Year:
+      return 365 * 24 * 60 * 60 * 1000; // 1年 ≈ 365 * 24 * 60 * 60 * 1000 毫秒
+    default:
+      return 24 * 60 * 60 * 1000; // 默认1天
+  }
 };

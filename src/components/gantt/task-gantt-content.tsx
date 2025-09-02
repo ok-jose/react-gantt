@@ -2,15 +2,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 import type { EventOption } from '../../types';
 import type { BarTask } from '../../types/bar-task';
 import { Arrow } from '../other/arrow';
-import {
-  handleTaskBySVGMouseEvent,
-  isKeyboardEvent,
-  updateTaskRecursively,
-  applyCascadeShift,
-} from '../../helpers';
+import { isKeyboardEvent } from '../../helpers';
 import { TaskItem } from '../task-item/task-item';
 import {
-  type BarMoveAction,
   type GanttContentMoveAction,
   type GanttEvent,
 } from '../../types/gantt-task-actions';
@@ -23,7 +17,6 @@ import {
   type DragStartEvent,
   type DragMoveEvent,
   type DragEndEvent,
-  useDraggable,
 } from '@dnd-kit/core';
 import {
   restrictToHorizontalAxis,
@@ -59,13 +52,10 @@ export type TaskGanttContentProps = {
 
 export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
   tasks,
-  dates,
   ganttEvent,
   selectedTask,
   rowHeight,
   columnWidth,
-  timeStep,
-  svg,
   taskHeight,
   arrowColor,
   arrowIndent,
@@ -73,20 +63,17 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
   fontSize,
   rtl,
   setGanttEvent,
-  setFailedTask,
   setSelectedTask,
   showProjectSegmentProgress = false,
-  isDateChangeable = false,
   onDateChange,
-  onProgressChange,
   onDoubleClick,
   onClick,
   onDelete,
+  timeStep,
 }) => {
-  const { events, tasks: currentTasks } = useGanttContext();
+  const { events, tasks: currentTasks, display } = useGanttContext();
   const {
     onDateChange: contextOnDateChange,
-    onProgressChange: contextOnProgressChange,
     onDoubleClick: contextOnDoubleClick,
     onClick: contextOnClick,
     onDelete: contextOnDelete,
@@ -94,7 +81,6 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
 
   // 使用 Context 中的事件处理函数，如果没有传入 props 的话
   const finalOnDateChange = onDateChange || contextOnDateChange;
-  const finalOnProgressChange = onProgressChange || contextOnProgressChange;
   const finalOnDoubleClick = onDoubleClick || contextOnDoubleClick;
   const finalOnClick = onClick || contextOnClick;
   const finalOnDelete = onDelete || contextOnDelete;
@@ -125,14 +111,8 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
   }, [xStep]);
 
   const handleDragStart = (event: DragStartEvent) => {
-    const activeId = String(event.active.id);
-    const task = tasks.find(t => t.id === activeId);
-    if (!task) return;
-    setGanttEvent({
-      action: 'move',
-      changedTask: task,
-      originalSelectedTask: task,
-    });
+    // 拖拽开始时不需要特殊处理，所有信息都在 DragEndEvent 中
+    setGanttEvent({ action: 'move' });
   };
 
   const handleDragMove = (event: DragMoveEvent) => {
@@ -141,81 +121,105 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
-    const { originalSelectedTask } = ganttEvent;
-    if (!originalSelectedTask) return;
+    const { active, delta } = event;
+    if (!active) return;
 
     setGanttEvent({ action: '' });
 
+    // 直接从 event 中获取 currentBarTask 和位移
+    const currentBarTask = active.data.current?.task;
+    if (!currentBarTask) return;
+
     // 只在有实际移动时才进行时间更新
-    const deltaX = event.delta.x || 0;
+    const deltaX = delta.x || 0;
     if (Math.abs(deltaX) < 1) return; // 没有有效移动
 
     // 计算拖拽结束后的最终位置
     // 基于 viewMode 的格子刻度来计算时间偏移
-    const finalSvgX = originalSelectedTask.x1 + deltaX;
+    const finalSvgX = currentBarTask.x1 + deltaX;
 
     // 确保按网格步进对齐（每个格子对应一个时间单位）
     const alignedX = Math.round(finalSvgX / xStep) * xStep;
 
-    const { isChanged, changedTask } = handleTaskBySVGMouseEvent(
-      alignedX,
-      'move' as BarMoveAction,
-      originalSelectedTask,
+    console.log('拖拽调试信息:', {
+      deltaX,
       xStep,
+      viewMode: display.viewMode,
       timeStep,
-      0, // 对于拖拽移动，不需要额外的偏移量
-      rtl
-    );
+      finalSvgX,
+      alignedX,
+      currentBarTask: {
+        id: currentBarTask.id,
+        x1: currentBarTask.x1,
+        start: currentBarTask.start,
+        end: currentBarTask.end,
+      },
+    });
 
-    if (!isChanged || !finalOnDateChange) return;
+    // 直接计算时间偏移，不依赖 handleTaskBySVGMouseEvent
+    // 计算拖拽了多少个格子
+    const deltaGrids = deltaX / xStep;
+    // 转换为毫秒
+    const deltaMs = deltaGrids * timeStep;
 
-    let operationSuccess = true;
+    // 计算新的开始和结束时间
+    const newStartTime = new Date(currentBarTask.start.getTime() + deltaMs);
+    const newEndTime = new Date(currentBarTask.end.getTime() + deltaMs);
+
+    console.log('时间计算调试:', {
+      deltaGrids,
+      deltaMs,
+      originalStart: currentBarTask.start,
+      originalEnd: currentBarTask.end,
+      newStartTime,
+      newEndTime,
+      duration: newEndTime.getTime() - newStartTime.getTime(),
+      originalDuration:
+        currentBarTask.end.getTime() - currentBarTask.start.getTime(),
+    });
+
+    // 创建更新后的任务
+    const changedTask = {
+      ...currentBarTask,
+      start: newStartTime,
+      end: newEndTime,
+    };
+
+    if (!finalOnDateChange) return;
+
     try {
-      // 计算位移量（毫秒）
-      const deltaMs =
-        changedTask.start.getTime() - originalSelectedTask.start.getTime();
-
-      // 对于拖拽操作，需要正确处理子任务的时间更新
-      // 如果拖拽的是父任务，需要递归更新其所有子任务的时间
+      // 只更新当前拖拽的任务，不考虑其他任务的影响
       const updatedTasks = currentTasks.map(task => {
-        if (task.id === changedTask.id) {
-          // 检查是否有子任务需要更新
-          if (task.children && task.children.length > 0) {
-            // 递归更新子任务的时间
-            const updatedChildren = task.children.map(child => ({
-              ...child,
-              start: new Date(child.start.getTime() + deltaMs),
-              end: new Date(child.end.getTime() + deltaMs),
-            }));
+        // 检查这个任务是否包含被拖拽的子任务
+        if (
+          task.children &&
+          task.children.some(child => child.id === changedTask.id)
+        ) {
+          // 更新子任务
+          const updatedChildren = task.children.map(child => {
+            if (child.id === changedTask.id) {
+              // 使用 changedTask 的时间信息更新子任务
+              return {
+                ...child,
+                start: changedTask.start,
+                end: changedTask.end,
+              };
+            }
+            return child;
+          });
 
-            return {
-              ...changedTask,
-              children: updatedChildren,
-            };
-          }
-          return changedTask;
+          return {
+            ...task,
+            children: updatedChildren,
+          };
         }
         return task;
       });
 
-      // 再按规则对其他任务进行级联偏移
-      const cascadedTasks = applyCascadeShift(
-        updatedTasks,
-        changedTask.id,
-        deltaMs
-      );
-
-      // 回调返回整个最新 tasks
-      const result = await finalOnDateChange(changedTask, cascadedTasks);
-      if (result !== undefined) {
-        operationSuccess = result;
-      }
+      // 回调返回更新后的 tasks（先不考虑级联影响）
+      await finalOnDateChange(changedTask, updatedTasks);
     } catch (error) {
-      operationSuccess = false;
-    }
-
-    if (!operationSuccess) {
-      setFailedTask(originalSelectedTask);
+      console.error('Error updating dragged task:', error);
     }
   };
 

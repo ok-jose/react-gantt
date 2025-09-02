@@ -28,6 +28,7 @@ import {
   ganttDateRange,
   seedDates,
   convertToBarTasks,
+  calculateTimeStep,
 } from '../../helpers';
 import styles from './gantt.module.css';
 import { GanttProvider, useGanttContext } from '../../contexts/GanttContext';
@@ -555,7 +556,6 @@ export const Gantt: React.FunctionComponent<GanttProps> = props => {
     milestoneBackgroundSelectedColor = '#f29e4c',
     rtl = false,
     handleWidth = 8,
-    timeStep = 300000,
     arrowColor = 'grey',
     fontFamily = 'Arial, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue',
     fontSize = '14px',
@@ -577,7 +577,7 @@ export const Gantt: React.FunctionComponent<GanttProps> = props => {
     onSelect,
     onExpanderClick,
   } = props;
-
+  const timeStep = calculateTimeStep(viewMode);
   const [selectedTask, setSelectedTask] = useState<BarTask>();
   const [ganttEvent, setGanttEvent] = useState<GanttEvent>({
     action: '',

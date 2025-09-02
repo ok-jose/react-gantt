@@ -1,4 +1,3 @@
-import { ConfigurableColumnsExample } from './examples/ConfigurableColumnsExample';
 import './App.css';
 
 function App() {
@@ -8,9 +7,7 @@ function App() {
         <h1>React Gantt Chart - 可配置列功能演示</h1>
         <p>这个示例展示了可配置列的功能</p>
       </header>
-      <main>
-        <ConfigurableColumnsExample />
-      </main>
+      <main></main>
     </div>
   );
 }
