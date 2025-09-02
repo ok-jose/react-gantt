@@ -5,6 +5,8 @@ import { Bar } from './bar/bar';
 import { BarSmall } from './bar/bar-small';
 import { Milestone } from './milestone/milestone';
 import style from './task-list.module.css';
+import barStyles from './bar/bar.module.css';
+import { useDraggable } from '@dnd-kit/core';
 
 export type TaskItemProps = {
   task: BarTask;
@@ -41,6 +43,16 @@ export const TaskItem: React.FC<TaskItemProps> = props => {
   };
   const textRef = useRef<SVGTextElement>(null);
   const [isTextInside, setIsTextInside] = useState(true);
+
+  // 添加拖拽支持 - 提升到 TaskItem 级别
+  const { attributes, listeners, setNodeRef, transform, isDragging } =
+    useDraggable({
+      id: task.id,
+    });
+
+  const dragStyle = transform
+    ? { transform: `translate(${transform.x}px, ${transform.y}px)` }
+    : undefined;
 
   // 计算子任务
   const renderChildTasks = () => {
@@ -131,6 +143,7 @@ export const TaskItem: React.FC<TaskItemProps> = props => {
               dominantBaseline="middle"
               fill="#ffffff"
               fontSize="12"
+              className={isDragging ? barStyles.dragging : ''}
             >
               {childTask.name}
             </text>
@@ -180,8 +193,19 @@ export const TaskItem: React.FC<TaskItemProps> = props => {
     }
   };
 
+  // 构建样式类名，包含拖拽状态
+  const getWrapperClassName = () => {
+    const baseClass = '';
+    return isDragging ? `${baseClass} ${barStyles.dragging}` : baseClass;
+  };
+
   return (
     <g
+      ref={setNodeRef as unknown as React.Ref<SVGGElement>}
+      {...(listeners as any)}
+      {...(attributes as any)}
+      style={dragStyle as any}
+      className={getWrapperClassName()}
       onKeyDown={e => {
         switch (e.key) {
           case 'Delete': {

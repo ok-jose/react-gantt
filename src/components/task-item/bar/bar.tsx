@@ -5,7 +5,6 @@ import { BarDateHandle } from './bar-date-handle';
 import { BarProgressHandle } from './bar-progress-handle';
 import type { TaskItemProps } from '../task-item';
 import styles from './bar.module.css';
-import { useDraggable } from '@dnd-kit/core';
 
 export const Bar: React.FC<TaskItemProps> = ({
   task,
@@ -15,15 +14,6 @@ export const Bar: React.FC<TaskItemProps> = ({
   onEventStart,
   isSelected,
 }) => {
-  // 添加拖拽支持
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: task.id,
-  });
-
-  const dragStyle = transform
-    ? { transform: `translate(${transform.x}px, ${transform.y}px)` }
-    : undefined;
-
   const progressPoint = getProgressPoint(
     +!rtl * task.progressWidth + task.progressX,
     task.y,
@@ -31,14 +21,7 @@ export const Bar: React.FC<TaskItemProps> = ({
   );
   const handleHeight = task.height - 2;
   return (
-    <g
-      className={styles.barWrapper}
-      tabIndex={0}
-      ref={setNodeRef as unknown as React.Ref<SVGGElement>}
-      {...(listeners as any)}
-      {...(attributes as any)}
-      style={dragStyle as any}
-    >
+    <g className={styles.barWrapper} tabIndex={0}>
       <BarDisplay
         x={task.x1}
         y={task.y}
@@ -49,7 +32,6 @@ export const Bar: React.FC<TaskItemProps> = ({
         barCornerRadius={task.barCornerRadius}
         styles={task.styles}
         isSelected={isSelected}
-        // 由 dnd-kit 处理拖拽
       />
       {isDateChangeable && (
         <g className="handleGroup">
