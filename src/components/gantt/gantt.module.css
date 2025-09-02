@@ -19,3 +19,13 @@
   outline: none;
   position: relative;
 }
+
+/* 网格 SVG 样式 - 静态背景 */
+.gridSvg {
+  z-index: 1;
+}
+
+/* 任务 SVG 样式 - 交互层 */
+.tasksSvg {
+  z-index: 2;
+}
