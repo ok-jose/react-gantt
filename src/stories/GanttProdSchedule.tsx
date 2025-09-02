@@ -670,6 +670,10 @@ const ProdSchedule = () => {
         },
       ]}
       tasks={tasks}
+      calendarRange={[
+        new Date(2024, 11, 25, 6, 0, 0),
+        new Date(2024, 11, 25, 18, 0, 0),
+      ]}
       // childrenField="tasks"
       viewMode={ViewMode.HalfHour}
       onDateChange={(changedTask, all) => {

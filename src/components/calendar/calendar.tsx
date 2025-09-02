@@ -21,6 +21,7 @@ export type CalendarProps = {
   columnWidth?: number;
   fontFamily?: string;
   fontSize?: string;
+  calendarRange?: [Date, Date];
 };
 
 export const Calendar: React.FC<CalendarProps> = ({
@@ -32,6 +33,7 @@ export const Calendar: React.FC<CalendarProps> = ({
   columnWidth: propColumnWidth,
   fontFamily: propFontFamily,
   fontSize: propFontSize,
+  // calendarRange 主要用于 gantt 组件的日期范围控制，当前 calendar 组件未直接使用
 }) => {
   const { styling, display } = useGanttContext();
   const {
@@ -44,6 +46,7 @@ export const Calendar: React.FC<CalendarProps> = ({
     locale: contextLocale,
     viewMode: contextViewMode,
     rtl: contextRtl,
+    // calendarRange 主要用于 gantt 组件的日期范围控制，当前 calendar 组件未直接使用
   } = display;
 
   // 使用 props 优先，如果没有则使用 Context 中的值
@@ -54,6 +57,8 @@ export const Calendar: React.FC<CalendarProps> = ({
   const columnWidth = propColumnWidth || contextColumnWidth;
   const fontFamily = propFontFamily || contextFontFamily;
   const fontSize = propFontSize || contextFontSize;
+  // 注意：calendarRange 主要用于 gantt 组件的日期范围控制
+  // 当前 calendar 组件主要使用 dateSetup.dates
 
   const getCalendarValuesForYear = () => {
     const topValues: React.ReactNode[] = [];
@@ -289,14 +294,7 @@ export const Calendar: React.FC<CalendarProps> = ({
     const topValues: React.ReactNode[] = [];
     const bottomValues: React.ReactNode[] = [];
     // QuarterDay:4, HalfDay:2, HalfHour:48
-    const ticks =
-      viewMode === ViewMode.QuarterDay
-        ? 4
-        : viewMode === ViewMode.HalfDay
-          ? 2
-          : viewMode === ViewMode.HalfHour
-            ? 48
-            : 4;
+    // 注意：当前未使用，但保留作为参考
     const topDefaultHeight = headerHeight * 0.5; // 上半部分高度
     const dates = dateSetup.dates;
     for (let i = 0; i < dates.length; i++) {

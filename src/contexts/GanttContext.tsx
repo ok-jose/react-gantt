@@ -50,6 +50,7 @@ interface GanttContextValue {
     preStepsCount: number;
     locale: string;
     rtl: boolean;
+    calendarRange?: [Date, Date];
   };
 
   // 事件处理函数

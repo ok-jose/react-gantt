@@ -10,7 +10,7 @@ export enum ViewMode {
   QuarterYear = 'QuarterYear',
   Year = 'Year',
 }
-export type TaskType = 'task' | 'milestone';
+export type TaskType = 'task' | 'milestone' | 'project';
 export type Task = {
   id: string;
   type: TaskType;
@@ -91,6 +91,10 @@ export interface DisplayOption {
    */
   locale?: string;
   rtl?: boolean;
+  /**
+   * 可选的日历范围，如果不提供则基于任务时间自动计算
+   */
+  calendarRange?: [Date, Date];
 }
 
 export interface StylingOption {

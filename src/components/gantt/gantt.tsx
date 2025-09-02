@@ -74,7 +74,8 @@ const GanttInternal: React.FunctionComponent = () => {
     showSubTask,
   } = styling;
 
-  const { viewMode, viewDate, preStepsCount, locale, rtl } = display;
+  const { viewMode, viewDate, preStepsCount, locale, rtl, calendarRange } =
+    display;
   const {
     onDateChange,
     onProgressChange,
@@ -89,7 +90,13 @@ const GanttInternal: React.FunctionComponent = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const taskListRef = useRef<HTMLDivElement>(null);
   const [dateSetup, setDateSetup] = useState<DateSetup>(() => {
-    const [startDate, endDate] = ganttDateRange(tasks, viewMode, preStepsCount);
+    // 优先使用外部传入的 calendarRange，如果没有则基于任务计算
+    let startDate: Date, endDate: Date;
+    if (calendarRange && calendarRange[0] && calendarRange[1]) {
+      [startDate, endDate] = calendarRange;
+    } else {
+      [startDate, endDate] = ganttDateRange(tasks, viewMode, preStepsCount);
+    }
     return { viewMode, dates: seedDates(startDate, endDate, viewMode) };
   });
   const [currentViewDate, setCurrentViewDate] = useState<Date | undefined>(
@@ -118,11 +125,17 @@ const GanttInternal: React.FunctionComponent = () => {
   useEffect(() => {
     const filteredTasks = tasks.sort(sortTasks);
 
-    const [startDate, endDate] = ganttDateRange(
-      filteredTasks,
-      viewMode,
-      preStepsCount
-    );
+    // 优先使用外部传入的 calendarRange，如果没有则基于任务计算
+    let startDate: Date, endDate: Date;
+    if (calendarRange && calendarRange[0] && calendarRange[1]) {
+      [startDate, endDate] = calendarRange;
+    } else {
+      [startDate, endDate] = ganttDateRange(
+        filteredTasks,
+        viewMode,
+        preStepsCount
+      );
+    }
     let newDates = seedDates(startDate, endDate, viewMode);
     if (rtl) {
       newDates = newDates.reverse();
@@ -158,6 +171,7 @@ const GanttInternal: React.FunctionComponent = () => {
     tasks,
     viewMode,
     preStepsCount,
+    calendarRange,
     rowHeight,
     barCornerRadius,
     columnWidth,
@@ -551,6 +565,7 @@ export const Gantt: React.FunctionComponent<GanttProps> = props => {
     showSubTask = false,
     isDateChangeable,
     viewDate,
+    calendarRange,
     TooltipContent = StandardTooltipContent,
     TaskListHeader = TaskListHeaderDefault,
     TaskListTable = TaskListTableDefault,
@@ -603,6 +618,7 @@ export const Gantt: React.FunctionComponent<GanttProps> = props => {
       preStepsCount,
       locale,
       rtl,
+      calendarRange,
     },
     events: {
       onDateChange,
