@@ -52,3 +52,13 @@
   padding-left: 1rem;
   user-select: none;
 }
+
+/* 子任务重叠行样式 */
+.taskListRowOverlap {
+  
+  &:global {
+    .taskListCell {
+      background-color: var(--gantt-overlap-color);
+    }
+  }
+}

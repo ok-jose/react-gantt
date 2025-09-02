@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import styles from './task-list-table.module.css';
 import type { Task, TableColumn } from '../../types';
 import { DEFAULT_COLUMNS } from '../../types';
+import { hasOverlappingChildren } from '../../helpers';
 
 const localeDateStringCache: any = {};
 const toLocaleDateStringFactory =
@@ -71,6 +72,12 @@ export const TaskListTableDefault: React.FC<{
     // 判断是否为选中状态
     const isSelected = selectedTaskId === task.id;
 
+    // 检测子任务是否有重叠
+    const hasChildrenOverlap =
+      task.children && task.children.length > 0
+        ? hasOverlappingChildren(task.children)
+        : false;
+
     // 过滤可见的列
     const visibleColumns = columns.filter(col => col.visible !== false);
 
@@ -78,7 +85,7 @@ export const TaskListTableDefault: React.FC<{
       <div
         className={`${styles.taskListTableRow} ${
           isSelected ? styles.selectedRow : ''
-        }`}
+        } ${hasChildrenOverlap ? styles.taskListRowOverlap : ''}`}
         style={{ height: rowHeight }}
         key={`${task.id}row`}
         onClick={() => setSelectedTask(task.id)}
