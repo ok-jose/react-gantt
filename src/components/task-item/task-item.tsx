@@ -122,7 +122,16 @@ export const TaskItem: React.FC<TaskItemProps> = props => {
       };
 
       return (
-        <g key={`${task.id}-child-${childTask.id}`}>
+        <g
+          key={`${task.id}-child-${childTask.id}`}
+          onMouseEnter={e => {
+            // 子任务 hover 时，传递子任务信息而不是父任务信息
+            onEventStart?.('mouseenter', childBarTask, e);
+          }}
+          onMouseLeave={e => {
+            onEventStart?.('mouseleave', childBarTask, e);
+          }}
+        >
           <Bar
             task={childBarTask}
             isSelected={isSelected}
