@@ -181,10 +181,6 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
     const { active, delta, over } = event;
     if (!active) return;
 
-    setGanttEvent({ action: '' });
-    setDraggedTask(null);
-    setDragOverTask(null);
-
     // 直接从 event 中获取 currentBarTask 和位移
     const currentBarTask = active.data.current?.task;
     if (!currentBarTask) return;
@@ -193,24 +189,33 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
     const deltaY = delta.y || 0;
     const deltaX = delta.x || 0;
 
-    // 检查是否有垂直移动（跨行拖拽）
-    if (Math.abs(deltaY) > 10) {
-      // 有垂直移动，处理层级变化
-      let targetOver = over;
-      if (!targetOver && isHierarchyChangeable) {
-        const targetRow = calculateTargetRow(event, currentBarTask);
-        if (targetRow) {
-          // 创建一个模拟的 over 对象
-          targetOver = {
-            data: { current: { task: targetRow } },
-          } as any;
+    try {
+      // 检查是否有垂直移动（跨行拖拽）
+      if (Math.abs(deltaY) > 10) {
+        // 有垂直移动，处理层级变化
+        let targetOver = over;
+        if (!targetOver && isHierarchyChangeable) {
+          const targetRow = calculateTargetRow(event, currentBarTask);
+          if (targetRow) {
+            // 创建一个模拟的 over 对象
+            targetOver = {
+              data: { current: { task: targetRow } },
+            } as any;
+          }
         }
+        // 将位移信息传递给 handleHierarchyChange，让它同时处理层级变化和位置调整
+        await handleHierarchyChange(currentBarTask, targetOver, deltaX, deltaY);
+      } else if (Math.abs(deltaX) > 1) {
+        // 只有水平移动，处理时间变化
+        await handleTimeChange(currentBarTask, deltaX);
       }
-      // 将位移信息传递给 handleHierarchyChange，让它同时处理层级变化和位置调整
-      await handleHierarchyChange(currentBarTask, targetOver, deltaX, deltaY);
-    } else if (Math.abs(deltaX) > 1) {
-      // 只有水平移动，处理时间变化
-      await handleTimeChange(currentBarTask, deltaX);
+    } catch (error) {
+      console.error('Error during drag end:', error);
+    } finally {
+      // 确保在所有情况下都清理拖拽状态
+      setGanttEvent({ action: '' });
+      setDraggedTask(null);
+      setDragOverTask(null);
     }
   };
 
