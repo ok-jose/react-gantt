@@ -8,6 +8,7 @@ export type GanttContentMoveAction =
   | 'dblclick'
   | 'click'
   | 'select'
+  | 'hierarchy-changed'
   | ''
   | BarMoveAction;
 

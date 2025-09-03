@@ -76,6 +76,15 @@ export interface EventOption {
    * Invokes on expander on task list
    */
   onExpanderClick?: (task: Task) => void;
+  /**
+   * Invokes on task hierarchy change (cross-row dragging).
+   * Chart undoes operation if method return false or error.
+   */
+  onHierarchyChange?: (
+    movedTask: Task,
+    newParentTask: Task | null,
+    allTasks: Task[]
+  ) => void | boolean | Promise<void> | Promise<boolean>;
 }
 
 export interface DisplayOption {
@@ -131,6 +140,11 @@ export interface StylingOption {
    * 默认为 false，设置为 true 时显示子任务
    */
   showSubTask?: boolean;
+  /**
+   * 是否允许跨行拖拽（改变任务层级关系）
+   * 默认为 false，设置为 true 时允许拖拽任务到其他任务下
+   */
+  isHierarchyChangeable?: boolean;
   isDateChangeable?: boolean | ['start', 'end', 'move'];
   TooltipContent?: React.FC<{
     task: Task;

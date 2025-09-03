@@ -62,6 +62,7 @@ interface GanttContextValue {
     onDelete?: EventOption['onDelete'];
     onSelect?: EventOption['onSelect'];
     onExpanderClick?: EventOption['onExpanderClick'];
+    onHierarchyChange?: EventOption['onHierarchyChange'];
   };
 
   // 状态管理

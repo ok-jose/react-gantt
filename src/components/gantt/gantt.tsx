@@ -576,6 +576,7 @@ export const Gantt: React.FunctionComponent<GanttProps> = props => {
     onDelete,
     onSelect,
     onExpanderClick,
+    onHierarchyChange,
   } = props;
   const timeStep = calculateTimeStep(viewMode);
   const [selectedTask, setSelectedTask] = useState<BarTask>();
@@ -628,6 +629,7 @@ export const Gantt: React.FunctionComponent<GanttProps> = props => {
       onDelete,
       onSelect,
       onExpanderClick,
+      onHierarchyChange,
     },
     state: {
       selectedTask,

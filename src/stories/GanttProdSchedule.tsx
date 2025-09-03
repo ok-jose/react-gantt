@@ -659,6 +659,15 @@ const TASKS = [
   }),
 ];
 const ProdSchedule = () => {
+  const handleHierarchyChange = (
+    movedTask: Task,
+    newParentTask: Task | null,
+    allTasks: Task[]
+  ) => {
+    console.log('onHierarchyChange', movedTask, newParentTask, allTasks);
+    setTasks(allTasks);
+    return true;
+  };
   const [tasks, setTasks] = React.useState<Task[]>(TASKS);
   return (
     <Gantt
@@ -680,6 +689,7 @@ const ProdSchedule = () => {
         console.log('onDateChange', changedTask, all);
         setTasks(all);
       }}
+      onHierarchyChange={handleHierarchyChange}
       isDateChangeable={false}
       ganttHeight={1000}
       rowHeight={38}

@@ -60,6 +60,29 @@ const GanttChart = () => {
     console.log('On expander click Id:' + task.id);
   };
 
+  /**
+   * 处理任务层级关系变化
+   * @param movedTask 被移动的任务
+   * @param newParentTask 新的父任务（null 表示成为根任务）
+   * @param allTasks 更新后的全量任务列表
+   */
+  const handleHierarchyChange = async (
+    movedTask: Task,
+    newParentTask: Task | null,
+    allTasks: Task[]
+  ) => {
+    console.log('层级变化:', {
+      movedTask: movedTask.name,
+      newParent: newParentTask?.name || '根级别',
+    });
+
+    // 更新任务列表
+    setTasks(allTasks);
+
+    // 返回 true 表示接受更改
+    return true;
+  };
+
   return (
     <div className="Wrapper">
       <ViewSwitcher
@@ -85,6 +108,8 @@ const GanttChart = () => {
         onClick={handleClick}
         onSelect={handleSelect}
         onExpanderClick={handleExpanderClick}
+        onHierarchyChange={handleHierarchyChange}
+        isHierarchyChangeable={true}
         listCellWidth={isChecked ? '155px' : ''}
         ganttHeight={600}
         columnWidth={columnWidth}

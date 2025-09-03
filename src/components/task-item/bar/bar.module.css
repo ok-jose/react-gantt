@@ -19,3 +19,14 @@
   user-select: none;
   stroke-width: 0;
 }
+
+.dragging {
+  opacity: 0.8;
+  z-index: 1000;
+}
+
+.dragOver {
+  stroke: #007bff;
+  stroke-width: 2;
+  stroke-dasharray: 5,5;
+}

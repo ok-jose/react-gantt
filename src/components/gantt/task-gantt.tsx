@@ -104,7 +104,7 @@ export const TaskGantt: React.FC<TaskGanttProps> = ({
             left: 0,
           }}
         >
-          <TaskGanttContent {...newBarProps} />
+          <TaskGanttContent {...newBarProps} isHierarchyChangeable={true} />
         </svg>
       </div>
     </div>

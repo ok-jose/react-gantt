@@ -22,6 +22,14 @@ export type TaskItemProps = {
    * 默认为 true，设置为 false 时只显示子任务段，不显示进度条
    */
   showProjectSegmentProgress?: boolean;
+  /**
+   * 是否允许跨行拖拽（改变任务层级关系）
+   */
+  isHierarchyChangeable?: boolean;
+  /**
+   * 当前任务是否被拖拽悬停
+   */
+  isDragOver?: boolean;
   onEventStart?: (
     action: GanttContentMoveAction,
     selectedTask: BarTask,
@@ -37,6 +45,7 @@ export const TaskItem: React.FC<TaskItemProps> = props => {
     taskHeight,
     isSelected,
     rtl,
+    isDragOver = false,
     onEventStart,
   } = {
     ...props,
@@ -48,6 +57,10 @@ export const TaskItem: React.FC<TaskItemProps> = props => {
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
       id: task.id,
+      data: {
+        type: 'task',
+        task,
+      },
     });
 
   const dragStyle = transform
@@ -202,18 +215,24 @@ export const TaskItem: React.FC<TaskItemProps> = props => {
     }
   };
 
-  // 构建样式类名，包含拖拽状态
+  // 构建样式类名，包含拖拽状态和拖拽悬停状态
   const getWrapperClassName = () => {
-    const baseClass = '';
-    return isDragging ? `${baseClass} ${barStyles.dragging}` : baseClass;
+    let baseClass = '';
+    if (isDragging) {
+      baseClass += ` ${barStyles.dragging}`;
+    }
+    if (isDragOver) {
+      baseClass += ` ${barStyles.dragOver}`;
+    }
+    return baseClass.trim();
   };
 
   return (
     <g
       ref={setNodeRef as unknown as React.Ref<SVGGElement>}
-      {...(listeners as any)}
-      {...(attributes as any)}
-      style={dragStyle as any}
+      // {...(listeners as any)}
+      // {...(attributes as any)}
+      // style={dragStyle as any}
       className={getWrapperClassName()}
       onKeyDown={e => {
         switch (e.key) {

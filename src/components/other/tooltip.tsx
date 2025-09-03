@@ -91,27 +91,6 @@ export const Tooltip: React.FC<TooltipProps> = ({
         newRelatedY = svgContainerHeight - tooltipHeight;
       }
 
-      // 添加调试信息
-      console.log('Tooltip 位置计算:', {
-        taskId: task.id,
-        taskName: task.name,
-        taskX1: task.x1,
-        taskX2: task.x2,
-        taskY: task.y,
-        taskIndex: task.index,
-        scrollX,
-        scrollY,
-        headerHeight,
-        taskListWidth,
-        svgContainerWidth,
-        tooltipWidth,
-        tooltipHeight,
-        calculatedX: newRelatedX,
-        calculatedY: newRelatedY,
-        finalX: newRelatedX,
-        finalY: newRelatedY,
-      });
-
       setRelatedY(newRelatedY);
       setRelatedX(newRelatedX);
     }
