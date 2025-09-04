@@ -4,6 +4,7 @@ import { getProgressPoint } from '../../../helpers';
 import { BarDisplay } from './bar-display';
 import { BarDateHandle } from './bar-date-handle';
 import { BarProgressHandle } from './bar-progress-handle';
+import { useGanttReadonly } from '../../../contexts/GanttContext';
 import type { TaskItemProps } from '../task-item';
 import styles from './bar.module.css';
 
@@ -17,7 +18,9 @@ export const Bar: React.FC<TaskItemProps> = ({
   taskHeight,
   arrowIndent,
 }) => {
-  // 使 Bar 可拖拽
+  const readonly = useGanttReadonly();
+
+  // 使 Bar 可拖拽，但在 readonly 模式下禁用
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
       id: task.id,
@@ -25,6 +28,7 @@ export const Bar: React.FC<TaskItemProps> = ({
         type: 'task',
         task,
       },
+      disabled: readonly, // 在 readonly 模式下禁用拖拽
     });
 
   const progressPoint = getProgressPoint(
@@ -90,7 +94,7 @@ export const Bar: React.FC<TaskItemProps> = ({
         styles={task.styles}
         isSelected={isSelected}
       />
-      {isDateChangeable && (
+      {isDateChangeable && !readonly && (
         <g className="handleGroup">
           <g>
             {/* left */}

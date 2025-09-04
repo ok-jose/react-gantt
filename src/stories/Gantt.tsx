@@ -6,10 +6,21 @@ import { initNestedTasks } from './data-helper';
 import { storyDebug, eventDebug, hierarchyDebug } from '../utils/debug';
 
 // Init
-const GanttChart = () => {
+interface GanttChartProps {
+  readonly?: boolean;
+  height?: number;
+  width?: string;
+  showProgress?: boolean;
+  showDependencies?: boolean;
+  locale?: string;
+}
+
+const GanttChart: React.FC<GanttChartProps> = ({
+  readonly = false,
+  locale = 'zh-CN',
+}) => {
   const [view, setView] = React.useState<ViewMode>(ViewMode.Day);
   const [tasks, setTasks] = React.useState<Task[]>(initNestedTasks());
-  const [isChecked, setIsChecked] = React.useState(true);
 
   let columnWidth = 65;
   if (view === ViewMode.Year) {
@@ -86,11 +97,7 @@ const GanttChart = () => {
 
   return (
     <div className="Wrapper">
-      <ViewSwitcher
-        onViewModeChange={viewMode => setView(viewMode)}
-        onViewListChange={setIsChecked}
-        isChecked={isChecked}
-      />
+      <ViewSwitcher onViewModeChange={viewMode => setView(viewMode)} />
       <h3>Gantt With Limited Height</h3>
       <Gantt
         columns={[
@@ -111,11 +118,12 @@ const GanttChart = () => {
         onExpanderClick={handleExpanderClick}
         onHierarchyChange={handleHierarchyChange}
         isHierarchyChangeable={true}
-        listCellWidth={isChecked ? '155px' : ''}
+        listCellWidth="155px"
         ganttHeight={600}
         columnWidth={columnWidth}
         rowHeight={38}
-        locale="zh-CN"
+        locale={locale}
+        readonly={readonly}
       />
     </div>
   );

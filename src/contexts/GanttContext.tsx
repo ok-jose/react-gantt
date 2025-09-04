@@ -77,6 +77,7 @@ interface GanttContextValue {
   timeStep: number;
   tasks: Task[];
   isDateChangeable?: boolean | ['start', 'end', 'move'];
+  readonly?: boolean;
   TooltipContent?: StylingOption['TooltipContent'];
   TaskListHeader?: StylingOption['TaskListHeader'];
   TaskListTable?: StylingOption['TaskListTable'];
@@ -154,4 +155,13 @@ export const useGanttEvents = () => {
 export const useGanttState = () => {
   const { state } = useGanttContext();
   return state;
+};
+
+/**
+ * 使用 Gantt 只读状态的 Hook
+ * @returns 是否处于只读模式
+ */
+export const useGanttReadonly = () => {
+  const { readonly = false } = useGanttContext();
+  return readonly;
 };

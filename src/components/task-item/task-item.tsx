@@ -4,6 +4,7 @@ import type { GanttContentMoveAction } from '../../types/gantt-task-actions';
 import { Bar } from './bar/bar';
 import { BarSmall } from './bar/bar-small';
 import { Milestone } from './milestone/milestone';
+import { useGanttReadonly } from '../../contexts/GanttContext';
 import barStyles from './bar/bar.module.css';
 import { useDraggable } from '@dnd-kit/core';
 
@@ -48,13 +49,16 @@ export const TaskItem: React.FC<TaskItemProps> = props => {
     onEventStart,
   } = props;
 
-  // 添加拖拽支持 - 提升到 TaskItem 级别
+  const readonly = useGanttReadonly();
+
+  // 添加拖拽支持 - 提升到 TaskItem 级别，但在 readonly 模式下禁用
   const { setNodeRef, transform, isDragging } = useDraggable({
     id: task.id,
     data: {
       type: 'task',
       task,
     },
+    disabled: readonly, // 在 readonly 模式下禁用拖拽
   });
 
   // 拖拽时的样式 - 应用到整个任务项

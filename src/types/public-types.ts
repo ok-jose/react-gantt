@@ -182,6 +182,11 @@ export interface StylingOption {
 
 export interface GanttProps extends EventOption, DisplayOption, StylingOption {
   tasks: Task[];
+  /**
+   * 是否只读模式，只读模式下不能拖拽任务条
+   * @default false
+   */
+  readonly?: boolean;
 }
 
 /**

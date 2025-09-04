@@ -86,7 +86,7 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
   onDelete,
   timeStep,
 }) => {
-  const { events, tasks: currentTasks } = useGanttContext();
+  const { events, tasks: currentTasks, readonly = false } = useGanttContext();
   const {
     onDateChange: contextOnDateChange,
     onDoubleClick: contextOnDoubleClick,
@@ -560,6 +560,18 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
     task: BarTask,
     event?: React.MouseEvent | React.KeyboardEvent
   ) => {
+    // 在 readonly 模式下，只允许选择操作，禁用其他所有操作
+    if (
+      readonly &&
+      action !== 'select' &&
+      action !== 'click' &&
+      action !== 'dblclick' &&
+      action !== 'mouseenter' &&
+      action !== 'mouseleave'
+    ) {
+      return;
+    }
+
     if (!event) {
       if (action === 'select') {
         setSelectedTask(task.id);
