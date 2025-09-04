@@ -10,7 +10,7 @@ export enum ViewMode {
   QuarterYear = 'QuarterYear',
   Year = 'Year',
 }
-export type TaskType = 'task' | 'milestone' | 'project';
+export type TaskType = 'task' | 'milestone';
 export type Task = {
   id: string;
   type: TaskType;
@@ -31,10 +31,6 @@ export type Task = {
   dependencies?: string[];
   hideChildren?: boolean;
   children?: Task[];
-  /**
-   * 所属项目ID（向后兼容，推荐使用 children 结构）
-   */
-  project?: string;
   /**
    * 显示顺序
    */
@@ -121,10 +117,6 @@ export interface StylingOption {
   barProgressSelectedColor?: string;
   barBackgroundColor?: string;
   barBackgroundSelectedColor?: string;
-  projectProgressColor?: string;
-  projectProgressSelectedColor?: string;
-  projectBackgroundColor?: string;
-  projectBackgroundSelectedColor?: string;
   milestoneBackgroundColor?: string;
   milestoneBackgroundSelectedColor?: string;
   arrowColor?: string;
@@ -210,48 +202,3 @@ export interface TableColumn {
   /** 是否显示此列 */
   visible?: boolean;
 }
-
-/**
- * 默认列配置
- */
-export const DEFAULT_COLUMNS: TableColumn[] = [
-  {
-    key: 'name',
-    title: 'Name',
-    width: '40%',
-    align: 'left',
-    visible: true,
-  },
-  {
-    key: 'start',
-    title: 'From',
-    width: '30%',
-    align: 'left',
-    visible: true,
-    render: (task: Task, locale: string) => {
-      const dateTimeOptions: Intl.DateTimeFormatOptions = {
-        weekday: 'short',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      };
-      return task.start.toLocaleDateString(locale, dateTimeOptions);
-    },
-  },
-  {
-    key: 'end',
-    title: 'To',
-    width: '30%',
-    align: 'left',
-    visible: true,
-    render: (task: Task, locale: string) => {
-      const dateTimeOptions: Intl.DateTimeFormatOptions = {
-        weekday: 'short',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      };
-      return task.end.toLocaleDateString(locale, dateTimeOptions);
-    },
-  },
-];

@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import styles from './task-list-table.module.css';
 import type { Task, TableColumn } from '../../types';
-import { DEFAULT_COLUMNS } from '../../types';
 import { hasOverlappingChildren } from '../../helpers';
 
 const localeDateStringCache: any = {};
@@ -46,7 +45,7 @@ export const TaskListTableDefault: React.FC<{
   setSelectedTask,
   onExpanderClick,
   showSubTask = false,
-  columns = DEFAULT_COLUMNS,
+  columns = [],
 }) => {
   const toLocaleDateString = useMemo(
     () => toLocaleDateStringFactory(locale),

@@ -1,7 +1,6 @@
 import React from 'react';
 import styles from './task-list-header.module.css';
 import type { TableColumn } from '../../types';
-import { DEFAULT_COLUMNS } from '../../types';
 
 export const TaskListHeaderDefault: React.FC<{
   headerHeight: number;
@@ -9,15 +8,9 @@ export const TaskListHeaderDefault: React.FC<{
   fontFamily: string;
   fontSize: string;
   columns?: TableColumn[];
-}> = ({
-  headerHeight,
-  fontFamily,
-  fontSize,
-  rowWidth,
-  columns = DEFAULT_COLUMNS,
-}) => {
+}> = ({ headerHeight, fontFamily, fontSize, rowWidth, columns }) => {
   // 过滤可见的列
-  const visibleColumns = columns.filter(col => col.visible !== false);
+  const visibleColumns = columns?.filter(col => col.visible !== false);
 
   return (
     <div
@@ -33,7 +26,7 @@ export const TaskListHeaderDefault: React.FC<{
           height: headerHeight - 2,
         }}
       >
-        {visibleColumns.map(column => (
+        {visibleColumns?.map(column => (
           <div
             key={column.key}
             className={styles.ganttTable_HeaderItem}

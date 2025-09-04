@@ -29,10 +29,6 @@ interface GanttContextValue {
     barProgressSelectedColor: string;
     barBackgroundColor: string;
     barBackgroundSelectedColor: string;
-    projectProgressColor: string;
-    projectProgressSelectedColor: string;
-    projectBackgroundColor: string;
-    projectBackgroundSelectedColor: string;
     milestoneBackgroundColor: string;
     milestoneBackgroundSelectedColor: string;
     arrowColor: string;
@@ -76,7 +72,6 @@ interface GanttContextValue {
   // 其他配置
   timeStep: number;
   tasks: Task[];
-  isDateChangeable?: boolean | ['start', 'end', 'move'];
   readonly?: boolean;
   TooltipContent?: StylingOption['TooltipContent'];
   TaskListHeader?: StylingOption['TaskListHeader'];

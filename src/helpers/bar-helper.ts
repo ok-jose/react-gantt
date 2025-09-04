@@ -13,10 +13,6 @@ export const convertToBarTasks = (
   barProgressSelectedColor: string,
   barBackgroundColor: string,
   barBackgroundSelectedColor: string,
-  projectProgressColor: string,
-  projectProgressSelectedColor: string,
-  projectBackgroundColor: string,
-  projectBackgroundSelectedColor: string,
   milestoneBackgroundColor: string,
   milestoneBackgroundSelectedColor: string,
   showSubTask: boolean = false,
@@ -40,10 +36,6 @@ export const convertToBarTasks = (
       barProgressSelectedColor,
       barBackgroundColor,
       barBackgroundSelectedColor,
-      projectProgressColor,
-      projectProgressSelectedColor,
-      projectBackgroundColor,
-      projectBackgroundSelectedColor,
       milestoneBackgroundColor,
       milestoneBackgroundSelectedColor
     );
@@ -128,10 +120,6 @@ const convertToBarTask = (
   barProgressSelectedColor: string,
   barBackgroundColor: string,
   barBackgroundSelectedColor: string,
-  _projectProgressColor: string,
-  _projectProgressSelectedColor: string,
-  _projectBackgroundColor: string,
-  _projectBackgroundSelectedColor: string,
   milestoneBackgroundColor: string,
   milestoneBackgroundSelectedColor: string
 ): BarTask => {

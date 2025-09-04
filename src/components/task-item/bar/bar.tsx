@@ -94,7 +94,7 @@ export const Bar: React.FC<TaskItemProps> = ({
         styles={task.styles}
         isSelected={isSelected}
       />
-      {isDateChangeable && !readonly && (
+      {isDateChangeable && (
         <g className="handleGroup">
           <g>
             {/* left */}
