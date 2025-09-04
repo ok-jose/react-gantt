@@ -70,16 +70,26 @@ export const startOfDate = (date: Date, scale: DateHelperScales) => {
 export const ganttDateRange = (
   tasks: Task[],
   viewMode: ViewMode,
-  preStepsCount: number
+  preStepsCount: number,
+  calendarRange?: [Date, Date]
 ) => {
-  let newStartDate: Date = tasks[0].start;
-  let newEndDate: Date = tasks[0].start;
-  for (const task of tasks) {
-    if (task.start < newStartDate) {
-      newStartDate = task.start;
-    }
-    if (task.end > newEndDate) {
-      newEndDate = task.end;
+  let newStartDate: Date;
+  let newEndDate: Date;
+
+  // 优先使用外部传入的 calendarRange
+  if (calendarRange && calendarRange[0] && calendarRange[1]) {
+    [newStartDate, newEndDate] = calendarRange;
+  } else {
+    // 如果没有 calendarRange，则从任务中计算
+    newStartDate = tasks[0].start;
+    newEndDate = tasks[0].start;
+    for (const task of tasks) {
+      if (task.start < newStartDate) {
+        newStartDate = task.start;
+      }
+      if (task.end > newEndDate) {
+        newEndDate = task.end;
+      }
     }
   }
   switch (viewMode) {

@@ -1,7 +1,34 @@
 .barWrapper {
   cursor: pointer;
   outline: none;
+  /* 添加过渡动画 */
+  transition: all 0.2s ease-in-out;
 }
+
+.barLabel {
+  fill: #fff;
+  text-anchor: middle;
+  dominant-baseline: central;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  pointer-events: none;
+}
+
+.barLabelOutside {
+  fill: #555;
+  text-anchor: start;
+  dominant-baseline: central;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  pointer-events: none;
+}
+
 
 .barWrapper .barHandle {
   visibility: visible;
@@ -23,10 +50,45 @@
 .dragging {
   opacity: 0.8;
   z-index: 1000;
+  /* 拖拽时的特殊效果 */
+  transform: scale(1.02);
+  filter: brightness(1.1);
 }
 
 .dragOver {
-  stroke: #007bff;
-  stroke-width: 2;
-  stroke-dasharray: 5,5;
+  /* 使用 outline 而不是 stroke，避免覆盖原有样式 */
+  outline: 3px solid #007bff;
+  outline-offset: 3px;
+  /* 添加阴影效果增强视觉反馈 */
+  filter: drop-shadow(0 0 8px rgba(0, 123, 255, 0.4));
+  /* 添加脉冲动画效果 */
+  animation: dragOverPulse 1.5s ease-in-out infinite;
+}
+
+/* 拖拽悬停时的特殊状态 */
+.dragOver .barBackground {
+  /* 保持原有样式不变 */
+  stroke-width: 0;
+}
+
+/* 拖拽悬停时的文本样式 */
+.dragOver text {
+  /* 确保文本在拖拽悬停状态下仍然可见 */
+  fill: inherit;
+}
+
+/* 拖拽悬停脉冲动画 */
+@keyframes dragOverPulse {
+  0% {
+    outline-color: #007bff;
+    filter: drop-shadow(0 0 8px rgba(0, 123, 255, 0.4));
+  }
+  50% {
+    outline-color: #0056b3;
+    filter: drop-shadow(0 0 12px rgba(0, 123, 255, 0.6));
+  }
+  100% {
+    outline-color: #007bff;
+    filter: drop-shadow(0 0 8px rgba(0, 123, 255, 0.4));
+  }
 }

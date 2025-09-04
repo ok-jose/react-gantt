@@ -96,7 +96,12 @@ const GanttInternal: React.FunctionComponent = () => {
     if (calendarRange && calendarRange[0] && calendarRange[1]) {
       [startDate, endDate] = calendarRange;
     } else {
-      [startDate, endDate] = ganttDateRange(tasks, viewMode, preStepsCount);
+      [startDate, endDate] = ganttDateRange(
+        tasks,
+        viewMode,
+        preStepsCount,
+        calendarRange
+      );
     }
     return { viewMode, dates: seedDates(startDate, endDate, viewMode) };
   });
@@ -112,7 +117,6 @@ const GanttInternal: React.FunctionComponent = () => {
     () => (rowHeight * barFill) / 100,
     [rowHeight, barFill]
   );
-
   const [failedTask, setFailedTask] = useState<BarTask | null>(null);
 
   const svgWidth = dateSetup.dates.length * columnWidth;
@@ -134,7 +138,8 @@ const GanttInternal: React.FunctionComponent = () => {
       [startDate, endDate] = ganttDateRange(
         filteredTasks,
         viewMode,
-        preStepsCount
+        preStepsCount,
+        calendarRange
       );
     }
     let newDates = seedDates(startDate, endDate, viewMode);
@@ -165,7 +170,8 @@ const GanttInternal: React.FunctionComponent = () => {
         projectBackgroundSelectedColor,
         milestoneBackgroundColor,
         milestoneBackgroundSelectedColor,
-        showSubTask
+        showSubTask,
+        calendarRange
       )
     );
   }, [

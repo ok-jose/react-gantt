@@ -85,7 +85,7 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
   onDelete,
   timeStep,
 }) => {
-  const { events, tasks: currentTasks, display } = useGanttContext();
+  const { events, tasks: currentTasks } = useGanttContext();
   const {
     onDateChange: contextOnDateChange,
     onDoubleClick: contextOnDoubleClick,
@@ -213,6 +213,11 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
       console.error('Error during drag end:', error);
     } finally {
       // 确保在所有情况下都清理拖拽状态
+      console.log('清理拖拽状态:', {
+        draggedTask: draggedTask?.name,
+        dragOverTask: dragOverTask?.name,
+        action: ganttEvent.action,
+      });
       setGanttEvent({ action: '' });
       setDraggedTask(null);
       setDragOverTask(null);
@@ -674,7 +679,6 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
               y={draggedTask.y + draggedTask.height / 2}
               textAnchor="middle"
               dominantBaseline="middle"
-              fill="#ffffff"
               fontSize="12"
             >
               {draggedTask.name}

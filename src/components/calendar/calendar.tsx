@@ -310,30 +310,31 @@ export const Calendar: React.FC<CalendarProps> = ({
               hour: 'numeric',
             }).format(date);
 
-      const xCenter = rtl
-        ? columnWidth * (i + 1) - columnWidth * 0.5
-        : columnWidth * i + columnWidth * 0.5;
+      // 文字标签在垂直线后面一点，给一些间距
+      const xPosition = rtl
+        ? columnWidth * (i + 1) - 15 // 右对齐，距离垂直线15px
+        : columnWidth * i + 15; // 左对齐，距离垂直线15px
 
       // 下半部：垂直居中
       bottomValues.push(
         <text
           key={date.getTime()}
           y={topDefaultHeight + topDefaultHeight * 0.6}
-          x={xCenter}
+          x={xPosition}
           className={styles.calendarBottomText}
           fontFamily={fontFamily}
         >
           {bottomValue}
         </text>
       );
-      // 新的一天：在开头左对齐显示日期（上半部）
+      // 新的一天：在开头显示日期，紧跟在分割线后面
       if (i === 0 || date.getDate() !== dates[i - 1].getDate()) {
         const topValue = `${getLocalDayOfWeek(
           date,
           locale,
           'short'
         )}, ${date.getDate()} ${getLocaleMonth(date, locale)}`;
-        const xText = columnWidth * i + 8; // 左侧内边距
+        const xText = columnWidth * i + 50; // 从时间轴绝对位置计算，避免重合
         topValues.push(
           <TopPartOfCalendar
             key={topValue + date.getFullYear()}
@@ -364,30 +365,31 @@ export const Calendar: React.FC<CalendarProps> = ({
         hour12: false,
       }).format(date);
 
-      const xCenter = rtl
-        ? columnWidth * (i + 1) - columnWidth * 0.5
-        : columnWidth * i + columnWidth * 0.5;
+      // 文字标签在垂直线后面一点，给一些间距
+      const xPosition = rtl
+        ? columnWidth * (i + 1) - 15 // 右对齐，距离垂直线15px
+        : columnWidth * i + 15; // 左对齐，距离垂直线15px
 
       // 下半部：垂直居中
       bottomValues.push(
         <text
           key={date.getTime()}
           y={topDefaultHeight + topDefaultHeight * 0.6}
-          x={xCenter}
+          x={xPosition}
           className={styles.calendarBottomText}
           fontFamily={fontFamily}
         >
           {bottomValue}
         </text>
       );
-      // 新的一天：在开头左对齐显示日期（上半部）
+      // 新的一天：在开头显示日期，紧跟在分割线后面
       if (i === 0 || date.getDate() !== dates[i - 1].getDate()) {
         const topValue = `${getLocalDayOfWeek(
           date,
           locale,
           'long'
         )}, ${date.getDate()} ${getLocaleMonth(date, locale)}`;
-        const xText = columnWidth * i + 8;
+        const xText = columnWidth * i + 50; // 从时间轴绝对位置计算，避免重合
         topValues.push(
           <TopPartOfCalendar
             key={topValue + date.getFullYear()}

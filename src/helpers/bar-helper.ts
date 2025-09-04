@@ -19,10 +19,11 @@ export const convertToBarTasks = (
   projectBackgroundSelectedColor: string,
   milestoneBackgroundColor: string,
   milestoneBackgroundSelectedColor: string,
-  showSubTask: boolean = false
+  showSubTask: boolean = false,
+  calendarRange?: [Date, Date]
 ) => {
   // 扁平化嵌套的任务结构
-  const flattenedTasks = flattenTasks(tasks, showSubTask);
+  const flattenedTasks = flattenTasks(tasks, showSubTask, calendarRange);
 
   let barTasks = flattenedTasks.map((t, i) => {
     return convertToBarTask(
@@ -69,12 +70,28 @@ export const convertToBarTasks = (
  * 注意：只有当父任务的 hideChildren 不为 true 且 showSubTask 为 true 时才包含子任务
  * 项目任务会保留其子任务信息用于分段显示，同时子任务也会作为独立任务行显示
  */
-function flattenTasks(tasks: Task[], showSubTask: boolean = false): Task[] {
+function flattenTasks(
+  tasks: Task[],
+  showSubTask: boolean = false,
+  calendarRange?: [Date, Date]
+): Task[] {
   const flattened: Task[] = [];
 
   tasks.forEach(task => {
-    // 添加当前任务
-    flattened.push(task);
+    // 如果父节点没有 start 和 end，使用 calendarRange 作为默认值
+    let processedTask = { ...task };
+    if (!task.start || !task.end) {
+      if (calendarRange && calendarRange[0] && calendarRange[1]) {
+        processedTask.start = calendarRange[0];
+        processedTask.end = calendarRange[1];
+      } else {
+        // 如果没有 calendarRange，跳过这个任务
+        return;
+      }
+    }
+
+    // 添加处理后的任务
+    flattened.push(processedTask);
 
     // 递归处理 children 中的任务
     // 只有当 hideChildren 不为 true 且 showSubTask 为 true 时才包含子任务
@@ -85,7 +102,11 @@ function flattenTasks(tasks: Task[], showSubTask: boolean = false): Task[] {
       showSubTask
     ) {
       // 统一处理子任务：保留子任务信息在父任务中，同时将子任务提取到顶层
-      const childrenTasks = flattenTasks(task.children, showSubTask);
+      const childrenTasks = flattenTasks(
+        task.children,
+        showSubTask,
+        calendarRange
+      );
       flattened.push(...childrenTasks);
     }
   });
@@ -128,24 +149,6 @@ const convertToBarTask = (
         handleWidth,
         milestoneBackgroundColor,
         milestoneBackgroundSelectedColor
-      );
-      break;
-    case 'project':
-      // 项目任务现在当作普通任务处理，不再有特殊逻辑
-      barTask = convertToBar(
-        task,
-        index,
-        dates,
-        columnWidth,
-        rowHeight,
-        taskHeight,
-        barCornerRadius,
-        handleWidth,
-        rtl,
-        barProgressColor,
-        barProgressSelectedColor,
-        barBackgroundColor,
-        barBackgroundSelectedColor
       );
       break;
     default:
@@ -282,10 +285,26 @@ const convertToMilestone = (
 const taskXCoordinate = (xDate: Date, dates: Date[], columnWidth: number) => {
   // 找到第一个大于等于 xDate 的刻度索引
   const firstGE = dates.findIndex(d => d.getTime() >= xDate.getTime());
-  // 若未找到，说明 xDate 超过最后一个刻度，使用倒数第二段进行计算
-  const safeIndex = firstGE === -1 ? dates.length - 2 : firstGE - 1;
-  const index = Math.max(0, safeIndex);
 
+  if (firstGE === -1) {
+    // 如果 xDate 超过最后一个刻度，需要计算超出部分的位置
+    const lastIndex = dates.length - 1;
+    const lastDate = dates[lastIndex];
+    const remainderMillis = xDate.getTime() - lastDate.getTime();
+
+    // 使用最后一个时间间隔作为参考
+    const interval =
+      lastIndex > 0
+        ? dates[lastIndex].getTime() - dates[lastIndex - 1].getTime()
+        : 30 * 60 * 1000; // 默认30分钟间隔
+
+    const percentOfInterval = interval > 0 ? remainderMillis / interval : 0;
+    // 计算超出最后一个刻度的位置
+    const x = lastIndex * columnWidth + percentOfInterval * columnWidth;
+    return x;
+  }
+
+  const index = Math.max(0, firstGE - 1);
   const remainderMillis = xDate.getTime() - dates[index].getTime();
   const interval = dates[index + 1].getTime() - dates[index].getTime();
   const percentOfInterval = interval > 0 ? remainderMillis / interval : 0;

@@ -1,10 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import type { BarTask } from '../../types/bar-task';
 import type { GanttContentMoveAction } from '../../types/gantt-task-actions';
 import { Bar } from './bar/bar';
 import { BarSmall } from './bar/bar-small';
 import { Milestone } from './milestone/milestone';
-import style from './task-list.module.css';
 import barStyles from './bar/bar.module.css';
 import { useDraggable } from '@dnd-kit/core';
 
@@ -47,24 +46,23 @@ export const TaskItem: React.FC<TaskItemProps> = props => {
     rtl,
     isDragOver = false,
     onEventStart,
-  } = {
-    ...props,
-  };
-  const textRef = useRef<SVGTextElement>(null);
-  const [isTextInside, setIsTextInside] = useState(true);
+  } = props;
 
   // 添加拖拽支持 - 提升到 TaskItem 级别
-  const { attributes, listeners, setNodeRef, transform, isDragging } =
-    useDraggable({
-      id: task.id,
-      data: {
-        type: 'task',
-        task,
-      },
-    });
+  const { setNodeRef, transform, isDragging } = useDraggable({
+    id: task.id,
+    data: {
+      type: 'task',
+      task,
+    },
+  });
 
+  // 拖拽时的样式 - 应用到整个任务项
   const dragStyle = transform
-    ? { transform: `translate(${transform.x}px, ${transform.y}px)` }
+    ? {
+        transform: `translate(${transform.x}px, ${transform.y}px)`,
+        zIndex: isDragging ? 1000 : 'auto',
+      }
     : undefined;
 
   // 计算子任务
@@ -156,20 +154,6 @@ export const TaskItem: React.FC<TaskItemProps> = props => {
             taskHeight={taskHeight}
             isDelete={isDelete}
           />
-          {/* 子任务标签 */}
-          {childX2 - childX1 > 30 && (
-            <text
-              x={childX1 + (childX2 - childX1) / 2}
-              y={task.y + task.height / 2}
-              textAnchor="middle"
-              dominantBaseline="middle"
-              fill="#ffffff"
-              fontSize="12"
-              className={isDragging ? barStyles.dragging : ''}
-            >
-              {childTask.name}
-            </text>
-          )}
         </g>
       );
     });
@@ -187,31 +171,14 @@ export const TaskItem: React.FC<TaskItemProps> = props => {
         if (task.children && task.children.length > 0) {
           return null;
         }
-        return <Bar {...props} isDateChangeable={false} />;
-    }
-  };
-
-  useEffect(() => {
-    if (textRef.current) {
-      setIsTextInside(textRef.current.getBBox().width < task.x2 - task.x1);
-    }
-  }, [textRef, task]);
-
-  const getX = () => {
-    const width = task.x2 - task.x1;
-    const hasChild = task.barChildren.length > 0;
-    if (isTextInside) {
-      return task.x1 + width * 0.5;
-    }
-    if (rtl && textRef.current) {
-      return (
-        task.x1 -
-        textRef.current.getBBox().width -
-        arrowIndent * +hasChild -
-        arrowIndent * 0.2
-      );
-    } else {
-      return task.x1 + width + arrowIndent * +hasChild + arrowIndent * 0.2;
+        return (
+          <Bar
+            {...props}
+            isDateChangeable={false}
+            taskHeight={taskHeight}
+            arrowIndent={arrowIndent}
+          />
+        );
     }
   };
 
@@ -232,7 +199,7 @@ export const TaskItem: React.FC<TaskItemProps> = props => {
       ref={setNodeRef as unknown as React.Ref<SVGGElement>}
       // {...(listeners as any)}
       // {...(attributes as any)}
-      // style={dragStyle as any}
+      style={dragStyle as any}
       className={getWrapperClassName()}
       onKeyDown={e => {
         switch (e.key) {
@@ -264,24 +231,6 @@ export const TaskItem: React.FC<TaskItemProps> = props => {
 
       {/* 渲染子任务 */}
       {renderChildTasks()}
-
-      {/* 只有没有子任务的主任务才显示文本标签 */}
-      {(!task.children || task.children.length === 0) &&
-        task.typeInternal !== 'milestone' && (
-          <text
-            x={getX()}
-            y={task.y + taskHeight * 0.5}
-            className={
-              isTextInside
-                ? style.barLabel
-                : style.barLabel && style.barLabelOutside
-            }
-            ref={textRef}
-            fontSize="12"
-          >
-            {task.name}
-          </text>
-        )}
     </g>
   );
 };
