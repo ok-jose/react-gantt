@@ -9,6 +9,7 @@ import {
   type GanttEvent,
 } from '../../types/gantt-task-actions';
 import { useGanttContext } from '../../contexts/GanttContext';
+import { dragDebug, timeDebug, hierarchyDebug } from '../../utils/debug';
 import {
   DndContext,
   PointerSensor,
@@ -213,7 +214,7 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
       console.error('Error during drag end:', error);
     } finally {
       // 确保在所有情况下都清理拖拽状态
-      console.log('清理拖拽状态:', {
+      dragDebug('清理拖拽状态:', {
         draggedTask: draggedTask?.name,
         dragOverTask: dragOverTask?.name,
         action: ganttEvent.action,
@@ -235,7 +236,7 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
     const newStartTime = new Date(task.start.getTime() + deltaMs);
     const newEndTime = new Date(task.end.getTime() + deltaMs);
 
-    console.log('时间计算:', {
+    timeDebug('时间计算:', {
       taskId: task.id,
       taskName: task.name,
       deltaX,
@@ -398,7 +399,7 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
     const taskToMove = { ...movedTask, children: movedTask.children || [] };
     result = addTaskToParent(result, newParentTask?.id || null, taskToMove);
 
-    console.log('模拟任务移动:', {
+    hierarchyDebug('模拟任务移动:', {
       movedTask: movedTask.name,
       newParent: newParentTask?.name || '根级别',
       updatedTasksCount: result.length,
@@ -449,9 +450,9 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
       // 模拟任务移动后的新状态
       const updatedTasks = simulateTaskMove(movedTask, newParentTask, barTasks);
 
-      console.log('updatedTasks', updatedTasks);
+      hierarchyDebug('updatedTasks', updatedTasks);
 
-      console.log('层级变化调试信息:', {
+      hierarchyDebug('层级变化调试信息:', {
         movedTask: movedTask.name,
         newParent: newParentTask?.name || '根级别',
         overTask: over?.data?.current?.task?.name || '无',
@@ -462,7 +463,7 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
 
       // 如果同时有水平移动，在层级变化的基础上调整时间
       if (Math.abs(deltaX) > 1) {
-        console.log('同时处理时间调整:', { deltaX, deltaY });
+        timeDebug('同时处理时间调整:', { deltaX, deltaY });
 
         // 使用公用函数计算水平移动后的新时间
         const { newStartTime, newEndTime } = calculateNewTime(
@@ -510,7 +511,7 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
         );
 
         if (result !== false) {
-          console.log('任务层级关系和时间已更新:', {
+          hierarchyDebug('任务层级关系和时间已更新:', {
             movedTask: movedTask.name,
             newParent: newParentTask?.name || '根级别',
             newStartTime,
@@ -522,7 +523,7 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
             changedTask: movedTask,
           });
         } else {
-          console.log('层级变化和时间调整被拒绝');
+          hierarchyDebug('层级变化和时间调整被拒绝');
         }
 
         return; // 已经处理了回调，直接返回
@@ -535,7 +536,7 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
       );
 
       if (result !== false) {
-        console.log('任务层级关系已更新:', {
+        hierarchyDebug('任务层级关系已更新:', {
           movedTask: movedTask.name,
           newParent: newParentTask?.name || '根级别',
         });
@@ -544,7 +545,7 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
         // 这里可以添加一个状态更新来强制重新渲染
         setGanttEvent({ action: 'hierarchy-changed', changedTask: movedTask });
       } else {
-        console.log('层级变化被拒绝');
+        hierarchyDebug('层级变化被拒绝');
       }
     } catch (error) {
       console.error('Error updating task hierarchy:', error);

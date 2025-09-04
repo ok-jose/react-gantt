@@ -1,6 +1,7 @@
 import React from 'react';
 import { Gantt } from '../components/gantt/gantt';
 import { ViewMode, type Task } from '../types';
+import { storyDebug } from '../utils/debug';
 
 const TASKS = [
   // 硫化缸01-10
@@ -664,7 +665,7 @@ const ProdSchedule = () => {
     newParentTask: Task | null,
     allTasks: Task[]
   ) => {
-    console.log('onHierarchyChange', movedTask, newParentTask, allTasks);
+    storyDebug('onHierarchyChange', movedTask, newParentTask, allTasks);
     setTasks(allTasks);
     return true;
   };
@@ -686,7 +687,7 @@ const ProdSchedule = () => {
       // childrenField="tasks"
       viewMode={ViewMode.HalfHour}
       onDateChange={(changedTask, all) => {
-        console.log('onDateChange', changedTask, all);
+        storyDebug('onDateChange', changedTask, all);
         setTasks(all);
       }}
       onHierarchyChange={handleHierarchyChange}

@@ -184,7 +184,9 @@ const App = () => {
   ];
 
   const handleTaskChange = task => {
-    console.log('任务变更:', task);
+    // 使用 debug 包进行调试
+    const debug = require('debug')('react-gantt:example');
+    debug('任务变更:', task);
   };
 
   return (
@@ -206,7 +208,8 @@ const App = () => {
 ```tsx
 const handleExpanderClick = task => {
   // 处理任务展开/折叠
-  console.log('展开/折叠任务:', task);
+  const debug = require('debug')('react-gantt:example');
+  debug('展开/折叠任务:', task);
 };
 
 <Gantt
@@ -317,6 +320,31 @@ const newTasks = [
   },
 ];
 ```
+
+## 调试
+
+本项目使用 [debug](https://www.npmjs.com/package/debug) 包进行调试，替代了传统的 `console.log`。
+
+### 启用调试
+
+```bash
+# 启用所有调试日志
+DEBUG=react-gantt:* npm run dev
+
+# 只启用特定模块
+DEBUG=react-gantt:gantt,react-gantt:drag npm run dev
+```
+
+### 可用的调试命名空间
+
+- `react-gantt:gantt` - 甘特图主组件
+- `react-gantt:drag` - 拖拽功能
+- `react-gantt:time` - 时间计算
+- `react-gantt:hierarchy` - 层级关系
+- `react-gantt:events` - 事件处理
+- `react-gantt:stories` - 故事书示例
+
+详细的调试指南请参考 [DEBUG_GUIDE.md](./DEBUG_GUIDE.md)。
 
 ## 贡献
 

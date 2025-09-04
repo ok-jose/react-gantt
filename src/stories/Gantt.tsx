@@ -3,6 +3,7 @@ import { Gantt } from '../components/gantt/gantt';
 import { ViewMode, type Task } from '../types';
 import { ViewSwitcher } from './view-switcher';
 import { initNestedTasks } from './data-helper';
+import { storyDebug, eventDebug, hierarchyDebug } from '../utils/debug';
 
 // Init
 const GanttChart = () => {
@@ -25,7 +26,7 @@ const GanttChart = () => {
    * @param allTasks 更新后的全量任务列表
    */
   const handleTaskChange = (_changedTask: Task, allTasks: Task[]) => {
-    console.log('On date change Id:' + allTasks);
+    storyDebug('On date change Id:' + allTasks);
     // 使用更新后的全量任务列表
     setTasks(allTasks);
   };
@@ -40,7 +41,7 @@ const GanttChart = () => {
 
   const handleProgressChange = async (task: Task, allTasks: Task[]) => {
     setTasks(allTasks);
-    console.log('On progress change Id:' + task.id);
+    storyDebug('On progress change Id:' + task.id);
   };
 
   const handleDblClick = (task: Task) => {
@@ -48,16 +49,16 @@ const GanttChart = () => {
   };
 
   const handleClick = (task: Task) => {
-    console.log('On Click event Id:' + task.id);
+    eventDebug('On Click event Id:' + task.id);
   };
 
   const handleSelect = (task: Task, isSelected: boolean) => {
-    console.log(task.name + ' has ' + (isSelected ? 'selected' : 'unselected'));
+    eventDebug(task.name + ' has ' + (isSelected ? 'selected' : 'unselected'));
   };
 
   const handleExpanderClick = (task: Task) => {
     setTasks(tasks.map(t => (t.id === task.id ? task : t)));
-    console.log('On expander click Id:' + task.id);
+    eventDebug('On expander click Id:' + task.id);
   };
 
   /**
@@ -71,7 +72,7 @@ const GanttChart = () => {
     newParentTask: Task | null,
     allTasks: Task[]
   ) => {
-    console.log('层级变化:', {
+    hierarchyDebug('层级变化:', {
       movedTask: movedTask.name,
       newParent: newParentTask?.name || '根级别',
     });
