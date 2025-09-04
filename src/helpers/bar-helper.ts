@@ -470,7 +470,7 @@ const handleTaskBySVGMouseEventForBar = (
   selectedTask: BarTask,
   xStep: number,
   timeStep: number,
-  initEventX1Delta: number,
+  _initEventX1Delta: number,
   rtl: boolean
 ): { isChanged: boolean; changedTask: BarTask } => {
   const changedTask: BarTask = { ...selectedTask };

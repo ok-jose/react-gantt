@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "dist"
+  },
+  "include": [
+    "src/index.ts",
+    "src/types/**/*",
+    "src/components/**/*",
+    "src/helpers/**/*",
+    "src/hooks/**/*",
+    "src/contexts/**/*",
+    "src/css-modules.d.ts"
+  ],
+  "exclude": ["src/stories/**/*", "src/main.tsx", "src/App.tsx"]
+}

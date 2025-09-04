@@ -1,0 +1,43 @@
+# Source files
+src/
+stories/
+*.stories.*
+*.test.*
+*.spec.*
+
+# Development files
+.vite/
+node_modules/
+.git/
+.gitignore
+
+# Build tools
+vite.config.ts
+vite.lib.config.ts
+tsconfig*.json
+eslint.config.js
+
+# Documentation
+storybook-static/
+SHOW_SUBTASK_IMPLEMENTATION.md
+DEBUG_GUIDE.md
+INTERNAL_TASK_UPDATE_IMPLEMENTATION.md
+NESTED_STRUCTURE_CHANGES.md
+REFACTOR_SUMMARY.md
+CONTEXT_REFACTOR.md
+PUBLISH_GUIDE.md
+
+# Development dependencies
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db

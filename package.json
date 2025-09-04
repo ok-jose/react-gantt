@@ -1,10 +1,10 @@
 {
-  "name": "react-gantt",
+  "name": "@ok-jose/react-gantt",
   "private": false,
   "version": "0.1.0",
   "type": "module",
   "description": "A React Gantt chart component library",
-  "main": "dist/index.js",
+  "main": "dist/index.umd.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -12,7 +12,7 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build --config vite.lib.config.ts",
+    "build": "tsc -p tsconfig.lib.json && vite build --config vite.lib.config.ts",
     "build:lib": "vite build --config vite.lib.config.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -30,8 +30,16 @@
     "component",
     "typescript"
   ],
-  "author": "",
+  "author": "jose",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ok-jose/react-gantt.git"
+  },
+  "homepage": "https://github.com/ok-jose/react-gantt#readme",
+  "bugs": {
+    "url": "https://github.com/ok-jose/react-gantt/issues"
+  },
   "peerDependencies": {
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0"

@@ -356,7 +356,7 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
         .map(task => ({
           ...task,
           children: task.children
-            ? removeTaskFromChildren(task.children, taskId)
+            ? removeTaskFromChildren(task.children as BarTask[], taskId)
             : undefined,
         }))
         .filter(task => task.id !== taskId);
@@ -384,7 +384,11 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
         if (task.children) {
           return {
             ...task,
-            children: addTaskToParent(task.children, parentId, taskToAdd),
+            children: addTaskToParent(
+              task.children as BarTask[],
+              parentId,
+              taskToAdd
+            ),
           };
         }
 
@@ -492,7 +496,7 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
             if (task.children) {
               return {
                 ...task,
-                children: updateTaskTime(task.children, taskId),
+                children: updateTaskTime(task.children as BarTask[], taskId),
               };
             }
 

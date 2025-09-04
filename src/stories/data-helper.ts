@@ -9,7 +9,7 @@ export function initTasks() {
       name: 'Some Project',
       id: 'ProjectSample',
       progress: 25,
-      type: 'project',
+      type: 'task',
       hideChildren: false,
       displayOrder: 1,
       children: [
@@ -26,7 +26,6 @@ export function initTasks() {
           ),
           progress: 45,
           type: 'task',
-          project: 'ProjectSample',
           displayOrder: 2,
         },
         {
@@ -43,7 +42,6 @@ export function initTasks() {
           progress: 25,
           dependencies: ['Task 0'],
           type: 'task',
-          project: 'ProjectSample',
           displayOrder: 3,
         },
         {
@@ -60,7 +58,6 @@ export function initTasks() {
           progress: 10,
           dependencies: ['Task 1'],
           type: 'task',
-          project: 'ProjectSample',
           displayOrder: 4,
         },
         {
@@ -77,7 +74,6 @@ export function initTasks() {
           progress: 2,
           dependencies: ['Task 2'],
           type: 'task',
-          project: 'ProjectSample',
           displayOrder: 5,
         },
       ],
@@ -94,7 +90,7 @@ export function initTasks() {
       name: 'Idea',
       id: 'ProjectCC',
       progress: 45,
-      type: 'project',
+      type: 'task',
       hideChildren: false,
       children: [
         {
@@ -111,7 +107,6 @@ export function initTasks() {
           progress: 25,
           dependencies: ['Task 0'],
           type: 'task',
-          project: 'ProjectCC',
           displayOrder: 3,
         },
         {
@@ -128,7 +123,6 @@ export function initTasks() {
           progress: 10,
           dependencies: ['Task 1'],
           type: 'task',
-          project: 'ProjectCC',
           displayOrder: 4,
         },
         {
@@ -145,7 +139,6 @@ export function initTasks() {
           progress: 2,
           dependencies: ['Task 2'],
           type: 'task',
-          project: 'ProjectCC',
           displayOrder: 5,
         },
         {
@@ -156,7 +149,6 @@ export function initTasks() {
           type: 'task',
           progress: 70,
           dependencies: ['Task 2'],
-          project: 'ProjectCC',
           displayOrder: 6,
         },
       ],
@@ -186,7 +178,7 @@ export function initNestedTasks() {
       name: '软件开发项目',
       id: 'SoftwareProject',
       progress: 30,
-      type: 'project',
+      type: 'task',
       hideChildren: true,
       children: [
         {
@@ -245,7 +237,7 @@ export function initNestedTasks() {
       name: '项目文档',
       id: 'ProjectDocumentation',
       progress: 0,
-      type: 'project',
+      type: 'task',
       hideChildren: true,
       children: [
         {
