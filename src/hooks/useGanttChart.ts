@@ -7,19 +7,22 @@ export const useGanttChart = (tasks: Task[]) => {
   const [hoveredTask, setHoveredTask] = useState<Task | null>(null);
 
   const { min, max } = useMemo(() => {
-    return getMinMaxDates(tasks);
+    // 将 Task[] 转换为 getMinMaxDates 期望的格式
+    const tasksWithDates = tasks.map(task => ({
+      start: new Date(task.start),
+      end: new Date(task.end),
+    }));
+    return getMinMaxDates(tasksWithDates);
   }, [tasks]);
 
   const totalDays = useMemo(() => {
-    const timeDiff = max.getTime() - min.getTime();
+    const timeDiff = max - min; // 时间戳直接相减
     return Math.ceil(timeDiff / (1000 * 3600 * 24));
   }, [min, max]);
 
   const getTaskPosition = (task: Task) => {
-    const startOffset =
-      (task.start.getTime() - min.getTime()) / (1000 * 3600 * 24);
-    const duration =
-      (task.end.getTime() - task.start.getTime()) / (1000 * 3600 * 24);
+    const startOffset = (task.start - min) / (1000 * 3600 * 24); // 时间戳直接相减
+    const duration = (task.end - task.start) / (1000 * 3600 * 24); // 时间戳直接相减
 
     return {
       left: (startOffset / totalDays) * 100,

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import type { EventOption } from '../../types';
+import type { EventOption, Task } from '../../types';
 import type { BarTask } from '../../types/bar-task';
 import { Arrow } from '../other/arrow';
 import { isKeyboardEvent } from '../../helpers';
@@ -27,7 +27,7 @@ import {
 
 export type TaskGanttContentProps = {
   tasks: BarTask[];
-  dates: Date[];
+  dates: number[]; // 时间戳数组
   ganttEvent: GanttEvent;
   selectedTask: BarTask | undefined;
   rowHeight: number;
@@ -233,8 +233,8 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
     const deltaMs = deltaGrids * timeStep;
 
     // 计算新的开始和结束时间
-    const newStartTime = new Date(task.start.getTime() + deltaMs);
-    const newEndTime = new Date(task.end.getTime() + deltaMs);
+    const newStartTime = task.start + deltaMs;
+    const newEndTime = task.end + deltaMs;
 
     timeDebug('时间计算:', {
       taskId: task.id,
@@ -248,8 +248,8 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
       originalEnd: task.end,
       newStartTime,
       newEndTime,
-      duration: newEndTime.getTime() - newStartTime.getTime(),
-      originalDuration: task.end.getTime() - task.start.getTime(),
+      duration: newEndTime - newStartTime,
+      originalDuration: task.end - task.start,
     });
 
     return { newStartTime, newEndTime, deltaMs };
@@ -301,8 +301,24 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
         return task;
       });
 
+      // 将 BarTask 转换为 Task 类型
+      const taskForCallback: Task = {
+        id: changedTask.id,
+        type: changedTask.type,
+        name: changedTask.name,
+        start: changedTask.start,
+        end: changedTask.end,
+        progress: changedTask.progress,
+        styles: changedTask.styles,
+        isDisabled: changedTask.isDisabled,
+        dependencies: changedTask.dependencies,
+        hideChildren: changedTask.hideChildren,
+        children: changedTask.children,
+        displayOrder: changedTask.displayOrder,
+      };
+
       // 回调返回更新后的 tasks（先不考虑级联影响）
-      await finalOnDateChange(changedTask, updatedTasks);
+      await finalOnDateChange(taskForCallback, updatedTasks);
     } catch (error) {
       console.error('Error updating dragged task:', error);
     }
@@ -507,10 +523,43 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
         // 更新 updatedTasks 中的时间
         const updatedTasksWithTime = updateTaskTime(updatedTasks, movedTask.id);
 
+        // 将 BarTask 转换为 Task 类型
+        const movedTaskForCallback: Task = {
+          id: movedTask.id,
+          type: movedTask.type,
+          name: movedTask.name,
+          start: movedTask.start,
+          end: movedTask.end,
+          progress: movedTask.progress,
+          styles: movedTask.styles,
+          isDisabled: movedTask.isDisabled,
+          dependencies: movedTask.dependencies,
+          hideChildren: movedTask.hideChildren,
+          children: movedTask.children,
+          displayOrder: movedTask.displayOrder,
+        };
+
+        const newParentTaskForCallback: Task | null = newParentTask
+          ? {
+              id: newParentTask.id,
+              type: newParentTask.type,
+              name: newParentTask.name,
+              start: newParentTask.start,
+              end: newParentTask.end,
+              progress: newParentTask.progress,
+              styles: newParentTask.styles,
+              isDisabled: newParentTask.isDisabled,
+              dependencies: newParentTask.dependencies,
+              hideChildren: newParentTask.hideChildren,
+              children: newParentTask.children,
+              displayOrder: newParentTask.displayOrder,
+            }
+          : null;
+
         // 将时间调整后的任务传递给回调
         const result = await finalOnHierarchyChange(
-          movedTask,
-          newParentTask,
+          movedTaskForCallback,
+          newParentTaskForCallback,
           updatedTasksWithTime
         );
 
@@ -533,9 +582,42 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
         return; // 已经处理了回调，直接返回
       }
 
+      // 将 BarTask 转换为 Task 类型
+      const movedTaskForCallback: Task = {
+        id: movedTask.id,
+        type: movedTask.type,
+        name: movedTask.name,
+        start: movedTask.start,
+        end: movedTask.end,
+        progress: movedTask.progress,
+        styles: movedTask.styles,
+        isDisabled: movedTask.isDisabled,
+        dependencies: movedTask.dependencies,
+        hideChildren: movedTask.hideChildren,
+        children: movedTask.children,
+        displayOrder: movedTask.displayOrder,
+      };
+
+      const newParentTaskForCallback: Task | null = newParentTask
+        ? {
+            id: newParentTask.id,
+            type: newParentTask.type,
+            name: newParentTask.name,
+            start: newParentTask.start,
+            end: newParentTask.end,
+            progress: newParentTask.progress,
+            styles: newParentTask.styles,
+            isDisabled: newParentTask.isDisabled,
+            dependencies: newParentTask.dependencies,
+            hideChildren: newParentTask.hideChildren,
+            children: newParentTask.children,
+            displayOrder: newParentTask.displayOrder,
+          }
+        : null;
+
       const result = await finalOnHierarchyChange(
-        movedTask,
-        newParentTask,
+        movedTaskForCallback,
+        newParentTaskForCallback,
         updatedTasks
       );
 

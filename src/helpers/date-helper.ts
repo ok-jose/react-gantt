@@ -23,11 +23,19 @@ export const getCachedDateTimeFormat = (
   return dtf;
 };
 
+/**
+ * 向时间戳添加指定的时间量
+ * @param timestamp 时间戳（毫秒）
+ * @param quantity 要添加的数量
+ * @param scale 时间单位
+ * @returns 新的时间戳
+ */
 export const addToDate = (
-  date: Date,
+  timestamp: number,
   quantity: number,
   scale: DateHelperScales
-) => {
+): number => {
+  const date = new Date(timestamp);
   const newDate = new Date(
     date.getFullYear() + (scale === 'year' ? quantity : 0),
     date.getMonth() + (scale === 'month' ? quantity : 0),
@@ -37,10 +45,20 @@ export const addToDate = (
     date.getSeconds() + (scale === 'second' ? quantity : 0),
     date.getMilliseconds() + (scale === 'millisecond' ? quantity : 0)
   );
-  return newDate;
+  return newDate.getTime();
 };
 
-export const startOfDate = (date: Date, scale: DateHelperScales) => {
+/**
+ * 获取时间戳在指定时间单位的开始时间
+ * @param timestamp 时间戳（毫秒）
+ * @param scale 时间单位
+ * @returns 新的时间戳
+ */
+export const startOfDate = (
+  timestamp: number,
+  scale: DateHelperScales
+): number => {
+  const date = new Date(timestamp);
   const scores = [
     'millisecond',
     'second',
@@ -64,17 +82,25 @@ export const startOfDate = (date: Date, scale: DateHelperScales) => {
     shouldReset('minute') ? 0 : date.getSeconds(),
     shouldReset('second') ? 0 : date.getMilliseconds()
   );
-  return newDate;
+  return newDate.getTime();
 };
 
+/**
+ * 计算甘特图的日期范围
+ * @param tasks 任务列表
+ * @param viewMode 视图模式
+ * @param preStepsCount 前置步骤数量
+ * @param calendarRange 可选的日历范围（时间戳数组）
+ * @returns 日期范围（时间戳数组）
+ */
 export const ganttDateRange = (
   tasks: Task[],
   viewMode: ViewMode,
   preStepsCount: number,
-  calendarRange?: [Date, Date]
-) => {
-  let newStartDate: Date;
-  let newEndDate: Date;
+  calendarRange?: [number, number]
+): [number, number] => {
+  let newStartDate: number;
+  let newEndDate: number;
 
   // 优先使用外部传入的 calendarRange
   if (calendarRange && calendarRange[0] && calendarRange[1]) {
@@ -155,13 +181,20 @@ export const ganttDateRange = (
   return [newStartDate, newEndDate];
 };
 
+/**
+ * 生成日期序列
+ * @param startDate 开始时间戳
+ * @param endDate 结束时间戳
+ * @param viewMode 视图模式
+ * @returns 时间戳数组
+ */
 export const seedDates = (
-  startDate: Date,
-  endDate: Date,
+  startDate: number,
+  endDate: number,
   viewMode: ViewMode
-) => {
-  let currentDate: Date = new Date(startDate);
-  const dates: Date[] = [currentDate];
+): number[] => {
+  let currentDate: number = startDate;
+  const dates: number[] = [currentDate];
   while (currentDate < endDate) {
     switch (viewMode) {
       case ViewMode.Year:
@@ -197,7 +230,14 @@ export const seedDates = (
   return dates;
 };
 
-export const getLocaleMonth = (date: Date, locale: string) => {
+/**
+ * 获取本地化的月份名称
+ * @param timestamp 时间戳（毫秒）
+ * @param locale 语言环境
+ * @returns 本地化的月份名称
+ */
+export const getLocaleMonth = (timestamp: number, locale: string): string => {
+  const date = new Date(timestamp);
   let bottomValue = getCachedDateTimeFormat(locale, {
     month: 'long',
   }).format(date);
@@ -208,11 +248,19 @@ export const getLocaleMonth = (date: Date, locale: string) => {
   return bottomValue;
 };
 
+/**
+ * 获取本地化的星期名称
+ * @param timestamp 时间戳（毫秒）
+ * @param locale 语言环境
+ * @param format 格式类型
+ * @returns 本地化的星期名称
+ */
 export const getLocalDayOfWeek = (
-  date: Date,
+  timestamp: number,
   locale: string,
   format?: 'long' | 'short' | 'narrow' | undefined
-) => {
+): string => {
+  const date = new Date(timestamp);
   let bottomValue = getCachedDateTimeFormat(locale, {
     weekday: format,
   }).format(date);
@@ -224,17 +272,26 @@ export const getLocalDayOfWeek = (
 };
 
 /**
- * Returns monday of current week
- * @param date date for modify
+ * 获取当前周的周一
+ * @param timestamp 时间戳（毫秒）
+ * @returns 周一的时间戳
  */
-const getMonday = (date: Date) => {
+const getMonday = (timestamp: number): number => {
+  const date = new Date(timestamp);
   const day = date.getDay();
   const diff = date.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
-  return new Date(date.setDate(diff));
+  const mondayDate = new Date(date);
+  mondayDate.setDate(diff);
+  return mondayDate.getTime();
 };
 
-export const getWeekNumberISO8601 = (date: Date) => {
-  const tmpDate = new Date(date.valueOf());
+/**
+ * 获取ISO 8601标准的周数
+ * @param timestamp 时间戳（毫秒）
+ * @returns 周数字符串
+ */
+export const getWeekNumberISO8601 = (timestamp: number): string => {
+  const tmpDate = new Date(timestamp);
   const dayNumber = (tmpDate.getDay() + 6) % 7;
   tmpDate.setDate(tmpDate.getDate() - dayNumber + 3);
   const firstThursday = tmpDate.valueOf();

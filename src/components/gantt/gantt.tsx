@@ -88,7 +88,7 @@ const GanttInternal: React.FunctionComponent = () => {
   const taskListRef = useRef<HTMLDivElement>(null);
   const [dateSetup, setDateSetup] = useState<DateSetup>(() => {
     // 优先使用外部传入的 calendarRange，如果没有则基于任务计算
-    let startDate: Date, endDate: Date;
+    let startDate: number, endDate: number;
     if (calendarRange && calendarRange[0] && calendarRange[1]) {
       [startDate, endDate] = calendarRange;
     } else {
@@ -101,7 +101,7 @@ const GanttInternal: React.FunctionComponent = () => {
     }
     return { viewMode, dates: seedDates(startDate, endDate, viewMode) };
   });
-  const [currentViewDate, setCurrentViewDate] = useState<Date | undefined>(
+  const [currentViewDate, setCurrentViewDate] = useState<number | undefined>(
     undefined
   );
 
@@ -127,7 +127,7 @@ const GanttInternal: React.FunctionComponent = () => {
     const filteredTasks = tasks.sort(sortTasks);
 
     // 优先使用外部传入的 calendarRange，如果没有则基于任务计算
-    let startDate: Date, endDate: Date;
+    let startDate: number, endDate: number;
     if (calendarRange && calendarRange[0] && calendarRange[1]) {
       [startDate, endDate] = calendarRange;
     } else {
@@ -231,8 +231,8 @@ const GanttInternal: React.FunctionComponent = () => {
         const prevStateTask = barTasks.find(t => t.id === changedTask.id);
         if (
           prevStateTask &&
-          (prevStateTask.start.getTime() !== changedTask.start.getTime() ||
-            prevStateTask.end.getTime() !== changedTask.end.getTime() ||
+          (prevStateTask.start !== changedTask.start ||
+            prevStateTask.end !== changedTask.end ||
             prevStateTask.progress !== changedTask.progress)
         ) {
           // actions for change

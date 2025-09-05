@@ -8,8 +8,6 @@ const TASKS = [
   {
     id: '硫化缸01',
     name: '硫化缸01',
-    start: new Date(2024, 11, 25, 6, 0, 0),
-    end: new Date(2024, 11, 25, 18, 0, 0),
     progress: 0,
     type: 'task' as const,
     hideChildren: false,
@@ -17,8 +15,8 @@ const TASKS = [
       {
         id: 'WO-1001',
         name: 'WO-1001 - 胶料A',
-        start: new Date(2024, 11, 25, 6, 0, 0),
-        end: new Date(2024, 11, 25, 7, 30, 0),
+        start: new Date(2024, 11, 25, 6, 0, 0).getTime(),
+        end: new Date(2024, 11, 25, 7, 30, 0).getTime(),
         progress: 45,
         type: 'task' as const,
         invOrg: 'ORG-01',
@@ -35,8 +33,8 @@ const TASKS = [
       {
         id: 'WO-1002',
         name: 'WO-1002 - 胶料B',
-        start: new Date(2024, 11, 25, 8, 30, 0),
-        end: new Date(2024, 11, 25, 10, 0, 0),
+        start: new Date(2024, 11, 25, 8, 30, 0).getTime(),
+        end: new Date(2024, 11, 25, 10, 0, 0).getTime(),
         progress: 30,
         type: 'task' as const,
         dependencies: ['WO-1001'],
@@ -54,8 +52,8 @@ const TASKS = [
       {
         id: 'WO-1003',
         name: 'WO-1003 - 胶料C',
-        start: new Date(2024, 11, 25, 11, 0, 0),
-        end: new Date(2024, 11, 25, 12, 30, 0),
+        start: new Date(2024, 11, 25, 11, 0, 0).getTime(),
+        end: new Date(2024, 11, 25, 12, 30, 0).getTime(),
         progress: 20,
         type: 'task' as const,
         dependencies: ['WO-1002'],
@@ -73,8 +71,8 @@ const TASKS = [
       {
         id: 'WO-1004',
         name: 'WO-1004 - 胶料D',
-        start: new Date(2024, 11, 25, 14, 0, 0),
-        end: new Date(2024, 11, 25, 15, 30, 0),
+        start: new Date(2024, 11, 25, 14, 0, 0).getTime(),
+        end: new Date(2024, 11, 25, 15, 30, 0).getTime(),
         progress: 15,
         type: 'task' as const,
         dependencies: ['WO-1003'],
@@ -92,8 +90,8 @@ const TASKS = [
       {
         id: 'WO-1005',
         name: 'WO-1005 - 胶料E',
-        start: new Date(2024, 11, 25, 16, 30, 0),
-        end: new Date(2024, 11, 25, 18, 0, 0),
+        start: new Date(2024, 11, 25, 16, 30, 0).getTime(),
+        end: new Date(2024, 11, 25, 18, 0, 0).getTime(),
         progress: 10,
         type: 'task' as const,
         dependencies: ['WO-1004'],
@@ -113,8 +111,6 @@ const TASKS = [
   {
     id: '硫化缸02',
     name: '硫化缸02',
-    start: new Date(2024, 11, 25, 6, 0, 0),
-    end: new Date(2024, 11, 25, 18, 0, 0),
     progress: 0,
     type: 'task' as const,
     hideChildren: false,
@@ -122,8 +118,8 @@ const TASKS = [
       {
         id: 'WO-2001',
         name: 'WO-2001 - 胶料F',
-        start: new Date(2024, 11, 25, 6, 30, 0),
-        end: new Date(2024, 11, 25, 8, 0, 0),
+        start: new Date(2024, 11, 25, 6, 30, 0).getTime(),
+        end: new Date(2024, 11, 25, 8, 0, 0).getTime(),
         progress: 40,
         type: 'task' as const,
         invOrg: 'ORG-01',
@@ -140,8 +136,8 @@ const TASKS = [
       {
         id: 'WO-2002',
         name: 'WO-2002 - 胶料G',
-        start: new Date(2024, 11, 25, 9, 0, 0),
-        end: new Date(2024, 11, 25, 10, 30, 0),
+        start: new Date(2024, 11, 25, 9, 0, 0).getTime(),
+        end: new Date(2024, 11, 25, 10, 30, 0).getTime(),
         progress: 25,
         type: 'task' as const,
         dependencies: ['WO-2001'],
@@ -159,8 +155,8 @@ const TASKS = [
       {
         id: 'WO-2003',
         name: 'WO-2003 - 胶料H',
-        start: new Date(2024, 11, 25, 11, 30, 0),
-        end: new Date(2024, 11, 25, 13, 0, 0),
+        start: new Date(2024, 11, 25, 11, 30, 0).getTime(),
+        end: new Date(2024, 11, 25, 13, 0, 0).getTime(),
         progress: 15,
         type: 'task' as const,
         dependencies: ['WO-2002'],
@@ -178,8 +174,8 @@ const TASKS = [
       {
         id: 'WO-2004',
         name: 'WO-2004 - 胶料I',
-        start: new Date(2024, 11, 25, 14, 30, 0),
-        end: new Date(2024, 11, 25, 16, 0, 0),
+        start: new Date(2024, 11, 25, 14, 30, 0).getTime(),
+        end: new Date(2024, 11, 25, 16, 0, 0).getTime(),
         progress: 10,
         type: 'task' as const,
         dependencies: ['WO-2003'],
@@ -197,8 +193,8 @@ const TASKS = [
       {
         id: 'WO-2005',
         name: 'WO-2005 - 胶料J',
-        start: new Date(2024, 11, 25, 17, 0, 0),
-        end: new Date(2024, 11, 25, 18, 0, 0),
+        start: new Date(2024, 11, 25, 17, 0, 0).getTime(),
+        end: new Date(2024, 11, 25, 18, 0, 0).getTime(),
         progress: 5,
         type: 'task' as const,
         dependencies: ['WO-2004'],
@@ -218,8 +214,6 @@ const TASKS = [
   {
     id: '硫化缸03',
     name: '硫化缸03',
-    start: new Date(2024, 11, 25, 6, 0, 0),
-    end: new Date(2024, 11, 25, 18, 0, 0),
     progress: 0,
     type: 'task' as const,
     hideChildren: false,
@@ -227,8 +221,8 @@ const TASKS = [
       {
         id: 'WO-3001',
         name: 'WO-3001 - 胶料K',
-        start: new Date(2024, 11, 25, 6, 15, 0),
-        end: new Date(2024, 11, 25, 7, 45, 0),
+        start: new Date(2024, 11, 25, 6, 15, 0).getTime(),
+        end: new Date(2024, 11, 25, 7, 45, 0).getTime(),
         progress: 35,
         type: 'task' as const,
         invOrg: 'ORG-01',
@@ -245,8 +239,8 @@ const TASKS = [
       {
         id: 'WO-3002',
         name: 'WO-3002 - 胶料L',
-        start: new Date(2024, 11, 25, 8, 45, 0),
-        end: new Date(2024, 11, 25, 10, 15, 0),
+        start: new Date(2024, 11, 25, 8, 45, 0).getTime(),
+        end: new Date(2024, 11, 25, 10, 15, 0).getTime(),
         progress: 20,
         type: 'task' as const,
         dependencies: ['WO-3001'],
@@ -264,8 +258,8 @@ const TASKS = [
       {
         id: 'WO-3003',
         name: 'WO-3003 - 胶料M',
-        start: new Date(2024, 11, 25, 11, 15, 0),
-        end: new Date(2024, 11, 25, 12, 45, 0),
+        start: new Date(2024, 11, 25, 11, 15, 0).getTime(),
+        end: new Date(2024, 11, 25, 12, 45, 0).getTime(),
         progress: 10,
         type: 'task' as const,
         dependencies: ['WO-3002'],
@@ -283,8 +277,8 @@ const TASKS = [
       {
         id: 'WO-3004',
         name: 'WO-3004 - 胶料N',
-        start: new Date(2024, 11, 25, 13, 45, 0),
-        end: new Date(2024, 11, 25, 15, 15, 0),
+        start: new Date(2024, 11, 25, 13, 45, 0).getTime(),
+        end: new Date(2024, 11, 25, 15, 15, 0).getTime(),
         progress: 5,
         type: 'task' as const,
         dependencies: ['WO-3003'],
@@ -302,8 +296,8 @@ const TASKS = [
       {
         id: 'WO-3005',
         name: 'WO-3005 - 胶料O',
-        start: new Date(2024, 11, 25, 16, 15, 0),
-        end: new Date(2024, 11, 25, 18, 0, 0),
+        start: new Date(2024, 11, 25, 16, 15, 0).getTime(),
+        end: new Date(2024, 11, 25, 18, 0, 0).getTime(),
         progress: 0,
         type: 'task' as const,
         dependencies: ['WO-3004'],
@@ -323,8 +317,6 @@ const TASKS = [
   {
     id: '硫化缸04',
     name: '硫化缸04',
-    start: new Date(2024, 11, 25, 6, 0, 0),
-    end: new Date(2024, 11, 25, 18, 0, 0),
     progress: 0,
     type: 'task' as const,
     hideChildren: false,
@@ -332,8 +324,8 @@ const TASKS = [
       {
         id: 'WO-4001',
         name: 'WO-4001 - 胶料P',
-        start: new Date(2024, 11, 25, 6, 45, 0),
-        end: new Date(2024, 11, 25, 8, 15, 0),
+        start: new Date(2024, 11, 25, 6, 45, 0).getTime(),
+        end: new Date(2024, 11, 25, 8, 15, 0).getTime(),
         progress: 30,
         type: 'task' as const,
         invOrg: 'ORG-01',
@@ -350,8 +342,8 @@ const TASKS = [
       {
         id: 'WO-4002',
         name: 'WO-4002 - 胶料Q',
-        start: new Date(2024, 11, 25, 9, 15, 0),
-        end: new Date(2024, 11, 25, 10, 45, 0),
+        start: new Date(2024, 11, 25, 9, 15, 0).getTime(),
+        end: new Date(2024, 11, 25, 10, 45, 0).getTime(),
         progress: 15,
         type: 'task' as const,
         dependencies: ['WO-4001'],
@@ -369,8 +361,8 @@ const TASKS = [
       {
         id: 'WO-4003',
         name: 'WO-4003 - 胶料R',
-        start: new Date(2024, 11, 25, 11, 45, 0),
-        end: new Date(2024, 11, 25, 13, 15, 0),
+        start: new Date(2024, 11, 25, 11, 45, 0).getTime(),
+        end: new Date(2024, 11, 25, 13, 15, 0).getTime(),
         progress: 8,
         type: 'task' as const,
         dependencies: ['WO-4002'],
@@ -388,8 +380,8 @@ const TASKS = [
       {
         id: 'WO-4004',
         name: 'WO-4004 - 胶料S',
-        start: new Date(2024, 11, 25, 14, 15, 0),
-        end: new Date(2024, 11, 25, 15, 45, 0),
+        start: new Date(2024, 11, 25, 14, 15, 0).getTime(),
+        end: new Date(2024, 11, 25, 15, 45, 0).getTime(),
         progress: 3,
         type: 'task' as const,
         dependencies: ['WO-4003'],
@@ -407,8 +399,8 @@ const TASKS = [
       {
         id: 'WO-4005',
         name: 'WO-4005 - 胶料T',
-        start: new Date(2024, 11, 25, 16, 45, 0),
-        end: new Date(2024, 11, 25, 18, 0, 0),
+        start: new Date(2024, 11, 25, 16, 45, 0).getTime(),
+        end: new Date(2024, 11, 25, 18, 0, 0).getTime(),
         progress: 0,
         type: 'task' as const,
         dependencies: ['WO-4004'],
@@ -428,8 +420,6 @@ const TASKS = [
   {
     id: '硫化缸05',
     name: '硫化缸05',
-    start: new Date(2024, 11, 25, 6, 0, 0),
-    end: new Date(2024, 11, 25, 18, 0, 0),
     progress: 0,
     type: 'task' as const,
     hideChildren: false,
@@ -437,8 +427,8 @@ const TASKS = [
       {
         id: 'WO-5001',
         name: 'WO-5001 - 胶料U',
-        start: new Date(2024, 11, 25, 6, 20, 0),
-        end: new Date(2024, 11, 25, 7, 50, 0),
+        start: new Date(2024, 11, 25, 6, 20, 0).getTime(),
+        end: new Date(2024, 11, 25, 7, 50, 0).getTime(),
         progress: 25,
         type: 'task' as const,
         invOrg: 'ORG-01',
@@ -455,8 +445,8 @@ const TASKS = [
       {
         id: 'WO-5002',
         name: 'WO-5002 - 胶料V',
-        start: new Date(2024, 11, 25, 8, 50, 0),
-        end: new Date(2024, 11, 25, 10, 20, 0),
+        start: new Date(2024, 11, 25, 8, 50, 0).getTime(),
+        end: new Date(2024, 11, 25, 10, 20, 0).getTime(),
         progress: 12,
         type: 'task' as const,
         dependencies: ['WO-5001'],
@@ -474,8 +464,8 @@ const TASKS = [
       {
         id: 'WO-5003',
         name: 'WO-5003 - 胶料W',
-        start: new Date(2024, 11, 25, 11, 20, 0),
-        end: new Date(2024, 11, 25, 12, 50, 0),
+        start: new Date(2024, 11, 25, 11, 20, 0).getTime(),
+        end: new Date(2024, 11, 25, 12, 50, 0).getTime(),
         progress: 8,
         type: 'task' as const,
         dependencies: ['WO-5002'],
@@ -493,8 +483,8 @@ const TASKS = [
       {
         id: 'WO-5004',
         name: 'WO-5004 - 胶料X',
-        start: new Date(2024, 11, 25, 13, 50, 0),
-        end: new Date(2024, 11, 25, 15, 20, 0),
+        start: new Date(2024, 11, 25, 13, 50, 0).getTime(),
+        end: new Date(2024, 11, 25, 15, 20, 0).getTime(),
         progress: 5,
         type: 'task' as const,
         dependencies: ['WO-5003'],
@@ -521,8 +511,6 @@ const TASKS = [
     return {
       id: `硫化缸${tankNum.toString().padStart(2, '0')}`,
       name: `硫化缸${tankNum.toString().padStart(2, '0')}`,
-      start: new Date(2024, 11, 25, 6, 0, 0),
-      end: new Date(2024, 11, 25, 18, 0, 0),
       progress: 0,
       type: 'task' as const,
       hideChildren: false,
@@ -530,8 +518,15 @@ const TASKS = [
         {
           id: `WO-${tankNum}001`,
           name: `WO-${tankNum}001 - 胶料${String.fromCharCode(65 + ((index * 5) % 26))}`,
-          start: new Date(2024, 11, 25, baseHour, baseMinute, 0),
-          end: new Date(2024, 11, 25, baseHour + 1, baseMinute + 30, 0),
+          start: new Date(2024, 11, 25, baseHour, baseMinute, 0).getTime(),
+          end: new Date(
+            2024,
+            11,
+            25,
+            baseHour + 1,
+            baseMinute + 30,
+            0
+          ).getTime(),
           progress: Math.floor(Math.random() * 50) + 10,
           type: 'task' as const,
           invOrg: 'ORG-01',
@@ -548,8 +543,15 @@ const TASKS = [
         {
           id: `WO-${tankNum}002`,
           name: `WO-${tankNum}002 - 胶料${String.fromCharCode(66 + ((index * 5) % 26))}`,
-          start: new Date(2024, 11, 25, baseHour + 2, baseMinute, 0),
-          end: new Date(2024, 11, 25, baseHour + 3, baseMinute + 30, 0),
+          start: new Date(2024, 11, 25, baseHour + 2, baseMinute, 0).getTime(),
+          end: new Date(
+            2024,
+            11,
+            25,
+            baseHour + 3,
+            baseMinute + 30,
+            0
+          ).getTime(),
           progress: Math.floor(Math.random() * 40) + 5,
           type: 'task' as const,
           dependencies: [`WO-${tankNum}001`],
@@ -567,8 +569,15 @@ const TASKS = [
         {
           id: `WO-${tankNum}003`,
           name: `WO-${tankNum}003 - 胶料${String.fromCharCode(67 + ((index * 5) % 26))}`,
-          start: new Date(2024, 11, 25, baseHour + 4, baseMinute, 0),
-          end: new Date(2024, 11, 25, baseHour + 5, baseMinute + 30, 0),
+          start: new Date(2024, 11, 25, baseHour + 4, baseMinute, 0).getTime(),
+          end: new Date(
+            2024,
+            11,
+            25,
+            baseHour + 5,
+            baseMinute + 30,
+            0
+          ).getTime(),
           progress: Math.floor(Math.random() * 30) + 2,
           type: 'task' as const,
           dependencies: [`WO-${tankNum}002`],
@@ -586,8 +595,15 @@ const TASKS = [
         {
           id: `WO-${tankNum}004`,
           name: `WO-${tankNum}004 - 胶料${String.fromCharCode(68 + ((index * 5) % 26))}`,
-          start: new Date(2024, 11, 25, baseHour + 6, baseMinute, 0),
-          end: new Date(2024, 11, 25, baseHour + 7, baseMinute + 30, 0),
+          start: new Date(2024, 11, 25, baseHour + 6, baseMinute, 0).getTime(),
+          end: new Date(
+            2024,
+            11,
+            25,
+            baseHour + 7,
+            baseMinute + 30,
+            0
+          ).getTime(),
           progress: Math.floor(Math.random() * 20) + 1,
           type: 'task' as const,
           dependencies: [`WO-${tankNum}003`],
@@ -608,8 +624,22 @@ const TASKS = [
               {
                 id: `WO-${tankNum}005`,
                 name: `WO-${tankNum}005 - 胶料${String.fromCharCode(69 + ((index * 5) % 26))}`,
-                start: new Date(2024, 11, 25, baseHour + 8, baseMinute, 0),
-                end: new Date(2024, 11, 25, baseHour + 9, baseMinute + 30, 0),
+                start: new Date(
+                  2024,
+                  11,
+                  25,
+                  baseHour + 8,
+                  baseMinute,
+                  0
+                ).getTime(),
+                end: new Date(
+                  2024,
+                  11,
+                  25,
+                  baseHour + 9,
+                  baseMinute + 30,
+                  0
+                ).getTime(),
                 progress: Math.floor(Math.random() * 15),
                 type: 'task' as const,
                 dependencies: [`WO-${tankNum}004`],
@@ -640,7 +670,7 @@ const ProdSchedule = () => {
     setTasks(allTasks);
     return true;
   };
-  const [tasks, setTasks] = React.useState<Task[]>(TASKS);
+  const [tasks, setTasks] = React.useState<Task[]>(TASKS as unknown as Task[]);
   return (
     <Gantt
       columns={[
@@ -652,8 +682,8 @@ const ProdSchedule = () => {
       ]}
       tasks={tasks}
       calendarRange={[
-        new Date(2024, 11, 25, 6, 0, 0),
-        new Date(2024, 11, 25, 18, 0, 0),
+        new Date(2024, 11, 25, 6, 0, 0).getTime(),
+        new Date(2024, 11, 25, 18, 0, 0).getTime(),
       ]}
       // childrenField="tasks"
       viewMode={ViewMode.HalfHour}

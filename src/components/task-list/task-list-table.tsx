@@ -138,9 +138,9 @@ export const TaskListTableDefault: React.FC<{
   const getDefaultColumnValue = (task: Task, key: string): string => {
     switch (key) {
       case 'start':
-        return toLocaleDateString(task.start, dateTimeOptions);
+        return toLocaleDateString(new Date(task.start), dateTimeOptions);
       case 'end':
-        return toLocaleDateString(task.end, dateTimeOptions);
+        return toLocaleDateString(new Date(task.end), dateTimeOptions);
       case 'progress':
         return task.progress ? `${task.progress}%` : '0%';
       case 'type':

@@ -6,7 +6,7 @@ import styles from './grid.module.css';
 
 export type GridBodyProps = {
   tasks: Task[];
-  dates: Date[];
+  dates: number[]; // 时间戳数组
   svgWidth: number;
   rowHeight?: number;
   columnWidth?: number;
@@ -81,15 +81,15 @@ export const GridBody: React.FC<GridBodyProps> = ({
     y += rowHeight;
   }
 
-  const now = new Date();
+  const now = Date.now(); // 使用时间戳
   let tickX = 0;
   const ticks: React.ReactNode[] = [];
   let today: React.ReactNode = <rect />;
   for (let i = 0; i < dates.length; i++) {
-    const date = dates[i];
+    const timestamp = dates[i];
     ticks.push(
       <line
-        key={date.getTime()}
+        key={timestamp}
         x1={tickX}
         y1={0}
         x2={tickX}
@@ -98,18 +98,12 @@ export const GridBody: React.FC<GridBodyProps> = ({
       />
     );
     if (
-      (i + 1 !== dates.length &&
-        date.getTime() < now.getTime() &&
-        dates[i + 1].getTime() >= now.getTime()) ||
+      (i + 1 !== dates.length && timestamp < now && dates[i + 1] >= now) ||
       // if current date is last
       (i !== 0 &&
         i + 1 === dates.length &&
-        date.getTime() < now.getTime() &&
-        addToDate(
-          date,
-          date.getTime() - dates[i - 1].getTime(),
-          'millisecond'
-        ).getTime() >= now.getTime())
+        timestamp < now &&
+        addToDate(timestamp, timestamp - dates[i - 1], 'millisecond') >= now)
     ) {
       today = (
         <rect
@@ -125,8 +119,8 @@ export const GridBody: React.FC<GridBodyProps> = ({
     if (
       rtl &&
       i + 1 !== dates.length &&
-      date.getTime() >= now.getTime() &&
-      dates[i + 1].getTime() < now.getTime()
+      timestamp >= now &&
+      dates[i + 1] < now
     ) {
       today = (
         <rect

@@ -15,8 +15,8 @@ export type Task = {
   id: string;
   type: TaskType;
   name: string;
-  start: Date;
-  end: Date;
+  start: number; // 时间戳（毫秒）
+  end: number; // 时间戳（毫秒）
   /**
    * From 0 to 100
    */
@@ -85,7 +85,7 @@ export interface EventOption {
 
 export interface DisplayOption {
   viewMode?: ViewMode;
-  viewDate?: Date;
+  viewDate?: number; // 时间戳（毫秒）
   preStepsCount?: number;
   /**
    * Specifies the month name language. Able formats: ISO 639-2, Java Locale
@@ -95,7 +95,7 @@ export interface DisplayOption {
   /**
    * 可选的日历范围，如果不提供则基于任务时间自动计算
    */
-  calendarRange?: [Date, Date];
+  calendarRange?: [number, number]; // 时间戳数组（毫秒）
 }
 
 export interface StylingOption {

@@ -75,8 +75,8 @@ export const applyCascadeShift = (
   const shiftTaskDeep = (task: Task, ms: number): Task => {
     const shifted: Task = {
       ...task,
-      start: new Date(task.start.getTime() + ms),
-      end: new Date(task.end.getTime() + ms),
+      start: task.start + ms, // 时间戳直接相加
+      end: task.end + ms, // 时间戳直接相加
     };
     if (task.children && task.children.length > 0) {
       shifted.children = task.children.map(child => shiftTaskDeep(child, ms));

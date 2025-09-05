@@ -2,7 +2,7 @@ import type { BarTask, TaskTypeInternal, Task, BarMoveAction } from '../types';
 
 export const convertToBarTasks = (
   tasks: Task[],
-  dates: Date[],
+  dates: number[], // 时间戳数组
   columnWidth: number,
   rowHeight: number,
   taskHeight: number,
@@ -16,7 +16,7 @@ export const convertToBarTasks = (
   milestoneBackgroundColor: string,
   milestoneBackgroundSelectedColor: string,
   showSubTask: boolean = false,
-  calendarRange?: [Date, Date]
+  calendarRange?: [number, number] // 时间戳数组
 ) => {
   // 扁平化嵌套的任务结构
   const flattenedTasks = flattenTasks(tasks, showSubTask, calendarRange);
@@ -65,7 +65,7 @@ export const convertToBarTasks = (
 function flattenTasks(
   tasks: Task[],
   showSubTask: boolean = false,
-  calendarRange?: [Date, Date]
+  calendarRange?: [number, number] // 时间戳数组
 ): Task[] {
   const flattened: Task[] = [];
 
@@ -109,7 +109,7 @@ function flattenTasks(
 const convertToBarTask = (
   task: Task,
   index: number,
-  dates: Date[],
+  dates: number[], // 时间戳数组
   columnWidth: number,
   rowHeight: number,
   taskHeight: number,
@@ -163,7 +163,7 @@ const convertToBarTask = (
 const convertToBar = (
   task: Task,
   index: number,
-  dates: Date[],
+  dates: number[], // 时间戳数组
   columnWidth: number,
   rowHeight: number,
   taskHeight: number,
@@ -227,7 +227,7 @@ const convertToBar = (
 const convertToMilestone = (
   task: Task,
   index: number,
-  dates: Date[],
+  dates: number[], // 时间戳数组
   columnWidth: number,
   rowHeight: number,
   taskHeight: number,
@@ -270,21 +270,30 @@ const convertToMilestone = (
   };
 };
 
-const taskXCoordinate = (xDate: Date, dates: Date[], columnWidth: number) => {
-  // 找到第一个大于等于 xDate 的刻度索引
-  const firstGE = dates.findIndex(d => d.getTime() >= xDate.getTime());
+/**
+ * 根据时间戳计算任务在 X 轴上的坐标
+ * @param xTimestamp 时间戳（毫秒）
+ * @param dates 时间戳数组
+ * @param columnWidth 列宽度
+ * @returns X 坐标
+ */
+const taskXCoordinate = (
+  xTimestamp: number,
+  dates: number[],
+  columnWidth: number
+): number => {
+  // 找到第一个大于等于 xTimestamp 的刻度索引
+  const firstGE = dates.findIndex(d => d >= xTimestamp);
 
   if (firstGE === -1) {
-    // 如果 xDate 超过最后一个刻度，需要计算超出部分的位置
+    // 如果 xTimestamp 超过最后一个刻度，需要计算超出部分的位置
     const lastIndex = dates.length - 1;
     const lastDate = dates[lastIndex];
-    const remainderMillis = xDate.getTime() - lastDate.getTime();
+    const remainderMillis = xTimestamp - lastDate;
 
     // 使用最后一个时间间隔作为参考
     const interval =
-      lastIndex > 0
-        ? dates[lastIndex].getTime() - dates[lastIndex - 1].getTime()
-        : 30 * 60 * 1000; // 默认30分钟间隔
+      lastIndex > 0 ? dates[lastIndex] - dates[lastIndex - 1] : 30 * 60 * 1000; // 默认30分钟间隔
 
     const percentOfInterval = interval > 0 ? remainderMillis / interval : 0;
     // 计算超出最后一个刻度的位置
@@ -293,18 +302,25 @@ const taskXCoordinate = (xDate: Date, dates: Date[], columnWidth: number) => {
   }
 
   const index = Math.max(0, firstGE - 1);
-  const remainderMillis = xDate.getTime() - dates[index].getTime();
-  const interval = dates[index + 1].getTime() - dates[index].getTime();
+  const remainderMillis = xTimestamp - dates[index];
+  const interval = dates[index + 1] - dates[index];
   const percentOfInterval = interval > 0 ? remainderMillis / interval : 0;
   const x = index * columnWidth + percentOfInterval * columnWidth;
   return x;
 };
+/**
+ * 根据时间戳计算 RTL 模式下任务在 X 轴上的坐标
+ * @param xTimestamp 时间戳（毫秒）
+ * @param dates 时间戳数组
+ * @param columnWidth 列宽度
+ * @returns X 坐标
+ */
 const taskXCoordinateRTL = (
-  xDate: Date,
-  dates: Date[],
+  xTimestamp: number,
+  dates: number[],
   columnWidth: number
-) => {
-  let x = taskXCoordinate(xDate, dates, columnWidth);
+): number => {
+  let x = taskXCoordinate(xTimestamp, dates, columnWidth);
   x += columnWidth;
   return x;
 };
@@ -410,19 +426,24 @@ const moveByX = (x: number, xStep: number, task: BarTask) => {
   return [newX1, newX2];
 };
 
+/**
+ * 根据 X 坐标计算对应的时间戳
+ * @param x X 坐标
+ * @param taskX 任务 X 坐标
+ * @param taskTimestamp 任务时间戳（毫秒）
+ * @param xStep X 步长
+ * @param timeStep 时间步长（毫秒）
+ * @returns 新的时间戳
+ */
 const dateByX = (
   x: number,
   taskX: number,
-  taskDate: Date,
+  taskTimestamp: number,
   xStep: number,
   timeStep: number
-) => {
-  let newDate = new Date(((x - taskX) / xStep) * timeStep + taskDate.getTime());
-  newDate = new Date(
-    newDate.getTime() +
-      (newDate.getTimezoneOffset() - taskDate.getTimezoneOffset()) * 60000
-  );
-  return newDate;
+): number => {
+  const newTimestamp = ((x - taskX) / xStep) * timeStep + taskTimestamp;
+  return newTimestamp;
 };
 
 /**
@@ -577,8 +598,8 @@ const handleTaskBySVGMouseEventForBar = (
         const deltaMs = deltaGrids * timeStep; // 转换为毫秒
 
         // 计算新的开始和结束时间
-        const newStartTime = new Date(selectedTask.start.getTime() + deltaMs);
-        const newEndTime = new Date(selectedTask.end.getTime() + deltaMs);
+        const newStartTime = selectedTask.start + deltaMs;
+        const newEndTime = selectedTask.end + deltaMs;
 
         changedTask.start = newStartTime;
         changedTask.end = newEndTime;
@@ -647,9 +668,7 @@ const hasOverlappingChildren = (children: Task[]): boolean => {
   }
 
   // 按开始时间排序
-  const sortedChildren = [...children].sort(
-    (a, b) => a.start.getTime() - b.start.getTime()
-  );
+  const sortedChildren = [...children].sort((a, b) => a.start - b.start);
 
   // 检查相邻任务是否有重叠
   for (let i = 0; i < sortedChildren.length - 1; i++) {
@@ -657,7 +676,7 @@ const hasOverlappingChildren = (children: Task[]): boolean => {
     const nextTask = sortedChildren[i + 1];
 
     // 如果当前任务的结束时间晚于下一个任务的开始时间，则存在重叠
-    if (currentTask.end.getTime() > nextTask.start.getTime()) {
+    if (currentTask.end > nextTask.start) {
       return true;
     }
   }
@@ -669,10 +688,10 @@ const hasOverlappingChildren = (children: Task[]): boolean => {
       const task2 = sortedChildren[j];
 
       // 检查是否有重叠（包括完全包含的情况）
-      const start1 = task1.start.getTime();
-      const end1 = task1.end.getTime();
-      const start2 = task2.start.getTime();
-      const end2 = task2.end.getTime();
+      const start1 = task1.start;
+      const end1 = task1.end;
+      const start2 = task2.start;
+      const end2 = task2.end;
 
       if (start1 < end2 && end1 > start2) {
         return true;

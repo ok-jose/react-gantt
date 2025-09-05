@@ -1,7 +1,7 @@
 {
   "name": "react-gantt-svg",
   "private": false,
-  "version": "1.0.2",
+  "version": "1.1.1",
   "description": "A React Gantt chart component library",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

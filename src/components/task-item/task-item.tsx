@@ -77,10 +77,10 @@ export const TaskItem: React.FC<TaskItemProps> = props => {
 
     return task.children.map((childTask, index) => {
       // 计算子任务的位置和宽度
-      const childStart = childTask.start.getTime();
-      const childEnd = childTask.end.getTime();
-      const parentStart = task.start.getTime();
-      const parentEnd = task.end.getTime();
+      const childStart = childTask.start;
+      const childEnd = childTask.end;
+      const parentStart = task.start;
+      const parentEnd = task.end;
 
       // 确保子任务的时间范围在父任务范围内
       const clampedChildStart = Math.max(childStart, parentStart);

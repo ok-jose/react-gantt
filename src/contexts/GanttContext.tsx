@@ -42,11 +42,11 @@ interface GanttContextValue {
   // 显示相关配置
   display: {
     viewMode: ViewMode;
-    viewDate?: Date;
+    viewDate?: number; // 时间戳
     preStepsCount: number;
     locale: string;
     rtl: boolean;
-    calendarRange?: [Date, Date];
+    calendarRange?: [number, number]; // 时间戳数组
   };
 
   // 事件处理函数
