@@ -8,7 +8,8 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'ReactGantt',
-      fileName: format => `index.${format === 'es' ? 'es' : 'umd'}.js`,
+      fileName: () => 'index.js',
+      formats: ['umd'],
     },
     rollupOptions: {
       external: ['react', 'react-dom'],
@@ -20,6 +21,7 @@ export default defineConfig({
       },
     },
     sourcemap: false,
+    emptyOutDir: false,
   },
   resolve: {
     alias: {
