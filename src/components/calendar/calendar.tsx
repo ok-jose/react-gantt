@@ -318,14 +318,14 @@ export const Calendar: React.FC<CalendarProps> = ({
 
       // 文字标签在垂直线后面一点，给一些间距
       const xPosition = rtl
-        ? columnWidth * (i + 1) - 15 // 右对齐，距离垂直线15px
-        : columnWidth * i + 15; // 左对齐，距离垂直线15px
+        ? columnWidth * (i + 1) - 25 // 右对齐，距离垂直线25px
+        : columnWidth * i + 25; // 左对齐，距离垂直线25px
 
       // 下半部：垂直居中
       bottomValues.push(
         <text
           key={timestamp}
-          y={topDefaultHeight + topDefaultHeight * 0.6}
+          y={topDefaultHeight + topDefaultHeight * 0.7}
           x={xPosition}
           className={styles.calendarBottomText}
           fontFamily={fontFamily}
@@ -370,14 +370,14 @@ export const Calendar: React.FC<CalendarProps> = ({
 
       // 文字标签在垂直线后面一点，给一些间距
       const xPosition = rtl
-        ? columnWidth * (i + 1) - 15 // 右对齐，距离垂直线15px
-        : columnWidth * i + 15; // 左对齐，距离垂直线15px
+        ? columnWidth * (i + 1) - 25 // 右对齐，距离垂直线15px
+        : columnWidth * i + 25; // 左对齐，距离垂直线15px
 
       // 下半部：垂直居中
       bottomValues.push(
         <text
           key={timestamp}
-          y={topDefaultHeight + topDefaultHeight * 0.6}
+          y={topDefaultHeight + topDefaultHeight * 0.7}
           x={xPosition}
           className={styles.calendarBottomText}
           fontFamily={fontFamily}
