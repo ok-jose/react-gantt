@@ -9,4 +9,6 @@
   --gantt-selected-border: #2196f3;
   --gantt-overlap-color: rgba(254, 238, 238, 1);
   --gantt-expander-color: rgb(86, 86, 86);
+  --gantt-font-size: 14px;
+  --gantt-font-size-small: 12px;
 }

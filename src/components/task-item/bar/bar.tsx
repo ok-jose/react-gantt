@@ -16,7 +16,6 @@ export const Bar: React.FC<TaskItemProps> = ({
   onEventStart,
   isSelected,
   taskHeight,
-  arrowIndent,
 }) => {
   const readonly = useGanttReadonly();
 
@@ -38,33 +37,37 @@ export const Bar: React.FC<TaskItemProps> = ({
   );
   const handleHeight = task.height - 2;
   const textRef = useRef<SVGTextElement>(null);
-  const [isTextInside, setIsTextInside] = useState(true);
+  const [displayText, setDisplayText] = useState(task.name);
 
-  // 计算文字位置
+  // 计算文字位置 - 统一居中显示
   const getX = () => {
     const width = task.x2 - task.x1;
-    const hasChild = task.barChildren.length > 0;
-    if (isTextInside) {
-      return task.x1 + width * 0.5;
-    }
-    if (rtl && textRef.current) {
-      return (
-        task.x1 -
-        textRef.current.getBBox().width -
-        arrowIndent * +hasChild -
-        arrowIndent * 0.2
-      );
-    } else {
-      return task.x1 + width + arrowIndent * +hasChild + arrowIndent * 0.2;
-    }
+    return task.x1 + width * 0.5;
   };
 
-  // 检查文字是否在任务条内部
+  // 处理文本截断
   useEffect(() => {
     if (textRef.current) {
-      setIsTextInside(textRef.current.getBBox().width < task.x2 - task.x1);
+      const textElement = textRef.current;
+      const taskWidth = task.x2 - task.x1;
+      const maxWidth = taskWidth * 0.9; // 留10%的边距
+
+      // 如果文本宽度超过任务条宽度，进行截断
+      if (textElement.getBBox().width > maxWidth) {
+        let truncatedText = task.name;
+        while (
+          textElement.getBBox().width > maxWidth &&
+          truncatedText.length > 0
+        ) {
+          truncatedText = truncatedText.slice(0, -1);
+          textElement.textContent = truncatedText + '...';
+        }
+        setDisplayText(truncatedText + '...');
+      } else {
+        setDisplayText(task.name);
+      }
     }
-  }, [textRef, task]);
+  }, [task.name, task.x1, task.x2]);
 
   // 拖拽时的样式
   const dragStyle = transform
@@ -135,18 +138,12 @@ export const Bar: React.FC<TaskItemProps> = ({
       <text
         x={getX()}
         y={task.y + taskHeight * 0.5}
-        className={
-          isTextInside
-            ? styles.barLabel
-            : styles.barLabel && styles.barLabelOutside
-        }
+        className={styles.barLabel}
         ref={textRef}
-        fill="#ffffff"
-        fontSize="12"
         // 确保文字在拖拽时也跟随移动
         style={isDragging ? { pointerEvents: 'none' } : undefined}
       >
-        {task.name}
+        {displayText}
       </text>
     </g>
   );
