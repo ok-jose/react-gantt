@@ -1,6 +1,43 @@
 import React, { useRef, useEffect, useState } from 'react';
 import type { Task, BarTask } from '../../types';
+import { ViewMode } from '../../types';
+import { useGanttDisplay } from '../../contexts/GanttContext';
 import styles from './tooltip.module.css';
+
+/**
+ * 根据viewMode格式化时间显示
+ * @param start 开始时间戳
+ * @param end 结束时间戳
+ * @param viewMode 视图模式
+ * @returns 格式化后的时间字符串
+ */
+const formatTimeByViewMode = (
+  start: number,
+  end: number,
+  viewMode: ViewMode
+): string => {
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+
+  // 对于Hour和HalfHour模式，只显示时间
+  if (viewMode === ViewMode.Hour || viewMode === ViewMode.HalfHour) {
+    const formatTime = (date: Date) => {
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      return `${hours}:${minutes}`;
+    };
+    return `${formatTime(startDate)} ~ ${formatTime(endDate)}`;
+  }
+
+  // 其他模式显示日期
+  const formatDate = (date: Date) => {
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+    return `${year}-${month}-${day}`;
+  };
+  return `${formatDate(startDate)} - ${formatDate(endDate)}`;
+};
 
 export type TooltipProps = {
   task: BarTask;
@@ -118,7 +155,12 @@ export const Tooltip: React.FC<TooltipProps> = ({
       }
       style={{ left: relatedX, top: relatedY }}
     >
-      <TooltipContent task={task} fontSize={fontSize} fontFamily={fontFamily} />
+      <StandardTooltipContent
+        task={task}
+        fontSize={fontSize}
+        fontFamily={fontFamily}
+        TooltipContent={TooltipContent}
+      />
     </div>
   );
 };
@@ -127,30 +169,48 @@ export const StandardTooltipContent: React.FC<{
   task: Task;
   fontSize: string;
   fontFamily: string;
-}> = ({ task, fontSize, fontFamily }) => {
+  TooltipContent?: React.FC<{
+    task: Task;
+    fontSize: string;
+    fontFamily: string;
+  }>;
+}> = ({ task, fontSize, fontFamily, TooltipContent }) => {
+  const { viewMode } = useGanttDisplay();
   const style = {
     fontSize,
     fontFamily,
   };
+
+  // 如果提供了自定义的TooltipContent，使用自定义组件
+
+  // 否则使用默认的tooltip内容
+  const timeString = formatTimeByViewMode(task.start, task.end, viewMode);
+
   return (
     <div className={styles.tooltipDefaultContainer} style={style}>
-      <b style={{ fontSize: fontSize + 6 }}>{`${
-        task.name
-      }: ${new Date(task.start).getDate()}-${
-        new Date(task.start).getMonth() + 1
-      }-${new Date(task.start).getFullYear()} - ${new Date(task.end).getDate()}-${
-        new Date(task.end).getMonth() + 1
-      }-${new Date(task.end).getFullYear()}`}</b>
-      {task.end - task.start !== 0 && (
-        <p className={styles.tooltipDefaultContainerParagraph}>{`Duration: ${~~(
-          (task.end - task.start) /
-          (1000 * 60 * 60 * 24)
-        )} day(s)`}</p>
-      )}
+      <b style={{ fontSize: fontSize + 6 }}>{`${task.name}: ${timeString}`}</b>
+      {TooltipContent ? (
+        <TooltipContent
+          task={task}
+          fontSize={fontSize}
+          fontFamily={fontFamily}
+        />
+      ) : (
+        <>
+          {task.end - task.start !== 0 && (
+            <p
+              className={styles.tooltipDefaultContainerParagraph}
+            >{`Duration: ${~~(
+              (task.end - task.start) /
+              (1000 * 60 * 60 * 24)
+            )} day(s)`}</p>
+          )}
 
-      <p className={styles.tooltipDefaultContainerParagraph}>
-        {!!task.progress && `Progress: ${task.progress} %`}
-      </p>
+          <p className={styles.tooltipDefaultContainerParagraph}>
+            {!!task.progress && `Progress: ${task.progress} %`}
+          </p>
+        </>
+      )}
     </div>
   );
 };

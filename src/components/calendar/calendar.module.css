@@ -17,7 +17,7 @@
 
 .calendarTopText {
   text-anchor: middle;
-  fill: var(--gantt-text-secondary);
+  fill: var(--gantt-text-color);
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -moz-user-select: none;

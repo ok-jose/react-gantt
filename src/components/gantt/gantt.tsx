@@ -11,7 +11,7 @@ import type { CalendarProps } from '../calendar/calendar';
 import type { TaskGanttContentProps } from './task-gantt-content';
 import { TaskListHeaderDefault } from '../task-list/task-list-header';
 import { TaskListTableDefault } from '../task-list/task-list-table';
-import { StandardTooltipContent, Tooltip } from '../other/tooltip';
+import { Tooltip } from '../other/tooltip';
 import { VerticalScroll } from '../other/vertical-scroll';
 import { type TaskListProps, TaskList } from '../task-list/task-list';
 import { TaskGantt } from './task-gantt';
@@ -24,7 +24,6 @@ import type {
 } from '../../types';
 import { HorizontalScroll } from '../other/horizontal-scroll';
 import {
-  sortTasks,
   ganttDateRange,
   seedDates,
   convertToBarTasks,
@@ -37,15 +36,8 @@ import { GanttProvider, useGanttContext } from '../../contexts/GanttContext';
  * Gantt 组件的内部实现
  */
 const GanttInternal: React.FunctionComponent = () => {
-  const {
-    styling,
-    display,
-    events,
-    state,
-    timeStep,
-    tasks,
-    TooltipContent = StandardTooltipContent,
-  } = useGanttContext();
+  const { styling, display, events, state, timeStep, tasks, TooltipContent } =
+    useGanttContext();
 
   const {
     headerHeight,
@@ -124,7 +116,8 @@ const GanttInternal: React.FunctionComponent = () => {
 
   // task change events
   useEffect(() => {
-    const filteredTasks = tasks.sort(sortTasks);
+    // 保持原始任务顺序，不进行排序
+    const filteredTasks = tasks;
 
     // 优先使用外部传入的 calendarRange，如果没有则基于任务计算
     let startDate: number, endDate: number;
@@ -557,7 +550,7 @@ export const Gantt: React.FunctionComponent<GanttProps> = props => {
     readonly = false,
     viewDate,
     calendarRange,
-    TooltipContent = StandardTooltipContent,
+    TooltipContent,
     TaskListHeader = TaskListHeaderDefault,
     TaskListTable = TaskListTableDefault,
     onDateChange,

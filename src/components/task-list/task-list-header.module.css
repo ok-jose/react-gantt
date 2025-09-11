@@ -13,6 +13,7 @@
   top: 0;
   z-index: 10;
   background-color: var(--gantt-background-color, #ffffff);
+  color: var(--gantt-text-color, #161718);
 }
 
 .ganttTable_Header {
@@ -33,6 +34,7 @@
   border-right: 1px solid var(--gantt-border-color);
   /* 确保头部单元格有背景色 */
   background-color: var(--gantt-background-color, #ffffff);
+  color: var(--gantt-text-color, #161718);
 }
 
 /* 新增：固定头部容器样式 */

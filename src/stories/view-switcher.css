@@ -24,7 +24,7 @@
 .Switch {
   margin: 4px 15px;
   font-size: 14px;
-  font-family: "Arial, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue";
+  font-family: 'Arial, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue';
   display: flex;
   justify-content: center;
   align-items: center;
@@ -57,7 +57,7 @@
 
 .Slider:before {
   position: absolute;
-  content: "";
+  content: '';
   height: 21px;
   width: 21px;
   left: 6px;

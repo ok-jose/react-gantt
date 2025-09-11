@@ -1,13 +1,16 @@
 .tooltipDefaultContainer {
-  background: #fff;
+  background: var(--gantt-background-color);
   padding: 12px;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  color: var(--gantt-text-color);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, 0.16),
+    0 3px 6px rgba(0, 0, 0, 0.23);
 }
 
 .tooltipDefaultContainerParagraph {
   font-size: 12px;
   margin-bottom: 6px;
-  color: #666;
+  color: var(--gantt-text-color);
 }
 
 .tooltipDetailsContainer {

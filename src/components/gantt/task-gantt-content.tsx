@@ -334,8 +334,11 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
     // 计算拖拽任务当前的实际位置
     const currentY = draggedTask.y + (event.delta.y || 0);
 
-    // 根据 Y 坐标计算行索引
-    const rowIndex = Math.round(currentY / rowHeight);
+    // 修正：考虑任务条的实际位置
+    // 任务条的中心位置是 index * rowHeight + rowHeight/2
+    // 所以我们需要根据任务条的中心位置来计算行索引
+    const taskCenterY = currentY;
+    const rowIndex = Math.round(taskCenterY / rowHeight);
 
     // 确保行索引在有效范围内
     if (rowIndex >= 0 && rowIndex < tasks.length) {
@@ -350,7 +353,6 @@ export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({
         return targetTask;
       }
     }
-
     return null;
   };
 
