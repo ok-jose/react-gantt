@@ -53,7 +53,7 @@ export type TooltipProps = {
   rowHeight: number;
   fontSize: string;
   fontFamily: string;
-  TooltipContent: React.FC<{
+  TooltipContent?: React.FC<{
     task: Task;
     fontSize: string;
     fontFamily: string;

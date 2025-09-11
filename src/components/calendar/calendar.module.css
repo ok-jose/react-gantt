@@ -24,6 +24,7 @@
   -ms-user-select: none;
   user-select: none;
   pointer-events: none;
+  font-size: 12px;
 }
 
 .calendarHeader {
@@ -35,4 +36,5 @@
 .calendarContainer {
   border: 1px solid var(--gantt-border-color);
   border-radius: 4px;
+  font-size: 12px;
 }

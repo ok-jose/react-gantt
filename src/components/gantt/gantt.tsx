@@ -540,7 +540,7 @@ export const Gantt: React.FunctionComponent<GanttProps> = props => {
     rtl = false,
     handleWidth = 8,
     arrowColor = 'grey',
-    fontFamily = 'Arial, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue',
+    fontFamily,
     fontSize = '14px',
     arrowIndent = 20,
     todayColor = 'rgba(252, 248, 227, 0.5)',

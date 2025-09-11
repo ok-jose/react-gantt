@@ -345,7 +345,7 @@ export const Calendar: React.FC<CalendarProps> = ({
             y1Line={0}
             y2Line={topDefaultHeight}
             xText={xText}
-            yText={topDefaultHeight * 0.6}
+            yText={topDefaultHeight * 0.7}
           />
         );
       }

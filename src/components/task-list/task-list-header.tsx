@@ -36,7 +36,7 @@ export const TaskListHeaderDefault: React.FC<{
               textAlign: column.align || 'left',
             }}
           >
-            &nbsp;{column.title}
+            {column.title}
           </div>
         ))}
       </div>
