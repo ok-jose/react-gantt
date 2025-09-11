@@ -578,7 +578,7 @@ export const Gantt: React.FunctionComponent<GanttProps> = props => {
       ganttHeight,
       barCornerRadius,
       handleWidth,
-      fontFamily,
+      fontFamily: fontFamily!,
       fontSize,
       barFill,
       barProgressColor,

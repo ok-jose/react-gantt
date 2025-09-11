@@ -13,7 +13,7 @@ export enum ViewMode {
 export type TaskType = 'task' | 'milestone';
 export type Task = {
   id: string;
-  type?: TaskType;
+  type: TaskType;
   name: string;
   start: number; // 时间戳（毫秒）
   end: number; // 时间戳（毫秒）
