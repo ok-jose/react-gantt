@@ -207,6 +207,7 @@ const BASIC_TASKS: Task[] = [
         end: 1757637000000,
         id: 'TASK-4',
         operation: '硫化',
+        adjusted: true,
       },
       {
         invOrg: '三力士余渚工厂',
@@ -223,6 +224,7 @@ const BASIC_TASKS: Task[] = [
         end: 1757640900000,
         id: 'TASK-5',
         operation: '硫化',
+        adjusted: true,
       },
       {
         invOrg: '三力士余渚工厂',
@@ -239,6 +241,7 @@ const BASIC_TASKS: Task[] = [
         end: 1757643300000,
         id: 'TASK-16',
         operation: '硫化',
+        adjusted: true,
       },
       {
         invOrg: '三力士余渚工厂',

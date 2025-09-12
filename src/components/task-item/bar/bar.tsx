@@ -79,7 +79,7 @@ export const Bar: React.FC<TaskItemProps> = ({
 
   return (
     <g
-      className={styles.barWrapper}
+      className={`${styles.barWrapper} ${task?.adjusted ? styles.unadjusted : ''}`}
       tabIndex={0}
       ref={setNodeRef as any}
       {...(listeners as any)}

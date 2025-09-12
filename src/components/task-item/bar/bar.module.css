@@ -80,3 +80,55 @@
     filter: drop-shadow(0 0 8px rgba(0, 123, 255, 0.4));
   }
 }
+
+/* 未调整过的 Bar 闪烁动画 */
+.unadjusted {
+  animation: unadjustedBlink 3s ease-in-out;
+}
+
+@keyframes unadjustedBlink {
+  0% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  10% {
+    opacity: 0.3;
+    filter: brightness(1.5);
+  }
+  20% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  30% {
+    opacity: 0.3;
+    filter: brightness(1.5);
+  }
+  40% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.3;
+    filter: brightness(1.5);
+  }
+  60% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  70% {
+    opacity: 0.3;
+    filter: brightness(1.5);
+  }
+  80% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  90% {
+    opacity: 0.3;
+    filter: brightness(1.5);
+  }
+  100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+}
