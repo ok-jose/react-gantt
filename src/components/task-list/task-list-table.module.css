@@ -2,7 +2,7 @@
 
 .taskListWrapper {
   display: table;
-  border-left: var(--gantt-border-color) 1px solid;
+  /* border-left: var(--gantt-border-color) 1px solid; */
   width: 100%;
   max-width: 220px;
   table-layout: fixed;
